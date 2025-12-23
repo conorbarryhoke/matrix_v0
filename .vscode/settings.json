@@ -1,0 +1,27 @@
+{
+  "python.defaultInterpreterPath": "/usr/local/bin/python",
+  "jupyter.notebookFileRoot": "${workspaceFolder}",
+  "jupyter.interactiveWindow.textEditor.executeSelection": true,
+  "files.associations": {
+    "*.ipynb": "jupyter-notebook"
+  },
+  "notebook.cellToolbarLocation": {
+    "default": "right",
+    "jupyter-notebook": "left"
+  },
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.ipynb_checkpoints": true,
+    "**/*.pyc": true
+  },
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.typeCheckingMode": "basic",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "never"
+    }
+  },
+  "jupyter.askForKernelRestart": false
+}
