@@ -84,7 +84,7 @@ profile_default/
 ipython_config.py
 
 # Trained model files (optional - uncomment to track models)
-*.pkl
+# *.pkl
 
 # MacOS
 .DS_Store
