@@ -113,6 +113,7 @@ function calculateHP() {
     const ac = parseInt(document.getElementById('ac').value) || 14;
     const attack = parseInt(document.getElementById('attack').value) || 5;
     const saveDC = parseInt(document.getElementById('saveDC').value) || 13;
+    const dpr = parseInt(document.getElementById('dpr').value) || 10;
 
     const groundSpeed = parseInt(document.getElementById('speed').value) || 30;
     const flySpeed = parseInt(document.getElementById('flySpeed').value) || 0;
@@ -140,6 +141,19 @@ function calculateHP() {
     const hasTruesight = document.getElementById('truesight').checked;
     const hasTremorsense = document.getElementById('tremorsense').checked;
 
+    // Condition infliction
+    const inflictsPoisoned = document.getElementById('inflictsPoisoned').checked;
+    const inflictsBlinded = document.getElementById('inflictsBlinded').checked;
+    const inflictsCharmed = document.getElementById('inflictsCharmed').checked;
+    const inflictsDeafened = document.getElementById('inflictsDeafened').checked;
+    const inflictsFrightened = document.getElementById('inflictsFrightened').checked;
+    const inflictsIncapacitated = document.getElementById('inflictsIncapacitated').checked;
+    const inflictsParalyzed = document.getElementById('inflictsParalyzed').checked;
+    const inflictsPetrified = document.getElementById('inflictsPetrified').checked;
+    const inflictsProne = document.getElementById('inflictsProne').checked;
+    const inflictsRestrained = document.getElementById('inflictsRestrained').checked;
+    const inflictsStunned = document.getElementById('inflictsStunned').checked;
+
     const spellcasterLevel = parseInt(document.getElementById('spellcasterLevel').value) || 0;
 
     // Build feature vector
@@ -165,10 +179,12 @@ function calculateHP() {
     features['speed_climb'] = climbSpeed;
     features['max_speed'] = Math.max(groundSpeed, flySpeed, swimSpeed, burrowSpeed, climbSpeed);
     features['movement_types_count'] = [groundSpeed, flySpeed, swimSpeed, burrowSpeed, climbSpeed].filter(s => s > 0).length;
+    features['has_flying'] = flySpeed > 0 ? 1 : 0;
 
     // Combat features
     features['highest_attack_bonus'] = attack;
     features['highest_save_dc'] = saveDC;
+    features['estimated_dpr'] = dpr;
     features['has_multiattack'] = hasMultiattack ? 1 : 0;
 
     // Defensive features
@@ -193,6 +209,19 @@ function calculateHP() {
     features['has_truesight'] = hasTruesight ? 1 : 0;
     features['has_tremorsense'] = hasTremorsense ? 1 : 0;
     features['passive_perception'] = passivePerception;
+
+    // Condition infliction
+    features['inflicts_poisoned'] = inflictsPoisoned ? 1 : 0;
+    features['inflicts_blinded'] = inflictsBlinded ? 1 : 0;
+    features['inflicts_charmed'] = inflictsCharmed ? 1 : 0;
+    features['inflicts_deafened'] = inflictsDeafened ? 1 : 0;
+    features['inflicts_frightened'] = inflictsFrightened ? 1 : 0;
+    features['inflicts_incapacitated'] = inflictsIncapacitated ? 1 : 0;
+    features['inflicts_paralyzed'] = inflictsParalyzed ? 1 : 0;
+    features['inflicts_petrified'] = inflictsPetrified ? 1 : 0;
+    features['inflicts_prone'] = inflictsProne ? 1 : 0;
+    features['inflicts_restrained'] = inflictsRestrained ? 1 : 0;
+    features['inflicts_stunned'] = inflictsStunned ? 1 : 0;
 
     // Action economy (estimates)
     features['trait_count'] = 1 + (isSpellcaster ? 1 : 0) + (hasLegendaryRes ? 1 : 0) + (hasMagicRes ? 1 : 0);
@@ -383,6 +412,7 @@ function randomMonster() {
     document.getElementById('ac').value = baseline.ac + Math.floor(Math.random() * 5) - 2;
     document.getElementById('attack').value = baseline.attack + Math.floor(Math.random() * 3) - 1;
     document.getElementById('saveDC').value = baseline.save;
+    document.getElementById('dpr').value = Math.floor((baseline.damage[0] + baseline.damage[1]) / 2);
 
     // Speeds
     document.getElementById('speed').value = 30 + Math.floor(Math.random() * 3) * 10;
