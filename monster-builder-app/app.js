@@ -113,7 +113,16 @@ function calculateHP() {
     const ac = parseInt(document.getElementById('ac').value) || 14;
     const attack = parseInt(document.getElementById('attack').value) || 5;
     const saveDC = parseInt(document.getElementById('saveDC').value) || 13;
-    const speed = parseInt(document.getElementById('speed').value) || 30;
+
+    const groundSpeed = parseInt(document.getElementById('speed').value) || 30;
+    const flySpeed = parseInt(document.getElementById('flySpeed').value) || 0;
+    const swimSpeed = parseInt(document.getElementById('swimSpeed').value) || 0;
+    const burrowSpeed = parseInt(document.getElementById('burrowSpeed').value) || 0;
+    const climbSpeed = parseInt(document.getElementById('climbSpeed').value) || 0;
+
+    const saveProficiency = parseInt(document.getElementById('saveProficiency').value) || 0;
+    const skillProficiency = parseInt(document.getElementById('skillProficiency').value) || 0;
+    const passivePerception = parseInt(document.getElementById('passivePerception').value) || 10;
 
     const resistances = parseInt(document.getElementById('resistances').value) || 0;
     const immunities = parseInt(document.getElementById('immunities').value) || 0;
@@ -148,9 +157,13 @@ function calculateHP() {
     features['size_ordinal'] = currentSize;
 
     // Speed
-    features['speed_ground'] = speed;
-    features['max_speed'] = speed;
-    features['movement_types_count'] = 1;
+    features['speed_ground'] = groundSpeed;
+    features['speed_fly'] = flySpeed;
+    features['speed_swim'] = swimSpeed;
+    features['speed_burrow'] = burrowSpeed;
+    features['speed_climb'] = climbSpeed;
+    features['max_speed'] = Math.max(groundSpeed, flySpeed, swimSpeed, burrowSpeed, climbSpeed);
+    features['movement_types_count'] = [groundSpeed, flySpeed, swimSpeed, burrowSpeed, climbSpeed].filter(s => s > 0).length;
 
     // Combat features
     features['highest_attack_bonus'] = attack;
@@ -177,13 +190,13 @@ function calculateHP() {
     features['has_blindsight'] = hasBlindsight ? 1 : 0;
     features['has_truesight'] = hasTruesight ? 1 : 0;
     features['has_tremorsense'] = hasTremorsense ? 1 : 0;
-    features['passive_perception'] = 10 + Math.floor(cr / 2); // Estimate
+    features['passive_perception'] = passivePerception;
 
     // Action economy (estimates)
     features['trait_count'] = 1 + (isSpellcaster ? 1 : 0) + (hasLegendaryRes ? 1 : 0) + (hasMagicRes ? 1 : 0);
     features['action_count'] = 1 + (hasMultiattack ? 1 : 0);
-    features['skill_proficiency_count'] = Math.floor(cr / 3);
-    features['save_proficiency_count'] = cr >= 5 ? 2 : (cr >= 2 ? 1 : 0);
+    features['skill_proficiency_count'] = skillProficiency;
+    features['save_proficiency_count'] = saveProficiency;
 
     // Predict HP
     const hp = predictHP(features);
@@ -208,14 +221,20 @@ function calculateHP() {
     document.getElementById('hpDiff').textContent = hpDiff >= 0 ? `+${hpDiff}` : hpDiff;
 
     // Update stat block
-    generateStatBlock(hp, hpDice, cr, ac, attack, saveDC, speed);
+    generateStatBlock(hp, hpDice, cr, ac, attack, saveDC);
 }
 
 // Generate stat block
-function generateStatBlock(hp, hpDice, cr, ac, attack, saveDC, speed) {
+function generateStatBlock(hp, hpDice, cr, ac, attack, saveDC) {
     const name = document.getElementById('monsterName').value || 'Custom Creature';
     const sizeNames = ['', 'Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'];
     const sizeName = sizeNames[currentSize];
+
+    const groundSpeed = parseInt(document.getElementById('speed').value) || 30;
+    const flySpeed = parseInt(document.getElementById('flySpeed').value) || 0;
+    const swimSpeed = parseInt(document.getElementById('swimSpeed').value) || 0;
+    const burrowSpeed = parseInt(document.getElementById('burrowSpeed').value) || 0;
+    const climbSpeed = parseInt(document.getElementById('climbSpeed').value) || 0;
 
     const hasMultiattack = document.getElementById('multiattack').checked;
     const hasLegendary = document.getElementById('legendary').checked;
@@ -230,12 +249,20 @@ function generateStatBlock(hp, hpDice, cr, ac, attack, saveDC, speed) {
     const hasBlindsight = document.getElementById('blindsight').checked;
     const hasTruesight = document.getElementById('truesight').checked;
 
+    // Build speed string
+    let speedParts = [`${groundSpeed} ft.`];
+    if (flySpeed > 0) speedParts.push(`fly ${flySpeed} ft.`);
+    if (swimSpeed > 0) speedParts.push(`swim ${swimSpeed} ft.`);
+    if (burrowSpeed > 0) speedParts.push(`burrow ${burrowSpeed} ft.`);
+    if (climbSpeed > 0) speedParts.push(`climb ${climbSpeed} ft.`);
+    const speedString = speedParts.join(', ');
+
     let statBlock = `<h3>${name}</h3>\n`;
     statBlock += `<div class="subtitle">${sizeName} creature, any alignment</div>\n`;
     statBlock += `<hr>\n`;
     statBlock += `<div class="stat-line"><span class="stat-label">Armor Class</span> ${ac}</div>\n`;
     statBlock += `<div class="stat-line"><span class="stat-label">Hit Points</span> ${hp} ${hpDice}</div>\n`;
-    statBlock += `<div class="stat-line"><span class="stat-label">Speed</span> ${speed} ft.</div>\n`;
+    statBlock += `<div class="stat-line"><span class="stat-label">Speed</span> ${speedString}</div>\n`;
     statBlock += `<hr>\n`;
 
     // Ability scores (estimated)
@@ -267,11 +294,12 @@ function generateStatBlock(hp, hpDice, cr, ac, attack, saveDC, speed) {
     }
 
     // Senses
+    const passivePerception = parseInt(document.getElementById('passivePerception').value) || 10;
     let senses = [];
     if (hasDarkvision) senses.push('darkvision 60 ft.');
     if (hasBlindsight) senses.push('blindsight 30 ft.');
     if (hasTruesight) senses.push('truesight 60 ft.');
-    senses.push(`passive Perception ${10 + Math.floor(cr/2)}`);
+    senses.push(`passive Perception ${passivePerception}`);
     statBlock += `<div class="stat-line"><span class="stat-label">Senses</span> ${senses.join(', ')}</div>\n`;
 
     statBlock += `<div class="stat-line"><span class="stat-label">Languages</span> Common</div>\n`;
@@ -353,7 +381,18 @@ function randomMonster() {
     document.getElementById('ac').value = baseline.ac + Math.floor(Math.random() * 5) - 2;
     document.getElementById('attack').value = baseline.attack + Math.floor(Math.random() * 3) - 1;
     document.getElementById('saveDC').value = baseline.save;
+
+    // Speeds
     document.getElementById('speed').value = 30 + Math.floor(Math.random() * 3) * 10;
+    document.getElementById('flySpeed').value = Math.random() > 0.7 ? 30 + Math.floor(Math.random() * 3) * 10 : 0;
+    document.getElementById('swimSpeed').value = Math.random() > 0.8 ? 30 + Math.floor(Math.random() * 2) * 10 : 0;
+    document.getElementById('burrowSpeed').value = Math.random() > 0.9 ? 20 + Math.floor(Math.random() * 2) * 10 : 0;
+    document.getElementById('climbSpeed').value = Math.random() > 0.8 ? 20 + Math.floor(Math.random() * 2) * 10 : 0;
+
+    // Proficiencies
+    document.getElementById('saveProficiency').value = randomCR >= 5 ? 2 : (randomCR >= 2 ? 1 : 0);
+    document.getElementById('skillProficiency').value = Math.floor(randomCR / 2);
+    document.getElementById('passivePerception').value = 10 + Math.floor(randomCR / 2);
 
     document.getElementById('multiattack').checked = randomCR >= 2 ? Math.random() > 0.5 : false;
     document.getElementById('legendary').checked = randomCR >= 10 ? Math.random() > 0.5 : false;
