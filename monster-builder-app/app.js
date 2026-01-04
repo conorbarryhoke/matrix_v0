@@ -133,6 +133,7 @@ function calculateHP() {
     const hasMagicRes = document.getElementById('magicRes').checked;
     const hasRegeneration = document.getElementById('regeneration').checked;
     const isSpellcaster = document.getElementById('spellcasting').checked;
+    const hasGrapple = document.getElementById('grapple').checked;
 
     const hasDarkvision = document.getElementById('darkvision').checked;
     const hasBlindsight = document.getElementById('blindsight').checked;
@@ -183,6 +184,7 @@ function calculateHP() {
     features['has_regeneration'] = hasRegeneration ? 1 : 0;
     features['has_spellcasting'] = isSpellcaster ? 1 : 0;
     features['spellcaster_level'] = isSpellcaster ? spellcasterLevel : 0;
+    features['has_grapple'] = hasGrapple ? 1 : 0;
 
     // Senses
     features['has_darkvision'] = hasDarkvision ? 1 : 0;
