@@ -1,0 +1,89 @@
+D&D 5E MONSTER BUILDER - FILE MANIFEST
+=======================================
+
+REQUIRED FILES (DO NOT DELETE):
+--------------------------------
+✓ index.html         - Main HTML structure and layout
+✓ styles.css         - All styling and responsive design
+✓ app.js            - Application logic and ML prediction
+✓ model_data.json   - Trained model coefficients (12KB)
+
+DOCUMENTATION FILES (HELPFUL):
+-------------------------------
+✓ README.md         - Full documentation and features
+✓ DEPLOYMENT.md     - Deployment instructions
+✓ QUICKSTART.md     - 5-minute setup guide
+✓ FILES.txt         - This file
+
+TOTAL SIZE: ~65KB (very lightweight!)
+
+BROWSER COMPATIBILITY:
+----------------------
+✓ Chrome 90+
+✓ Firefox 88+
+✓ Safari 14+
+✓ Edge 90+
+✓ Mobile browsers (iOS Safari, Chrome Mobile)
+
+DEPLOYMENT OPTIONS:
+-------------------
+1. GitHub Pages (free, recommended)
+2. Netlify Drop (fastest)
+3. Vercel
+4. Cloudflare Pages
+5. Any static hosting
+
+LOCAL TESTING:
+--------------
+python3 -m http.server 8000
+# Visit http://localhost:8000
+
+FEATURES:
+---------
+✓ AI-powered HP prediction (R² = 0.86)
+✓ Spellcaster support with spell levels
+✓ Defensive features (resistances/immunities)
+✓ DMG baseline integration
+✓ Auto-generated stat blocks
+✓ Copy to clipboard
+✓ Random monster generator
+✓ Mobile responsive
+✓ No server required
+✓ Works offline (after first load)
+
+CUSTOMIZATION:
+--------------
+• Colors: Edit styles.css (search for #667eea, #764ba2)
+• Model: Replace model_data.json
+• Features: Edit app.js feature list
+• Layout: Modify index.html structure
+
+TROUBLESHOOTING:
+----------------
+• Model not loading? Check browser console (F12)
+• Blank page? Ensure all files in same folder
+• CORS errors? Use a web server, not file://
+• Copy not working? Use HTTPS or localhost
+
+UPDATES:
+--------
+To update your deployed site:
+1. Edit files locally
+2. Test with local server
+3. Re-upload to hosting service
+4. GitHub Pages: git push
+5. Netlify: drag new folder
+
+LICENSE:
+--------
+Code: MIT License
+D&D Content: ©Wizards of the Coast (fan use)
+
+SUPPORT:
+--------
+GitHub Issues: Report bugs
+Pull Requests: Contribute improvements
+Contact: Via repository
+
+VERSION: 1.0.0
+LAST UPDATED: 2026-01-04

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D 5E Monster Builder</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐉 D&D 5E Monster Builder</h1>
+            <p>AI-Powered HP Prediction Using Machine Learning</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel: Input Controls -->
+            <div class="panel">
+                <h2>Core Attributes</h2>
+
+                <div class="form-group">
+                    <label for="monsterName">Monster Name</label>
+                    <input type="text" id="monsterName" value="Custom Creature" placeholder="Enter monster name">
+                </div>
+
+                <div class="form-group">
+                    <label for="cr">Challenge Rating (CR)</label>
+                    <input type="number" id="cr" value="3" min="0" max="30" step="0.125">
+                </div>
+
+                <div class="form-group">
+                    <label for="ac">Armor Class (AC)</label>
+                    <input type="number" id="ac" value="14" min="1" max="25">
+                </div>
+
+                <div class="form-group">
+                    <label for="attack">Attack Bonus</label>
+                    <input type="number" id="attack" value="5" min="0" max="20">
+                </div>
+
+                <div class="form-group">
+                    <label for="saveDC">Save DC</label>
+                    <input type="number" id="saveDC" value="13" min="8" max="25">
+                </div>
+
+                <h2 style="margin-top: 30px;">Size</h2>
+                <div class="size-selector">
+                    <div class="size-btn" data-size="1">Tiny</div>
+                    <div class="size-btn" data-size="2">Small</div>
+                    <div class="size-btn active" data-size="3">Medium</div>
+                    <div class="size-btn" data-size="4">Large</div>
+                    <div class="size-btn" data-size="5">Huge</div>
+                    <div class="size-btn" data-size="6">Gargantuan</div>
+                </div>
+
+                <h2 style="margin-top: 30px;">Speed</h2>
+                <div class="form-group">
+                    <label for="speed">Ground Speed (ft)</label>
+                    <input type="number" id="speed" value="30" min="0" max="120" step="5">
+                </div>
+            </div>
+
+            <!-- Right Panel: Additional Features -->
+            <div class="panel">
+                <h2>Special Abilities</h2>
+
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="multiattack">
+                        <label for="multiattack">Multiattack</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="legendary">
+                        <label for="legendary">Legendary Actions</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="legendaryRes">
+                        <label for="legendaryRes">Legendary Resistance</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="magicRes">
+                        <label for="magicRes">Magic Resistance</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="regeneration">
+                        <label for="regeneration">Regeneration</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="spellcasting">
+                        <label for="spellcasting">Spellcasting</label>
+                    </div>
+                </div>
+
+                <div id="spellcasterOptions" style="display: none; margin-top: 20px;">
+                    <h3 style="color: #2a5298; margin-bottom: 10px;">Spellcaster Level</h3>
+                    <input type="number" id="spellcasterLevel" value="5" min="1" max="20" style="width: 100px;">
+
+                    <h3 style="color: #2a5298; margin-top: 15px; margin-bottom: 10px;">Highest Spell Level</h3>
+                    <select id="highestSpellLevel">
+                        <option value="0">Cantrips Only</option>
+                        <option value="1">1st Level</option>
+                        <option value="2">2nd Level</option>
+                        <option value="3" selected>3rd Level</option>
+                        <option value="4">4th Level</option>
+                        <option value="5">5th Level</option>
+                        <option value="6">6th Level</option>
+                        <option value="7">7th Level</option>
+                        <option value="8">8th Level</option>
+                        <option value="9">9th Level</option>
+                    </select>
+                </div>
+
+                <h2 style="margin-top: 30px;">Defensive Features</h2>
+                <div class="form-group">
+                    <label for="resistances">Damage Resistances <span class="info-tooltip" title="Acts as survivability multiplier">?</span></label>
+                    <input type="number" id="resistances" value="0" min="0" max="10">
+                </div>
+
+                <div class="form-group">
+                    <label for="immunities">Damage Immunities</label>
+                    <input type="number" id="immunities" value="0" min="0" max="10">
+                </div>
+
+                <h2 style="margin-top: 30px;">Senses</h2>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="darkvision">
+                        <label for="darkvision">Darkvision</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="blindsight">
+                        <label for="blindsight">Blindsight</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="truesight">
+                        <label for="truesight">Truesight</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="tremorsense">
+                        <label for="tremorsense">Tremorsense</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HP Result Display -->
+        <div style="padding: 0 30px 30px 30px;">
+            <div class="hp-result">
+                <div class="hp-label">PREDICTED HIT POINTS</div>
+                <div class="hp-value" id="hpValue">52</div>
+                <div class="hp-dice" id="hpDice">(8d8 + 16)</div>
+            </div>
+
+            <div class="stat-display">
+                <div class="stat-card">
+                    <div class="label">Effective HP</div>
+                    <div class="value" id="effectiveHP">65</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Suggested DPR Range</div>
+                    <div class="value" id="suggestedDPR">21-26</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">DMG Baseline HP</div>
+                    <div class="value" id="baselineHP">71</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">HP vs Baseline</div>
+                    <div class="value" id="hpDiff">-19</div>
+                </div>
+            </div>
+
+            <div class="stat-block" id="statBlock">
+                <!-- Generated stat block will appear here -->
+            </div>
+
+            <div class="button-group">
+                <button onclick="calculateHP()">🔄 Recalculate</button>
+                <button onclick="exportStatBlock()">📋 Copy Stat Block</button>
+                <button onclick="randomMonster()">🎲 Random Monster</button>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>Built with the HP Prediction Model | Based on D&D 5E 2014 Monster Manual</p>
+            <p>Model trained on 324 official monsters | Linear Regression R² = 0.86</p>
+            <p style="margin-top: 10px;">
+                <a href="https://github.com" target="_blank">📖 Documentation</a> |
+                <a href="https://github.com" target="_blank">⚙️ Source Code</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
