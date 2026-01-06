@@ -14,7 +14,7 @@ import json
 import re
 
 # Load dataset
-df = pd.read_csv('dnd5e_monsters_2014.csv')
+df = pd.read_csv('data/dnd5e_monsters_2014.csv')
 print(f"📊 Loaded {len(df)} monsters from dataset\n")
 
 # ===== FEATURE ENGINEERING =====
@@ -376,19 +376,19 @@ print("\n💾 SAVING MODEL ARTIFACTS")
 print("=" * 60)
 
 # Save model
-with open('hp_lr_model_with_conditions.pkl', 'wb') as f:
+with open('pickled_models/hp_lr_model_with_conditions.pkl', 'wb') as f:
     pickle.dump(model, f)
-print("✅ Saved: hp_lr_model_with_conditions.pkl")
+print("✅ Saved: pickled_models/hp_lr_model_with_conditions.pkl")
 
 # Save scaler
-with open('hp_scaler_with_conditions.pkl', 'wb') as f:
+with open('pickled_models/hp_scaler_with_conditions.pkl', 'wb') as f:
     pickle.dump(scaler, f)
-print("✅ Saved: hp_scaler_with_conditions.pkl")
+print("✅ Saved: pickled_models/hp_scaler_with_conditions.pkl")
 
 # Save feature columns
-with open('hp_feature_columns_with_conditions.pkl', 'wb') as f:
+with open('pickled_models/hp_feature_columns_with_conditions.pkl', 'wb') as f:
     pickle.dump(feature_columns, f)
-print("✅ Saved: hp_feature_columns_with_conditions.pkl")
+print("✅ Saved: pickled_models/hp_feature_columns_with_conditions.pkl")
 
 # Export to JSON for web app
 model_export = {
@@ -404,9 +404,9 @@ with open('monster-builder-app/model_data_with_conditions.json', 'w') as f:
 print("✅ Saved: monster-builder-app/model_data_with_conditions.json")
 
 # Save condition analysis results
-with open('condition_analysis_results.json', 'w') as f:
+with open('data/condition_analysis_results.json', 'w') as f:
     json.dump(condition_results, f, indent=2)
-print("✅ Saved: condition_analysis_results.json")
+print("✅ Saved: data/condition_analysis_results.json")
 
 # ===== SUMMARY =====
 print("\n" + "=" * 60)

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D Tools by Conor Barry Hoke</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 18px;
+            margin-bottom: 50px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 35px;
+            margin: 25px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            color: #2a5298;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .card .features {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .card .features ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card .features li {
+            color: #555;
+            padding: 5px 0;
+            font-size: 14px;
+        }
+
+        .card .features li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+        }
+
+        footer {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-top: 60px;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 D&D 5e Tools</h1>
+        <p class="subtitle">AI-powered tools and resources for Dungeon Masters</p>
+
+        <div class="card">
+            <h2>🔮 Monster HP Builder</h2>
+            <p>Advanced AI-powered monster HP prediction tool using machine learning with constrained regression. Design balanced monsters by specifying attributes and special abilities.</p>
+
+            <div class="features">
+                <ul>
+                    <li>88 features including CR, AC, attack bonus, damage per round</li>
+                    <li>11 condition infliction types (poisoned, blinded, charmed, etc.)</li>
+                    <li>Special abilities: flying, grappling, spellcasting, legendary actions</li>
+                    <li>Real-time HP calculation with dice notation</li>
+                    <li>Constrained coefficients for accurate balance</li>
+                </ul>
+            </div>
+
+            <a href="monster-builder-app/" class="btn">Launch Monster Builder →</a>
+        </div>
+
+        <div class="card">
+            <h2>📚 Monsters List</h2>
+            <p>Comprehensive D&D 5e monsters compendium from the Roll20 database. Browse and reference creature statistics.</p>
+
+            <div class="features">
+                <ul>
+                    <li>Complete monster stat blocks</li>
+                    <li>Searchable and filterable</li>
+                    <li>Official D&D 5e content</li>
+                </ul>
+            </div>
+
+            <a href="monsters_list.html" class="btn btn-secondary">View Monsters List →</a>
+        </div>
+
+        <footer>
+            <p>Created by Conor Barry Hoke | <a href="https://github.com/conorbarryhoke" target="_blank">GitHub</a></p>
+        </footer>
+    </div>
+</body>
+</html>
