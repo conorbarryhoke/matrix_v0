@@ -1,0 +1,68 @@
+[
+  {
+    "condition": "poisoned",
+    "hp_impact": 4.447506876067266,
+    "count": 25,
+    "percentage": 7.716049382716049
+  },
+  {
+    "condition": "blinded",
+    "hp_impact": -26.57465844951236,
+    "count": 18,
+    "percentage": 5.555555555555555
+  },
+  {
+    "condition": "charmed",
+    "hp_impact": -30.260314562597678,
+    "count": 16,
+    "percentage": 4.938271604938271
+  },
+  {
+    "condition": "deafened",
+    "hp_impact": 26.165552394240375,
+    "count": 10,
+    "percentage": 3.0864197530864197
+  },
+  {
+    "condition": "frightened",
+    "hp_impact": 12.963462470052274,
+    "count": 40,
+    "percentage": 12.345679012345679
+  },
+  {
+    "condition": "incapacitated",
+    "hp_impact": 10.926277697051255,
+    "count": 34,
+    "percentage": 10.493827160493826
+  },
+  {
+    "condition": "paralyzed",
+    "hp_impact": 14.296747490115804,
+    "count": 19,
+    "percentage": 5.864197530864197
+  },
+  {
+    "condition": "petrified",
+    "hp_impact": -7.819477103960056,
+    "count": 5,
+    "percentage": 1.5432098765432098
+  },
+  {
+    "condition": "prone",
+    "hp_impact": 25.321480078015686,
+    "count": 64,
+    "percentage": 19.753086419753085
+  },
+  {
+    "condition": "restrained",
+    "hp_impact": -20.904658915513483,
+    "count": 32,
+    "percentage": 9.876543209876543
+  },
+  {
+    "condition": "stunned",
+    "hp_impact": -8.779042188109786,
+    "count": 6,
+    "percentage": 1.8518518518518516
+  }
+]

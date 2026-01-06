@@ -42,20 +42,28 @@ const DMG_CR_TABLE = {
 
 // Load model data
 async function loadModel() {
+    const loader = document.getElementById('loadingIndicator');
+    if (loader) loader.style.display = 'block';
+
     try {
-        const response = await fetch('model_data.json');
+        const response = await fetch('model_data_with_conditions.json');
         modelData = await response.json();
-        console.log('Model loaded successfully');
+        console.log('✅ Model loaded successfully with', modelData.feature_columns.length, 'features');
+        if (loader) loader.style.display = 'none';
         calculateHP(); // Initial calculation
     } catch (error) {
-        console.error('Error loading model:', error);
+        console.error('❌ Error loading model:', error);
         alert('Error loading model data. Please ensure model_data.json is present.');
+        if (loader) loader.style.display = 'none';
     }
 }
 
 // Predict HP using linear regression model
 function predictHP(features) {
-    if (!modelData) return 50; // Default if model not loaded
+    if (!modelData) {
+        console.warn('⚠️ Model not loaded yet, returning default HP');
+        return 50;
+    }
 
     let prediction = modelData.intercept;
 
@@ -457,8 +465,9 @@ function updateSizeButtons() {
 }
 
 // Event listeners
-document.addEventListener('DOMContentLoaded', () => {
-    loadModel();
+document.addEventListener('DOMContentLoaded', async () => {
+    // Wait for model to load before setting up event listeners
+    await loadModel();
 
     // Size buttons
     document.querySelectorAll('.size-btn').forEach(btn => {
@@ -481,4 +490,6 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('change', calculateHP);
         input.addEventListener('input', calculateHP);
     });
+
+    console.log('✅ Event listeners attached - app ready');
 });
