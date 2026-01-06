@@ -46,7 +46,7 @@ async function loadModel() {
     if (loader) loader.style.display = 'block';
 
     try {
-        const response = await fetch('model_data_with_conditions.json');
+        const response = await fetch('model_data_baseline.json');
         modelData = await response.json();
         console.log('✅ Model loaded successfully with', modelData.feature_columns.length, 'features');
         if (loader) loader.style.display = 'none';

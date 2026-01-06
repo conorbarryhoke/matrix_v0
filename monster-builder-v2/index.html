@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D 5e Monster Builder v2</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>D&D 5e Monster Builder v2</h1>
+            <p class="subtitle">Three-Phase HP Prediction with CR-Based Baselines</p>
+        </header>
+
+        <div id="loadingIndicator" style="display: block; text-align: center; padding: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; margin-bottom: 20px;">
+            <div style="font-size: 20px; color: white; font-weight: bold;">⚙️ Loading Model...</div>
+            <div style="font-size: 14px; color: rgba(255,255,255,0.8); margin-top: 10px;">Please wait while the HP prediction model loads</div>
+        </div>
+
+        <div class="content-grid">
+            <!-- Left Column: Inputs -->
+            <div class="input-section">
+                <div class="card">
+                    <h2>Phase 1: CR & Basic Stats</h2>
+
+                    <div class="form-group">
+                        <label for="cr">Challenge Rating (CR)</label>
+                        <select id="cr">
+                            <option value="0">0</option>
+                            <option value="0.125">1/8</option>
+                            <option value="0.25" selected>1/4</option>
+                            <option value="0.5">1/2</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                            <option value="24">24</option>
+                            <option value="25">25</option>
+                            <option value="26">26</option>
+                            <option value="27">27</option>
+                            <option value="28">28</option>
+                            <option value="29">29</option>
+                            <option value="30">30</option>
+                        </select>
+                    </div>
+
+                    <div class="baseline-display" id="baselineDisplay">
+                        <h3>CR Baselines</h3>
+                        <div class="baseline-grid">
+                            <div class="baseline-item">
+                                <span class="baseline-label">HP:</span>
+                                <span id="baselineHP">-</span>
+                            </div>
+                            <div class="baseline-item">
+                                <span class="baseline-label">AC:</span>
+                                <span id="baselineAC">-</span>
+                            </div>
+                            <div class="baseline-item">
+                                <span class="baseline-label">Attack:</span>
+                                <span id="baselineAttack">-</span>
+                            </div>
+                            <div class="baseline-item">
+                                <span class="baseline-label">DPR:</span>
+                                <span id="baselineDPR">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Phase 2: Combat Stats</h2>
+                    <p class="section-note">Deviations from baseline will apply fixed penalties</p>
+
+                    <div class="form-group">
+                        <label for="ac">Armor Class (AC)</label>
+                        <input type="number" id="ac" value="12" min="1" max="30">
+                        <span class="deviation" id="acDeviation"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="attack">Attack Bonus</label>
+                        <input type="number" id="attack" value="3" min="0" max="20">
+                        <span class="deviation" id="attackDeviation"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dpr">Damage Per Round (DPR)</label>
+                        <input type="number" id="dpr" value="5" min="0" max="200" step="0.5">
+                        <span class="deviation" id="dprDeviation"></span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Phase 2: Powerful Abilities</h2>
+                    <p class="section-note">These scale with baseline HP</p>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="hasFlying">
+                            <span>Flying (-10% of baseline HP)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="hasLegendaryResistance">
+                            <span>Legendary Resistance (-15%)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="hasMagicResistance">
+                            <span>Magic Resistance (-12%)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="hasRegeneration">
+                            <span>Regeneration (-18%)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="hasLegendaryActions">
+                            <span>Legendary Actions (-8%)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Phase 3: Additional Features</h2>
+
+                    <div class="form-group">
+                        <label for="size">Size</label>
+                        <select id="size">
+                            <option value="0">Tiny</option>
+                            <option value="1">Small</option>
+                            <option value="2" selected>Medium</option>
+                            <option value="3">Large</option>
+                            <option value="4">Huge</option>
+                            <option value="5">Gargantuan</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="speedGround">Speed (Ground)</label>
+                            <input type="number" id="speedGround" value="30" min="0" max="120" step="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="speedFly">Speed (Fly)</label>
+                            <input type="number" id="speedFly" value="0" min="0" max="120" step="5">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="saveProficiencies">Save Proficiencies</label>
+                            <input type="number" id="saveProficiencies" value="0" min="0" max="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="skillProficiencies">Skill Proficiencies</label>
+                            <input type="number" id="skillProficiencies" value="0" min="0" max="18">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="resistances">Resistances</label>
+                            <input type="number" id="resistances" value="0" min="0" max="13">
+                        </div>
+                        <div class="form-group">
+                            <label for="immunities">Immunities</label>
+                            <input type="number" id="immunities" value="0" min="0" max="13">
+                        </div>
+                    </div>
+
+                    <details class="expandable-section">
+                        <summary>Condition Inflictions</summary>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-label"><input type="checkbox" id="inflictsPoisoned"> Poisoned</label>
+                            <label class="checkbox-label"><input type="checkbox" id="inflictsBlinded"> Blinded</label>
+                            <label class="checkbox-label"><input type="checkbox" id="inflictsCharmed"> Charmed</label>
+                            <label class="checkbox-label"><input type="checkbox" id="inflictsDeafened"> Deafened</label>
+                            <label class="checkbox-label"><input type="checkbox" id="inflictsFrightened"> Frightened</label>
+                            <label class="checkbox-label"><input type="checkbox" id="inflictsIncapacitated"> Incapacitated</label>
+                            <label class="checkbox-label"><input type="checkbox" id="inflictsParalyzed"> Paralyzed</label>
+                            <label class="checkbox-label"><input type="checkbox" id="inflictsPetrified"> Petrified</label>
+                            <label class="checkbox-label"><input type="checkbox" id="inflictsProne"> Prone</label>
+                            <label class="checkbox-label"><input type="checkbox" id="inflictsRestrained"> Restrained</label>
+                            <label class="checkbox-label"><input type="checkbox" id="inflictsStunned"> Stunned</label>
+                        </div>
+                    </details>
+
+                    <details class="expandable-section">
+                        <summary>Other Abilities</summary>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" id="hasMultiattack"> Multiattack</label>
+                            <label class="checkbox-label"><input type="checkbox" id="hasGrapple"> Grapple</label>
+                            <label class="checkbox-label"><input type="checkbox" id="hasSpellcasting"> Spellcasting</label>
+                            <label class="checkbox-label"><input type="checkbox" id="hasDarkvision"> Darkvision</label>
+                            <label class="checkbox-label"><input type="checkbox" id="hasBlindsight"> Blindsight</label>
+                            <label class="checkbox-label"><input type="checkbox" id="hasTruesight"> Truesight</label>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <!-- Right Column: Results -->
+            <div class="results-section">
+                <div class="card hp-result">
+                    <h2>Predicted Hit Points</h2>
+                    <div class="hp-display" id="hpDisplay">
+                        <div class="hp-value" id="hpValue">--</div>
+                        <div class="hp-label">HP</div>
+                    </div>
+
+                    <div class="breakdown">
+                        <h3>HP Breakdown</h3>
+                        <div class="breakdown-item">
+                            <span>Phase 1 (Baseline):</span>
+                            <span id="phase1Value">--</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Phase 2 (Stat Deviations):</span>
+                            <span id="phase2StatValue">--</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Phase 2 (Scaled Abilities):</span>
+                            <span id="phase2AbilityValue">--</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Phase 3 (Other Features):</span>
+                            <span id="phase3Value">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Model Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Model Type:</span>
+                            <span id="modelType">--</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Total Features:</span>
+                            <span id="featureCount">--</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Test R²:</span>
+                            <span>0.595</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Test MAE:</span>
+                            <span>36.1 HP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Quick Reference</h3>
+                    <div class="reference-section">
+                        <h4>Penalty Multipliers</h4>
+                        <ul class="reference-list">
+                            <li><strong>AC:</strong> -5 HP per point above baseline</li>
+                            <li><strong>Attack:</strong> -6 HP per point above baseline</li>
+                            <li><strong>DPR:</strong> -2.5 HP per point above baseline</li>
+                        </ul>
+
+                        <h4>Scaled Abilities</h4>
+                        <ul class="reference-list">
+                            <li><strong>Flying:</strong> -10% of baseline HP</li>
+                            <li><strong>Legendary Resistance:</strong> -15%</li>
+                            <li><strong>Magic Resistance:</strong> -12%</li>
+                            <li><strong>Regeneration:</strong> -18%</li>
+                            <li><strong>Legendary Actions:</strong> -8%</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>D&D 5e Monster Builder v2 | Baseline HP Model with Scaled Abilities</p>
+            <p>HP Baselines: +50% for CR ≤ 1, +20% for CR ≥ 2</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
