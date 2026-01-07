@@ -9,7 +9,12 @@ async function loadModel() {
     try {
         const response = await fetch('model_data.json');
         modelData = await response.json();
-        console.log('✅ Model loaded successfully with', modelData.feature_columns.length, 'features');
+        console.log('✅ Model loaded successfully');
+        console.log('   - Model type:', modelData.model_type);
+        console.log('   - Total features:', modelData.feature_columns.length);
+        console.log('   - Low-CR model: R²=' + modelData.models.low_cr.test_r2.toFixed(3));
+        console.log('   - Mid-CR model: R²=' + modelData.models.mid_cr.test_r2.toFixed(3));
+        console.log('   - High-CR model: R²=' + modelData.models.high_cr.test_r2.toFixed(3));
 
         // Update UI with model info
         document.getElementById('modelType').textContent = modelData.model_type || 'baseline_hp_model';
@@ -23,6 +28,19 @@ async function loadModel() {
         console.error('❌ Error loading model:', error);
         alert('Error loading model data. Please ensure model_data.json is present.');
         if (loader) loader.style.display = 'none';
+    }
+}
+
+// Select appropriate model based on CR
+function selectModel(cr) {
+    if (!modelData || !modelData.models) return null;
+
+    if (cr <= 1.0) {
+        return modelData.models.low_cr;
+    } else if (cr <= 12.0) {
+        return modelData.models.mid_cr;
+    } else {
+        return modelData.models.high_cr;
     }
 }
 
@@ -77,7 +95,7 @@ function updateBaselines() {
 }
 
 // Update deviation displays
-function updateDeviations(baselines) {
+function updateDeviations(baselines, cr) {
     const ac = parseInt(document.getElementById('ac').value);
     const attack = parseInt(document.getElementById('attack').value);
     const dpr = parseFloat(document.getElementById('dpr').value);
@@ -86,22 +104,22 @@ function updateDeviations(baselines) {
     const attackDev = attack - Math.round(baselines.attackBaseline);
     const dprDev = dpr - baselines.dprBaseline;
 
-    updateDeviationDisplay('acDeviation', acDev, 'AC');
-    updateDeviationDisplay('attackDeviation', attackDev, 'Attack');
-    updateDeviationDisplay('dprDeviation', dprDev, 'DPR');
+    updateDeviationDisplay('acDeviation', acDev, 'AC', cr);
+    updateDeviationDisplay('attackDeviation', attackDev, 'Attack', cr);
+    updateDeviationDisplay('dprDeviation', dprDev, 'DPR', cr);
 
     return { acDev, attackDev, dprDev };
 }
 
-function updateDeviationDisplay(elementId, deviation, label) {
+function updateDeviationDisplay(elementId, deviation, label, cr) {
     const elem = document.getElementById(elementId);
     const rounded = Math.round(deviation * 10) / 10;
 
     if (rounded > 0) {
-        elem.textContent = `Deviation: +${rounded} (${label} penalty: ${Math.round(deviation * getConstraint(label))} HP)`;
+        elem.textContent = `Deviation: +${rounded} (${label} penalty: ${Math.round(deviation * getConstraint(label, cr))} HP)`;
         elem.className = 'deviation positive';
     } else if (rounded < 0) {
-        elem.textContent = `Deviation: ${rounded} (${label} bonus: ${Math.round(-deviation * getConstraint(label))} HP)`;
+        elem.textContent = `Deviation: ${rounded} (${label} bonus: ${Math.round(-deviation * getConstraint(label, cr))} HP)`;
         elem.className = 'deviation negative';
     } else {
         elem.textContent = `Deviation: ${rounded} (no penalty)`;
@@ -109,13 +127,14 @@ function updateDeviationDisplay(elementId, deviation, label) {
     }
 }
 
-function getConstraint(label) {
-    if (!modelData || !modelData.constraints) return 0;
+function getConstraint(label, cr) {
+    const selectedModel = selectModel(cr);
+    if (!selectedModel || !selectedModel.constraints) return 0;
 
     const constraintMap = {
-        'AC': Math.abs(modelData.constraints.ac_deviation || -5),
-        'Attack': Math.abs(modelData.constraints.attack_deviation || -6),
-        'DPR': Math.abs(modelData.constraints.dpr_deviation || -2.5)
+        'AC': Math.abs(selectedModel.constraints.ac_deviation || -5),
+        'Attack': Math.abs(selectedModel.constraints.attack_deviation || -6),
+        'DPR': Math.abs(selectedModel.constraints.dpr_deviation || -2.5)
     };
 
     return constraintMap[label] || 0;
@@ -190,9 +209,16 @@ function buildFeatures(baselines, deviations) {
 }
 
 // Predict HP
-function predictHP(features) {
+function predictHP(features, cr) {
     if (!modelData) {
         console.warn('⚠️ Model not loaded yet, returning default HP');
+        return { total: 50, phase1: 50, phase2Stats: 0, phase2Abilities: 0, phase3: 0 };
+    }
+
+    // Select appropriate model based on CR
+    const selectedModel = selectModel(cr);
+    if (!selectedModel) {
+        console.warn('⚠️ Could not select model for CR:', cr);
         return { total: 50, phase1: 50, phase2Stats: 0, phase2Abilities: 0, phase3: 0 };
     }
 
@@ -200,18 +226,18 @@ function predictHP(features) {
     const X = [];
     modelData.feature_columns.forEach(col => {
         const value = features[col] || 0;
-        const mean = modelData.scaler_mean[col];
-        const scale = modelData.scaler_scale[col];
+        const mean = selectedModel.scaler_mean[col];
+        const scale = selectedModel.scaler_scale[col];
         X.push((value - mean) / scale);
     });
 
     // Calculate prediction
-    let prediction = modelData.intercept;
+    let prediction = selectedModel.intercept;
 
     for (let i = 0; i < modelData.feature_columns.length; i++) {
         const col = modelData.feature_columns[i];
-        const coef = modelData.coefficients[col];
-        const scaledCoef = coef * modelData.scaler_scale[col];
+        const coef = selectedModel.coefficients[col];
+        const scaledCoef = coef * selectedModel.scaler_scale[col];
         prediction += X[i] * scaledCoef;
     }
 
@@ -219,17 +245,17 @@ function predictHP(features) {
     const phase1 = features.hp_baseline;
 
     const phase2Stats = (
-        features.ac_deviation * modelData.constraints.ac_deviation +
-        features.attack_deviation * modelData.constraints.attack_deviation +
-        features.dpr_deviation * modelData.constraints.dpr_deviation
+        features.ac_deviation * selectedModel.constraints.ac_deviation +
+        features.attack_deviation * selectedModel.constraints.attack_deviation +
+        features.dpr_deviation * selectedModel.constraints.dpr_deviation
     );
 
     const phase2Abilities = (
-        features.has_flying_scaled * modelData.constraints.has_flying_scaled +
-        features.has_legendary_resistance_scaled * modelData.constraints.has_legendary_resistance_scaled +
-        features.has_magic_resistance_scaled * modelData.constraints.has_magic_resistance_scaled +
-        features.has_regeneration_scaled * modelData.constraints.has_regeneration_scaled +
-        features.has_legendary_actions_scaled * modelData.constraints.has_legendary_actions_scaled
+        features.has_flying_scaled * selectedModel.constraints.has_flying_scaled +
+        features.has_legendary_resistance_scaled * selectedModel.constraints.has_legendary_resistance_scaled +
+        features.has_magic_resistance_scaled * selectedModel.constraints.has_magic_resistance_scaled +
+        features.has_regeneration_scaled * selectedModel.constraints.has_regeneration_scaled +
+        features.has_legendary_actions_scaled * selectedModel.constraints.has_legendary_actions_scaled
     );
 
     const phase3 = prediction - phase1 - phase2Stats - phase2Abilities;
@@ -247,10 +273,11 @@ function predictHP(features) {
 function calculateHP() {
     if (!modelData) return;
 
+    const cr = parseFloat(document.getElementById('cr').value);
     const baselines = updateBaselines();
-    const deviations = updateDeviations(baselines);
+    const deviations = updateDeviations(baselines, cr);
     const features = buildFeatures(baselines, deviations);
-    const result = predictHP(features);
+    const result = predictHP(features, cr);
 
     // Update display
     document.getElementById('hpValue').textContent = result.total;

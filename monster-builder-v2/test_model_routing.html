@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Three-Tier Model Routing Test</title>
+</head>
+<body>
+    <h1>Three-Tier Model Routing Test</h1>
+    <div id="results"></div>
+
+    <script>
+        async function testModelRouting() {
+            const results = document.getElementById('results');
+
+            try {
+                // Load model data
+                const response = await fetch('model_data.json');
+                const modelData = await response.json();
+
+                results.innerHTML += '<h2>✅ Model Data Loaded</h2>';
+                results.innerHTML += `<p>Model Type: ${modelData.model_type}</p>`;
+                results.innerHTML += `<p>Total Features: ${modelData.feature_columns.length}</p>`;
+
+                // Test model selection
+                function selectModel(cr) {
+                    if (!modelData || !modelData.models) return null;
+
+                    if (cr <= 1.0) {
+                        return modelData.models.low_cr;
+                    } else if (cr <= 12.0) {
+                        return modelData.models.mid_cr;
+                    } else {
+                        return modelData.models.high_cr;
+                    }
+                }
+
+                // Test different CR values
+                const testCases = [
+                    { cr: 0.25, expected: 'low_cr' },
+                    { cr: 1.0, expected: 'mid_cr' },
+                    { cr: 5.0, expected: 'mid_cr' },
+                    { cr: 12.0, expected: 'high_cr' },
+                    { cr: 17.0, expected: 'high_cr' }
+                ];
+
+                results.innerHTML += '<h2>Model Selection Tests</h2>';
+
+                testCases.forEach(test => {
+                    const model = selectModel(test.cr);
+                    const modelName = test.cr <= 1.0 ? 'low_cr' : (test.cr <= 12.0 ? 'mid_cr' : 'high_cr');
+                    const passed = modelName === test.expected;
+
+                    results.innerHTML += `<p>${passed ? '✅' : '❌'} CR ${test.cr}: ${modelName} (expected ${test.expected})</p>`;
+
+                    if (model) {
+                        // Check constraints
+                        results.innerHTML += `<ul>`;
+                        results.innerHTML += `<li>AC Penalty: ${model.constraints.ac_deviation}</li>`;
+                        results.innerHTML += `<li>Attack Penalty: ${model.constraints.attack_deviation}</li>`;
+                        results.innerHTML += `<li>DPR Penalty: ${model.constraints.dpr_deviation}</li>`;
+                        results.innerHTML += `<li>Flying Penalty: ${(model.constraints.has_flying_scaled * 100)}%</li>`;
+                        results.innerHTML += `<li>Test R²: ${model.test_r2.toFixed(3)}</li>`;
+                        results.innerHTML += `</ul>`;
+                    }
+                });
+
+                // Test condition inflictions have 0 impact
+                results.innerHTML += '<h2>Condition Infliction Tests</h2>';
+                const conditions = ['poisoned', 'blinded', 'charmed', 'frightened', 'paralyzed', 'stunned'];
+                let allZero = true;
+
+                ['low_cr', 'mid_cr', 'high_cr'].forEach(modelKey => {
+                    results.innerHTML += `<h3>${modelKey}</h3>`;
+                    conditions.forEach(condition => {
+                        const value = modelData.models[modelKey].constraints[`inflicts_${condition}`];
+                        const passed = value === 0.0;
+                        allZero = allZero && passed;
+                        results.innerHTML += `<p>${passed ? '✅' : '❌'} inflicts_${condition}: ${value}</p>`;
+                    });
+                });
+
+                if (allZero) {
+                    results.innerHTML += '<h2>✅ All condition inflictions have 0 HP impact!</h2>';
+                } else {
+                    results.innerHTML += '<h2>❌ Some conditions have non-zero impact</h2>';
+                }
+
+            } catch (error) {
+                results.innerHTML += `<h2>❌ Error: ${error.message}</h2>`;
+                console.error(error);
+            }
+        }
+
+        testModelRouting();
+    </script>
+</body>
+</html>
