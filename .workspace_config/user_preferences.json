@@ -1,0 +1,8 @@
+{
+  "notebook_execution": {
+    "auto_execute": false,
+    "user_executes_manually": true,
+    "reminder_message": "⚠️ REMINDER: You have chosen to execute notebooks manually. When notebook changes are made, please run:\n\ncd /workspaces/matrix_v0 && jupyter nbconvert --to notebook --execute notebooks/three_tier_hp_model.ipynb --output three_tier_hp_model_executed.ipynb --ExecutePreprocessor.timeout=600",
+    "last_updated": "2026-01-07T03:30:00Z"
+  }
+}
