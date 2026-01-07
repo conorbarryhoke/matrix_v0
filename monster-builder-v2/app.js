@@ -317,16 +317,21 @@ async function loadCreatures() {
 
 // Update creature selector when CR changes
 function updateCreatureSelector() {
-    if (!creaturesData) return;
+    if (!creaturesData) {
+        console.warn('⚠️ Creatures data not loaded yet');
+        return;
+    }
 
     const cr = parseFloat(document.getElementById('cr').value);
     const select = document.getElementById('creatureSelect');
 
+    console.log('Updating creature selector for CR:', cr);
+
     // Clear existing options except first
     select.innerHTML = '<option value="">-- Select a creature --</option>';
 
-    // Filter creatures by CR
-    const matchingCreatures = creaturesData.filter(c => c.cr === cr);
+    // Filter creatures by CR (compare as floats)
+    const matchingCreatures = creaturesData.filter(c => Math.abs(c.cr - cr) < 0.001);
 
     // Add options
     matchingCreatures.forEach((creature, index) => {
@@ -337,14 +342,16 @@ function updateCreatureSelector() {
         select.appendChild(option);
     });
 
+    console.log(`Found ${matchingCreatures.length} creatures for CR ${cr}`);
+
     // Update info
     const info = document.getElementById('creatureInfo');
     if (matchingCreatures.length > 0) {
         info.textContent = `${matchingCreatures.length} creature(s) available at CR ${cr}`;
         info.style.display = 'block';
     } else {
-        info.textContent = '';
-        info.style.display = 'none';
+        info.textContent = 'No creatures found for this CR';
+        info.style.display = 'block';
     }
 }
 
@@ -398,21 +405,33 @@ function resetToDefaults() {
 // Load creature data into form
 function loadCreatureData() {
     const select = document.getElementById('creatureSelect');
-    const selectedIndex = select.options[select.selectedIndex]?.dataset?.creatureIndex;
+    const selectedOption = select.options[select.selectedIndex];
 
-    if (!selectedIndex || !creaturesData) return;
+    console.log('Load button clicked, selected index:', select.selectedIndex);
+    console.log('Selected option:', selectedOption);
 
-    const creature = creaturesData[parseInt(selectedIndex)];
-    console.log('Loading creature:', creature.name);
+    if (!selectedOption || selectedOption.value === '' || !creaturesData) {
+        console.warn('No creature selected or data not loaded');
+        return;
+    }
+
+    const creatureIndex = parseInt(selectedOption.dataset.creatureIndex);
+    console.log('Creature index from dataset:', creatureIndex);
+
+    const creature = creaturesData[creatureIndex];
+    console.log('Loading creature:', creature);
 
     // Parse and populate creature data
     try {
         // Set CR
+        console.log('Setting CR to:', creature.cr);
         document.getElementById('cr').value = creature.cr;
 
         // Parse AC
+        console.log('Parsing AC from:', creature.ac);
         const acMatch = creature.ac.match(/(\d+)/);
         if (acMatch) {
+            console.log('Setting AC to:', acMatch[1]);
             document.getElementById('ac').value = parseInt(acMatch[1]);
         }
 
