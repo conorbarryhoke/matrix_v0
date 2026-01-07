@@ -1,5 +1,7 @@
 // Global model data
 let modelData = null;
+let creaturesData = null;
+let defaultValues = null;
 
 // Load model data
 async function loadModel() {
@@ -21,6 +23,12 @@ async function loadModel() {
         document.getElementById('featureCount').textContent = modelData.feature_columns.length;
 
         if (loader) loader.style.display = 'none';
+
+        // Load creatures data
+        await loadCreatures();
+
+        // Save default values for reset
+        saveDefaultValues();
 
         // Initial calculation
         calculateHP();
@@ -293,6 +301,213 @@ function calculateHP() {
     document.getElementById('phase3Value').textContent = `${phase3Text} HP`;
 }
 
+// Load creatures data
+async function loadCreatures() {
+    try {
+        const response = await fetch('creatures_data.json');
+        creaturesData = await response.json();
+        console.log(`✅ Loaded ${creaturesData.length} creatures`);
+
+        // Populate creature selector based on current CR
+        updateCreatureSelector();
+    } catch (error) {
+        console.warn('⚠️ Could not load creatures data:', error);
+    }
+}
+
+// Update creature selector when CR changes
+function updateCreatureSelector() {
+    if (!creaturesData) return;
+
+    const cr = parseFloat(document.getElementById('cr').value);
+    const select = document.getElementById('creatureSelect');
+
+    // Clear existing options except first
+    select.innerHTML = '<option value="">-- Select a creature --</option>';
+
+    // Filter creatures by CR
+    const matchingCreatures = creaturesData.filter(c => c.cr === cr);
+
+    // Add options
+    matchingCreatures.forEach((creature, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${creature.name} (${creature.type})`;
+        option.dataset.creatureIndex = creaturesData.indexOf(creature);
+        select.appendChild(option);
+    });
+
+    // Update info
+    const info = document.getElementById('creatureInfo');
+    if (matchingCreatures.length > 0) {
+        info.textContent = `${matchingCreatures.length} creature(s) available at CR ${cr}`;
+        info.style.display = 'block';
+    } else {
+        info.textContent = '';
+        info.style.display = 'none';
+    }
+}
+
+// Save default values for reset
+function saveDefaultValues() {
+    defaultValues = {
+        cr: document.getElementById('cr').value,
+        ac: document.getElementById('ac').value,
+        attack: document.getElementById('attack').value,
+        dpr: document.getElementById('dpr').value,
+        size: document.getElementById('size').value,
+        speedGround: document.getElementById('speedGround').value,
+        speedFly: document.getElementById('speedFly').value,
+        saveProficiencies: document.getElementById('saveProficiencies').value,
+        skillProficiencies: document.getElementById('skillProficiencies').value,
+        resistances: document.getElementById('resistances').value,
+        immunities: document.getElementById('immunities').value,
+    };
+
+    // Save checkbox states
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        defaultValues[cb.id] = cb.checked;
+    });
+}
+
+// Reset to default values
+function resetToDefaults() {
+    if (!defaultValues) return;
+
+    // Restore input values
+    Object.keys(defaultValues).forEach(key => {
+        const elem = document.getElementById(key);
+        if (elem) {
+            if (elem.type === 'checkbox') {
+                elem.checked = defaultValues[key];
+            } else {
+                elem.value = defaultValues[key];
+            }
+        }
+    });
+
+    // Clear creature selector
+    document.getElementById('creatureSelect').value = '';
+
+    // Recalculate
+    calculateHP();
+
+    console.log('✅ Reset to default values');
+}
+
+// Load creature data into form
+function loadCreatureData() {
+    const select = document.getElementById('creatureSelect');
+    const selectedIndex = select.options[select.selectedIndex]?.dataset?.creatureIndex;
+
+    if (!selectedIndex || !creaturesData) return;
+
+    const creature = creaturesData[parseInt(selectedIndex)];
+    console.log('Loading creature:', creature.name);
+
+    // Parse and populate creature data
+    try {
+        // Set CR
+        document.getElementById('cr').value = creature.cr;
+
+        // Parse AC
+        const acMatch = creature.ac.match(/(\d+)/);
+        if (acMatch) {
+            document.getElementById('ac').value = parseInt(acMatch[1]);
+        }
+
+        // Parse Actions for attack bonus and DPR
+        if (creature.actions) {
+            try {
+                const actions = JSON.parse(creature.actions);
+
+                // Find highest attack bonus
+                let maxAttack = 0;
+                let totalDpr = 0;
+
+                actions.forEach(action => {
+                    if (action['Hit Bonus']) {
+                        const bonus = parseInt(action['Hit Bonus']);
+                        if (bonus > maxAttack) maxAttack = bonus;
+                    }
+
+                    // Calculate DPR
+                    if (action.Damage && action.Name !== 'Multiattack') {
+                        const damageMatch = action.Damage.match(/(\d+)d(\d+)(?:\s*\+\s*(\d+))?/);
+                        if (damageMatch) {
+                            const numDice = parseInt(damageMatch[1]);
+                            const dieSize = parseInt(damageMatch[2]);
+                            const modifier = damageMatch[3] ? parseInt(damageMatch[3]) : 0;
+                            const avgDmg = numDice * (dieSize + 1) / 2 + modifier;
+                            totalDpr += avgDmg;
+                        }
+                    }
+                });
+
+                if (maxAttack > 0) {
+                    document.getElementById('attack').value = maxAttack;
+                }
+
+                // Check for multiattack
+                const hasMultiattack = actions.some(a => a.Name === 'Multiattack');
+                if (hasMultiattack && totalDpr > 0) {
+                    totalDpr *= 1.5; // Simple heuristic
+                }
+
+                if (totalDpr > 0) {
+                    document.getElementById('dpr').value = Math.round(totalDpr);
+                }
+            } catch (e) {
+                console.warn('Could not parse actions:', e);
+            }
+        }
+
+        // Parse speed
+        if (creature.speed) {
+            const groundMatch = creature.speed.match(/^(\d+)\s*ft/);
+            const flyMatch = creature.speed.match(/fly\s+(\d+)\s*ft/i);
+
+            if (groundMatch) {
+                document.getElementById('speedGround').value = parseInt(groundMatch[1]);
+            }
+            if (flyMatch) {
+                document.getElementById('speedFly').value = parseInt(flyMatch[1]);
+                document.getElementById('hasFlying').checked = true;
+            } else {
+                document.getElementById('speedFly').value = 0;
+                document.getElementById('hasFlying').checked = false;
+            }
+        }
+
+        // Parse size
+        const sizeMap = {
+            'Tiny': 0, 'Small': 1, 'Medium': 2,
+            'Large': 3, 'Huge': 4, 'Gargantuan': 5
+        };
+        if (creature.size && sizeMap[creature.size] !== undefined) {
+            document.getElementById('size').value = sizeMap[creature.size];
+        }
+
+        // Check for special abilities in traits and legendary actions
+        const allText = (creature.traits || '') + ' ' + (creature.legendary_actions || '');
+        const lowerText = allText.toLowerCase();
+
+        document.getElementById('hasLegendaryResistance').checked = lowerText.includes('legendary resistance');
+        document.getElementById('hasMagicResistance').checked = lowerText.includes('magic resistance');
+        document.getElementById('hasRegeneration').checked = lowerText.includes('regeneration');
+        document.getElementById('hasLegendaryActions').checked = creature.legendary_actions && creature.legendary_actions.trim() !== '';
+
+        // Recalculate HP
+        calculateHP();
+
+        console.log(`✅ Loaded ${creature.name}`);
+
+    } catch (error) {
+        console.error('Error loading creature:', error);
+        alert('Error loading creature data');
+    }
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', async () => {
     await loadModel();
@@ -303,6 +518,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         input.addEventListener('change', calculateHP);
         input.addEventListener('input', calculateHP);
     });
+
+    // CR selector updates creature list
+    document.getElementById('cr').addEventListener('change', updateCreatureSelector);
+
+    // Load creature button
+    document.getElementById('loadCreatureBtn').addEventListener('click', loadCreatureData);
+
+    // Reset button
+    document.getElementById('resetBtn').addEventListener('click', resetToDefaults);
 
     console.log('✅ Event listeners attached - app ready');
 });
