@@ -13,14 +13,15 @@ async function loadModel() {
         modelData = await response.json();
         console.log('✅ Model loaded successfully');
         console.log('   - Model type:', modelData.model_type);
-        console.log('   - Total features:', modelData.feature_columns.length);
+        console.log('   - Phase 2 features:', modelData.phase2_features.length);
+        console.log('   - Phase 3 features:', modelData.phase3_features.length);
         console.log('   - Low-CR model: R²=' + modelData.models.low_cr.test_r2.toFixed(3));
         console.log('   - Mid-CR model: R²=' + modelData.models.mid_cr.test_r2.toFixed(3));
         console.log('   - High-CR model: R²=' + modelData.models.high_cr.test_r2.toFixed(3));
 
         // Update UI with model info
         document.getElementById('modelType').textContent = modelData.model_type || 'baseline_hp_model';
-        document.getElementById('featureCount').textContent = modelData.feature_columns.length;
+        document.getElementById('featureCount').textContent = modelData.phase3_features.length;
 
         if (loader) loader.style.display = 'none';
 
@@ -93,13 +94,14 @@ function updateBaselines() {
     const acBaseline = getBaseline(cr, 'ac_baseline');
     const attackBaseline = getBaseline(cr, 'attack_baseline');
     const dprBaseline = getBaseline(cr, 'dpr_baseline');
+    const dcBaseline = getBaseline(cr, 'dc_baseline');
 
     document.getElementById('baselineHP').textContent = Math.round(hpBaseline);
     document.getElementById('baselineAC').textContent = Math.round(acBaseline);
     document.getElementById('baselineAttack').textContent = '+' + Math.round(attackBaseline);
     document.getElementById('baselineDPR').textContent = Math.round(dprBaseline);
 
-    return { hpBaseline, acBaseline, attackBaseline, dprBaseline };
+    return { hpBaseline, acBaseline, attackBaseline, dprBaseline, dcBaseline };
 }
 
 // Update deviation displays
@@ -107,16 +109,18 @@ function updateDeviations(baselines, cr) {
     const ac = parseInt(document.getElementById('ac').value);
     const attack = parseInt(document.getElementById('attack').value);
     const dpr = parseFloat(document.getElementById('dpr').value);
+    const saveDC = parseInt(document.getElementById('saveDC').value) || 0;
 
     const acDev = ac - Math.round(baselines.acBaseline);
     const attackDev = attack - Math.round(baselines.attackBaseline);
     const dprDev = dpr - baselines.dprBaseline;
+    const saveDcDev = saveDC - Math.round(baselines.dcBaseline);
 
     updateDeviationDisplay('acDeviation', acDev, 'AC', cr);
     updateDeviationDisplay('attackDeviation', attackDev, 'Attack', cr);
     updateDeviationDisplay('dprDeviation', dprDev, 'DPR', cr);
 
-    return { acDev, attackDev, dprDev };
+    return { acDev, attackDev, dprDev, saveDcDev };
 }
 
 function updateDeviationDisplay(elementId, deviation, label, cr) {
@@ -137,43 +141,35 @@ function updateDeviationDisplay(elementId, deviation, label, cr) {
 
 function getConstraint(label, cr) {
     const selectedModel = selectModel(cr);
-    if (!selectedModel || !selectedModel.constraints) return 0;
+    if (!selectedModel || !selectedModel.phase2_penalties) return 0;
 
     const constraintMap = {
-        'AC': Math.abs(selectedModel.constraints.ac_deviation || -5),
-        'Attack': Math.abs(selectedModel.constraints.attack_deviation || -6),
-        'DPR': Math.abs(selectedModel.constraints.dpr_deviation || -2.5)
+        'AC': Math.abs(selectedModel.phase2_penalties.ac_deviation || -5),
+        'Attack': Math.abs(selectedModel.phase2_penalties.attack_deviation || -6),
+        'DPR': Math.abs(selectedModel.phase2_penalties.dpr_deviation || -2.5),
+        'Save DC': Math.abs(selectedModel.phase2_penalties.save_dc_deviation || -10)
     };
 
     return constraintMap[label] || 0;
 }
 
-// Build feature vector
-function buildFeatures(baselines, deviations) {
+// Build Phase 3 feature vector (scaled features need hp_after_phase2)
+function buildPhase3Features(hp_after_phase2) {
     const features = {};
 
-    // Initialize all features to 0
-    modelData.feature_columns.forEach(col => {
+    // Initialize all Phase 3 features to 0
+    modelData.phase3_features.forEach(col => {
         features[col] = 0;
     });
 
-    // Phase 1: Baseline HP
-    features.hp_baseline = baselines.hpBaseline;
+    // Scaled abilities using hp_after_phase2 (not hp_baseline!)
+    features.has_flying_scaled = document.getElementById('hasFlying').checked ? hp_after_phase2 : 0;
+    features.has_legendary_resistance_scaled = document.getElementById('hasLegendaryResistance').checked ? hp_after_phase2 : 0;
+    features.has_magic_resistance_scaled = document.getElementById('hasMagicResistance').checked ? hp_after_phase2 : 0;
+    features.has_regeneration_scaled = document.getElementById('hasRegeneration').checked ? hp_after_phase2 : 0;
+    features.has_legendary_actions_scaled = document.getElementById('hasLegendaryActions').checked ? hp_after_phase2 : 0;
 
-    // Phase 2: Deviations
-    features.ac_deviation = deviations.acDev;
-    features.attack_deviation = deviations.attackDev;
-    features.dpr_deviation = deviations.dprDev;
-
-    // Phase 2: Scaled abilities
-    const hpBase = baselines.hpBaseline;
-    features.has_flying_scaled = document.getElementById('hasFlying').checked ? hpBase : 0;
-    features.has_legendary_resistance_scaled = document.getElementById('hasLegendaryResistance').checked ? hpBase : 0;
-    features.has_magic_resistance_scaled = document.getElementById('hasMagicResistance').checked ? hpBase : 0;
-    features.has_regeneration_scaled = document.getElementById('hasRegeneration').checked ? hpBase : 0;
-    features.has_legendary_actions_scaled = document.getElementById('hasLegendaryActions').checked ? hpBase : 0;
-
-    // Phase 3: Basic stats
+    // Basic stats
     features.size_ordinal = parseInt(document.getElementById('size').value);
     features.speed_ground = parseInt(document.getElementById('speedGround').value);
     features.speed_fly = parseInt(document.getElementById('speedFly').value);
@@ -185,7 +181,7 @@ function buildFeatures(baselines, deviations) {
     features.resistance_count = parseInt(document.getElementById('resistances').value);
     features.immunity_count = parseInt(document.getElementById('immunities').value);
 
-    // Phase 3: Conditions
+    // Conditions
     const conditions = ['poisoned', 'blinded', 'charmed', 'deafened', 'frightened',
                        'incapacitated', 'paralyzed', 'petrified', 'prone', 'restrained', 'stunned'];
     conditions.forEach(condition => {
@@ -193,10 +189,7 @@ function buildFeatures(baselines, deviations) {
         features[`inflicts_${condition}`] = elem && elem.checked ? 1 : 0;
     });
 
-    // Phase 3: Other abilities
-    if (document.getElementById('hasMultiattack')) {
-        features.has_multiattack = document.getElementById('hasMultiattack').checked ? 1 : 0;
-    }
+    // Other abilities
     if (document.getElementById('hasGrapple')) {
         features.has_grapple = document.getElementById('hasGrapple').checked ? 1 : 0;
     }
@@ -216,64 +209,65 @@ function buildFeatures(baselines, deviations) {
     return features;
 }
 
-// Predict HP
-function predictHP(features, cr) {
+// Predict HP using sequential three-phase approach
+function predictHP(baselines, deviations, cr) {
     if (!modelData) {
         console.warn('⚠️ Model not loaded yet, returning default HP');
-        return { total: 50, phase1: 50, phase2Stats: 0, phase2Abilities: 0, phase3: 0 };
+        return { total: 50, phase1: 50, phase2: 0, phase3: 0 };
     }
 
     // Select appropriate model based on CR
     const selectedModel = selectModel(cr);
-    if (!selectedModel) {
+    if (!selectedModel || !selectedModel.phase3_model) {
         console.warn('⚠️ Could not select model for CR:', cr);
-        return { total: 50, phase1: 50, phase2Stats: 0, phase2Abilities: 0, phase3: 0 };
+        return { total: 50, phase1: 50, phase2: 0, phase3: 0 };
     }
 
-    // Normalize features
+    // Phase 1: Get baseline HP
+    const phase1_hp = baselines.hpBaseline;
+
+    // Phase 2: Apply fixed penalties for combat stat deviations
+    const phase2_penalties = selectedModel.phase2_penalties;
+    const phase2_adjustment = (
+        deviations.acDev * phase2_penalties.ac_deviation +
+        deviations.attackDev * phase2_penalties.attack_deviation +
+        deviations.dprDev * phase2_penalties.dpr_deviation +
+        (deviations.saveDcDev || 0) * phase2_penalties.save_dc_deviation
+    );
+
+    const hp_after_phase2 = phase1_hp + phase2_adjustment;
+
+    // Phase 3: Build features using hp_after_phase2 for scaling
+    const phase3_features = buildPhase3Features(hp_after_phase2);
+
+    // Normalize Phase 3 features
     const X = [];
-    modelData.feature_columns.forEach(col => {
-        const value = features[col] || 0;
-        const mean = selectedModel.scaler_mean[col];
-        const scale = selectedModel.scaler_scale[col];
+    modelData.phase3_features.forEach(col => {
+        const value = phase3_features[col] || 0;
+        const mean = selectedModel.phase3_model.scaler_mean[col];
+        const scale = selectedModel.phase3_model.scaler_scale[col];
         X.push((value - mean) / scale);
     });
 
-    // Calculate prediction
-    let prediction = selectedModel.intercept;
+    // Predict residual HP using Phase 3 model
+    let residual_prediction = selectedModel.phase3_model.intercept;
 
-    for (let i = 0; i < modelData.feature_columns.length; i++) {
-        const col = modelData.feature_columns[i];
-        const coef = selectedModel.coefficients[col];
-        const scaledCoef = coef * selectedModel.scaler_scale[col];
-        prediction += X[i] * scaledCoef;
+    for (let i = 0; i < modelData.phase3_features.length; i++) {
+        const col = modelData.phase3_features[i];
+        const coef = selectedModel.phase3_model.coefficients[col];
+        const scale = selectedModel.phase3_model.scaler_scale[col];
+        const scaledCoef = coef * scale;
+        residual_prediction += X[i] * scaledCoef;
     }
 
-    // Calculate breakdown
-    const phase1 = features.hp_baseline;
-
-    const phase2Stats = (
-        features.ac_deviation * selectedModel.constraints.ac_deviation +
-        features.attack_deviation * selectedModel.constraints.attack_deviation +
-        features.dpr_deviation * selectedModel.constraints.dpr_deviation
-    );
-
-    const phase2Abilities = (
-        features.has_flying_scaled * selectedModel.constraints.has_flying_scaled +
-        features.has_legendary_resistance_scaled * selectedModel.constraints.has_legendary_resistance_scaled +
-        features.has_magic_resistance_scaled * selectedModel.constraints.has_magic_resistance_scaled +
-        features.has_regeneration_scaled * selectedModel.constraints.has_regeneration_scaled +
-        features.has_legendary_actions_scaled * selectedModel.constraints.has_legendary_actions_scaled
-    );
-
-    const phase3 = prediction - phase1 - phase2Stats - phase2Abilities;
+    // Final HP = hp_after_phase2 + residual
+    const total_hp = hp_after_phase2 + residual_prediction;
 
     return {
-        total: Math.max(1, Math.round(prediction)),
-        phase1: Math.round(phase1),
-        phase2Stats: Math.round(phase2Stats),
-        phase2Abilities: Math.round(phase2Abilities),
-        phase3: Math.round(phase3)
+        total: Math.max(1, Math.round(total_hp)),
+        phase1: Math.round(phase1_hp),
+        phase2: Math.round(phase2_adjustment),
+        phase3: Math.round(residual_prediction)
     };
 }
 
@@ -284,18 +278,14 @@ function calculateHP() {
     const cr = parseFloat(document.getElementById('cr').value);
     const baselines = updateBaselines();
     const deviations = updateDeviations(baselines, cr);
-    const features = buildFeatures(baselines, deviations);
-    const result = predictHP(features, cr);
+    const result = predictHP(baselines, deviations, cr);
 
     // Update display
     document.getElementById('hpValue').textContent = result.total;
     document.getElementById('phase1Value').textContent = `+${result.phase1} HP`;
 
-    const phase2StatText = result.phase2Stats >= 0 ? `+${result.phase2Stats}` : `${result.phase2Stats}`;
-    document.getElementById('phase2StatValue').textContent = `${phase2StatText} HP`;
-
-    const phase2AbilityText = result.phase2Abilities >= 0 ? `+${result.phase2Abilities}` : `${result.phase2Abilities}`;
-    document.getElementById('phase2AbilityValue').textContent = `${phase2AbilityText} HP`;
+    const phase2Text = result.phase2 >= 0 ? `+${result.phase2}` : `${result.phase2}`;
+    document.getElementById('phase2StatValue').textContent = `${phase2Text} HP`;
 
     const phase3Text = result.phase3 >= 0 ? `+${result.phase3}` : `${result.phase3}`;
     document.getElementById('phase3Value').textContent = `${phase3Text} HP`;
