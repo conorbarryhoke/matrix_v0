@@ -119,6 +119,7 @@ function updateDeviations(baselines, cr) {
     updateDeviationDisplay('acDeviation', acDev, 'AC', cr);
     updateDeviationDisplay('attackDeviation', attackDev, 'Attack', cr);
     updateDeviationDisplay('dprDeviation', dprDev, 'DPR', cr);
+    updateDeviationDisplay('saveDcDeviation', saveDcDev, 'Save DC', cr);
 
     return { acDev, attackDev, dprDev, saveDcDev };
 }
@@ -171,15 +172,36 @@ function buildPhase3Features(hp_after_phase2) {
 
     // Basic stats
     features.size_ordinal = parseInt(document.getElementById('size').value);
+
+    // Speed features
     features.speed_ground = parseInt(document.getElementById('speedGround').value);
     features.speed_fly = parseInt(document.getElementById('speedFly').value);
-    features.max_speed = Math.max(features.speed_ground, features.speed_fly);
-    features.movement_types_count = (features.speed_ground > 0 ? 1 : 0) + (features.speed_fly > 0 ? 1 : 0);
+    features.speed_swim = parseInt(document.getElementById('speedSwim').value);
+    features.speed_burrow = parseInt(document.getElementById('speedBurrow').value);
+    features.speed_climb = parseInt(document.getElementById('speedClimb').value);
 
+    features.max_speed = Math.max(
+        features.speed_ground,
+        features.speed_fly,
+        features.speed_swim,
+        features.speed_burrow,
+        features.speed_climb
+    );
+
+    features.movement_types_count =
+        (features.speed_ground > 0 ? 1 : 0) +
+        (features.speed_fly > 0 ? 1 : 0) +
+        (features.speed_swim > 0 ? 1 : 0) +
+        (features.speed_burrow > 0 ? 1 : 0) +
+        (features.speed_climb > 0 ? 1 : 0);
+
+    // Proficiencies and resistances
     features.save_proficiency_count = parseInt(document.getElementById('saveProficiencies').value);
     features.skill_proficiency_count = parseInt(document.getElementById('skillProficiencies').value);
     features.resistance_count = parseInt(document.getElementById('resistances').value);
     features.immunity_count = parseInt(document.getElementById('immunities').value);
+    features.vulnerability_count = parseInt(document.getElementById('vulnerabilities').value);
+    features.condition_immunity_count = parseInt(document.getElementById('conditionImmunities').value);
 
     // Conditions
     const conditions = ['poisoned', 'blinded', 'charmed', 'deafened', 'frightened',
@@ -189,22 +211,32 @@ function buildPhase3Features(hp_after_phase2) {
         features[`inflicts_${condition}`] = elem && elem.checked ? 1 : 0;
     });
 
+    // Vision and senses
+    features.has_darkvision = document.getElementById('hasDarkvision').checked ? 1 : 0;
+    features.has_blindsight = document.getElementById('hasBlindsight').checked ? 1 : 0;
+    features.has_truesight = document.getElementById('hasTruesight').checked ? 1 : 0;
+    features.has_tremorsense = document.getElementById('hasTremorsense').checked ? 1 : 0;
+    features.darkvision_range = parseInt(document.getElementById('darkvisionRange').value);
+    features.passive_perception = parseInt(document.getElementById('passivePerception').value);
+
+    // Ability counts
+    features.trait_count = parseInt(document.getElementById('traitCount').value);
+    features.reaction_count = parseInt(document.getElementById('reactionCount').value);
+    features.bonus_action_count = parseInt(document.getElementById('bonusActionCount').value);
+    features.legendary_action_count = parseInt(document.getElementById('legendaryActionCount').value);
+    features.legendary_actions_per_round = parseInt(document.getElementById('legendaryActionsPerRound').value);
+
+    // Calculate total ability count
+    features.total_ability_count =
+        features.trait_count +
+        features.reaction_count +
+        features.bonus_action_count +
+        features.legendary_action_count;
+
     // Other abilities
-    if (document.getElementById('hasGrapple')) {
-        features.has_grapple = document.getElementById('hasGrapple').checked ? 1 : 0;
-    }
-    if (document.getElementById('hasSpellcasting')) {
-        features.has_spellcasting = document.getElementById('hasSpellcasting').checked ? 1 : 0;
-    }
-    if (document.getElementById('hasDarkvision')) {
-        features.has_darkvision = document.getElementById('hasDarkvision').checked ? 1 : 0;
-    }
-    if (document.getElementById('hasBlindsight')) {
-        features.has_blindsight = document.getElementById('hasBlindsight').checked ? 1 : 0;
-    }
-    if (document.getElementById('hasTruesight')) {
-        features.has_truesight = document.getElementById('hasTruesight').checked ? 1 : 0;
-    }
+    features.has_grapple = document.getElementById('hasGrapple').checked ? 1 : 0;
+    features.has_spellcasting = document.getElementById('hasSpellcasting').checked ? 1 : 0;
+    features.spellcaster_level = parseInt(document.getElementById('spellcasterLevel').value);
 
     return features;
 }
