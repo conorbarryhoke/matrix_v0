@@ -655,6 +655,41 @@ function loadCreatureData() {
             }
         }
 
+        // Extract highest save DC from creature data
+        // Search in both traits and actions, use baseline if none found
+        const cr = parseFloat(document.getElementById('cr').value);
+        const baselineDC = Math.round(getBaseline(cr, 'dc_baseline'));
+        let highestDC = baselineDC; // Default to baseline
+
+        // Check traits for save DC patterns
+        if (creature.traits) {
+            const dcMatches = creature.traits.match(/(?:spell )?save DC (\d+)/gi);
+            if (dcMatches) {
+                dcMatches.forEach(match => {
+                    const dcValue = parseInt(match.match(/(\d+)/)[1]);
+                    if (dcValue > highestDC) {
+                        highestDC = dcValue;
+                    }
+                });
+            }
+        }
+
+        // Check actions for save DC patterns
+        if (creature.actions) {
+            const dcMatches = creature.actions.match(/(?:spell )?save DC (\d+)/gi);
+            if (dcMatches) {
+                dcMatches.forEach(match => {
+                    const dcValue = parseInt(match.match(/(\d+)/)[1]);
+                    if (dcValue > highestDC) {
+                        highestDC = dcValue;
+                    }
+                });
+            }
+        }
+
+        console.log('   Setting Save DC:', highestDC, highestDC === baselineDC ? '(baseline)' : '(from creature)');
+        document.getElementById('saveDC').value = highestDC;
+
         // Parse size
         const sizeMap = {
             'Tiny': 0, 'Small': 1, 'Medium': 2,
