@@ -53,6 +53,51 @@ function selectModel(cr) {
     }
 }
 
+// Calculate HP cost for a feature based on current CR and model
+function calculateFeatureCost(featureName, cr = null) {
+    if (!modelData) return null;
+
+    // Use current CR if not specified
+    if (cr === null) {
+        cr = parseFloat(document.getElementById('cr').value);
+    }
+
+    const selectedModel = selectModel(cr);
+    if (!selectedModel || !selectedModel.phase3_model) return null;
+
+    // For scaled features, we need hp_after_phase2 estimate
+    // Use baseline HP as approximation (ignoring Phase 2 adjustments for label purposes)
+    const hpBaseline = getBaseline(cr, 'hp_baseline');
+
+    // Check if it's a scaled feature
+    if (featureName.endsWith('_scaled')) {
+        const coef = selectedModel.phase3_model.coefficients[featureName];
+        const scale = selectedModel.phase3_model.scaler_scale[featureName];
+        const scaledCoef = coef * scale;
+        // For scaled features, impact = coefficient * hp_after_phase2
+        return scaledCoef * hpBaseline;
+    } else {
+        // Non-scaled feature
+        const coef = selectedModel.phase3_model.coefficients[featureName];
+        const scale = selectedModel.phase3_model.scaler_scale[featureName];
+
+        // Calculate impact of changing from 0 to 1 (for binary) or per unit (for count)
+        // HP impact = coefficient * scale (after unscaling)
+        return coef * scale;
+    }
+}
+
+// Format HP cost for display
+function formatHPCost(cost, perUnit = false) {
+    if (cost === null || cost === undefined) return '';
+
+    const rounded = Math.round(cost * 10) / 10; // Round to 1 decimal
+    const sign = rounded >= 0 ? '+' : '';
+    const suffix = perUnit ? ' each' : '';
+
+    return `(${sign}${rounded} HP${suffix})`;
+}
+
 // Interpolate baseline values from CR
 function getBaseline(cr, valueType) {
     if (!modelData || !modelData.baseline_data) return 0;
@@ -152,6 +197,86 @@ function getConstraint(label, cr) {
     };
 
     return constraintMap[label] || 0;
+}
+
+// Update all feature cost labels based on current CR
+function updateFeatureCostLabels() {
+    if (!modelData) return;
+
+    // Update Phase 2 scaled ability labels
+    updateScaledAbilityLabel('hasFlying', 'Flying', 'has_flying_scaled');
+    updateScaledAbilityLabel('hasLegendaryResistance', 'Legendary Resistance', 'has_legendary_resistance_scaled');
+    updateScaledAbilityLabel('hasMagicResistance', 'Magic Resistance', 'has_magic_resistance_scaled');
+    updateScaledAbilityLabel('hasRegeneration', 'Regeneration', 'has_regeneration_scaled');
+    updateScaledAbilityLabel('hasLegendaryActions', 'Legendary Actions', 'has_legendary_actions_scaled');
+
+    // Update Phase 3 condition labels
+    const conditions = ['poisoned', 'blinded', 'charmed', 'deafened', 'frightened',
+                       'incapacitated', 'paralyzed', 'petrified', 'prone', 'restrained', 'stunned'];
+    conditions.forEach(condition => {
+        const capitalizedCondition = condition.charAt(0).toUpperCase() + condition.slice(1);
+        updateConditionLabel(`inflicts${capitalizedCondition}`, capitalizedCondition, `inflicts_${condition}`);
+    });
+
+    // Update other Phase 3 feature labels
+    updateCheckboxLabel('hasGrapple', 'Grapple', 'has_grapple');
+    updateCheckboxLabel('hasSpellcasting', 'Spellcasting', 'has_spellcasting');
+    updateCheckboxLabel('hasDarkvision', 'Darkvision', 'has_darkvision');
+    updateCheckboxLabel('hasBlindsight', 'Blindsight', 'has_blindsight');
+    updateCheckboxLabel('hasTruesight', 'Truesight', 'has_truesight');
+    updateCheckboxLabel('hasTremorsense', 'Tremorsense', 'has_tremorsense');
+
+    // Update count feature labels (with "per unit" costs)
+    updateCountLabel('saveProficiencies', 'Save Proficiencies', 'save_proficiency_count');
+    updateCountLabel('skillProficiencies', 'Skill Proficiencies', 'skill_proficiency_count');
+    updateCountLabel('resistances', 'Resistances', 'resistance_count');
+    updateCountLabel('immunities', 'Immunities', 'immunity_count');
+    updateCountLabel('vulnerabilities', 'Vulnerabilities', 'vulnerability_count');
+    updateCountLabel('conditionImmunities', 'Condition Immunities', 'condition_immunity_count');
+    updateCountLabel('traitCount', 'Traits', 'trait_count');
+    updateCountLabel('reactionCount', 'Reactions', 'reaction_count');
+    updateCountLabel('bonusActionCount', 'Bonus Actions', 'bonus_action_count');
+    updateCountLabel('legendaryActionCount', 'Legendary Actions', 'legendary_action_count');
+    updateCountLabel('legendaryActionsPerRound', 'Legendary Actions/Round', 'legendary_actions_per_round');
+    updateCountLabel('passivePerception', 'Passive Perception', 'passive_perception');
+    updateCountLabel('darkvisionRange', 'Darkvision Range', 'darkvision_range');
+    updateCountLabel('spellcasterLevel', 'Spellcaster Level', 'spellcaster_level');
+}
+
+function updateScaledAbilityLabel(elementId, label, featureName) {
+    const cost = calculateFeatureCost(featureName);
+    const costLabel = formatHPCost(cost);
+    const span = document.querySelector(`label.checkbox-label:has(#${elementId}) span`);
+    if (span) {
+        span.textContent = `${label} ${costLabel}`;
+    }
+}
+
+function updateConditionLabel(elementId, label, featureName) {
+    const cost = calculateFeatureCost(featureName);
+    const costLabel = formatHPCost(cost);
+    const labelElem = document.querySelector(`label.checkbox-label:has(#${elementId})`);
+    if (labelElem && labelElem.childNodes.length > 1) {
+        labelElem.childNodes[1].textContent = ` ${label} ${costLabel}`;
+    }
+}
+
+function updateCheckboxLabel(elementId, label, featureName) {
+    const cost = calculateFeatureCost(featureName);
+    const costLabel = formatHPCost(cost);
+    const labelElem = document.querySelector(`label.checkbox-label:has(#${elementId})`);
+    if (labelElem && labelElem.childNodes.length > 1) {
+        labelElem.childNodes[1].textContent = ` ${label} ${costLabel}`;
+    }
+}
+
+function updateCountLabel(elementId, label, featureName) {
+    const cost = calculateFeatureCost(featureName);
+    const costLabel = formatHPCost(cost, true); // Show "per unit"
+    const labelElem = document.querySelector(`label[for="${elementId}"]`);
+    if (labelElem) {
+        labelElem.textContent = `${label} ${costLabel}`;
+    }
 }
 
 // Build Phase 3 feature vector (scaled features need hp_after_phase2)
@@ -303,11 +428,21 @@ function predictHP(baselines, deviations, cr) {
     };
 }
 
+// Track last CR for label updates
+let lastCR = null;
+
 // Calculate and display HP
 function calculateHP() {
     if (!modelData) return;
 
     const cr = parseFloat(document.getElementById('cr').value);
+
+    // Update feature cost labels when CR changes
+    if (cr !== lastCR) {
+        updateFeatureCostLabels();
+        lastCR = cr;
+    }
+
     const baselines = updateBaselines();
     const deviations = updateDeviations(baselines, cr);
     const result = predictHP(baselines, deviations, cr);
