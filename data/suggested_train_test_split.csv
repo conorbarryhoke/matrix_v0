@@ -1,0 +1,383 @@
+Name,Type,cr_numeric,family,feature_complexity,suggested_split
+Deva,celestial,10.0,angel,11,train
+Planetar,celestial,16.0,angel,11,test
+Solar,celestial,21.0,angel,12,train
+Eagle,beast,0.0,beast,8,train
+Goat,beast,0.0,beast,8,train
+Frog,beast,0.0,beast,9,train
+Rat,beast,0.0,beast,8,train
+Seahorse,Beast,0.0,beast,8,train
+Sea Horse,beast,0.0,beast,8,train
+Hawk,beast,0.0,beast,8,train
+Spider,beast,0.0,beast,9,train
+Cat,beast,0.0,beast,8,train
+Bat,beast,0.0,beast,10,train
+Poisonous Snake,beast,0.125,beast,9,train
+Flying Snake,beast,0.125,beast,10,train
+Blood Hawk,beast,0.125,beast,9,train
+Venomous Snake,Beast,0.125,beast,9,train
+Riding Horse,beast,0.25,beast,7,train
+Swarm of Bats,swarm of tiny beasts,0.25,beast,10,train
+Draft Horse,beast,0.25,beast,7,train
+Swarm of Rats,swarm of tiny beasts,0.25,beast,8,train
+Blink Dog,fey,0.25,beast,7,train
+Constrictor Snake,beast,0.25,beast,10,train
+Wolf,beast,0.25,beast,9,train
+Reef Shark,beast,0.5,beast,10,train
+Crocodile,beast,0.5,beast,9,train
+Black Bear,beast,0.5,beast,8,train
+Warhorse,beast,0.5,beast,8,train
+Swarm of Spiders,swarm of tiny beasts,0.5,beast,9,train
+Death Dog,monstrosity,1.0,beast,14,train
+Dire Wolf,beast,1.0,beast,9,train
+Lion,beast,1.0,beast,9,train
+Pirate,Humanoid,1.0,beast,8,train
+Tiger,beast,1.0,beast,9,train
+Brown Bear,beast,1.0,beast,8,train
+Hunter Shark,beast,2.0,beast,9,train
+Wererat,"humanoid (human, shapechanger)",2.0,beast,8,train
+Swarm of Venomous Snakes,Swarm of Tiny Beasts,2.0,beast,9,train
+Swarm of Poisonous Snakes,swarm of tiny beasts,2.0,beast,9,train
+Polar Bear,beast,2.0,beast,8,train
+Saber-Toothed Tiger,beast,2.0,beast,8,train
+Phase Spider,monstrosity,3.0,beast,11,train
+Owlbear,monstrosity,3.0,beast,8,train
+Werewolf,"humanoid (human, shapechanger)",3.0,beast,7,train
+Winter Wolf,monstrosity,3.0,beast,9,train
+Weretiger,"humanoid (human, shapechanger)",4.0,beast,9,train
+Triceratops,beast,5.0,beast,8,train
+Werebear,"humanoid (human, shapechanger)",5.0,beast,8,train
+Pirate Captain,Humanoid,6.0,beast,8,train
+Vrock,fiend (demon),6.0,demon,12,train
+Hezrou,fiend (demon),8.0,demon,10,test
+Glabrezu,fiend (demon),9.0,demon,10,train
+Nalfeshnee,fiend (demon),13.0,demon,11,test
+Marilith,fiend (demon),16.0,demon,10,train
+Balor,fiend (demon),19.0,demon,10,test
+Bearded Devil,fiend (devil),3.0,devil,11,train
+Barbed Devil,fiend (devil),5.0,devil,9,test
+Chain Devil,fiend (devil),8.0,devil,11,train
+Bone Devil,fiend (devil),9.0,devil,11,test
+Horned Devil,fiend (devil),11.0,devil,10,train
+Erinyes,fiend (devil),12.0,devil,11,test
+Ice Devil,fiend (devil),14.0,devil,11,train
+Pit Fiend,fiend (devil),20.0,devil,14,test
+Adult Brass Dragon,dragon,13.0,dragon_adult,14,train
+Adult White Dragon,dragon,13.0,dragon_adult,15,test
+Adult Black Dragon,dragon,14.0,dragon_adult,14,train
+Adult Copper Dragon,dragon,14.0,dragon_adult,14,test
+Adult Green Dragon,dragon,15.0,dragon_adult,14,train
+Adult Bronze Dragon,dragon,15.0,dragon_adult,14,test
+Adult Blue Dragon,dragon,16.0,dragon_adult,14,train
+Adult Silver Dragon,dragon,16.0,dragon_adult,14,test
+Adult Red Dragon,dragon,17.0,dragon_adult,14,train
+Adult Gold Dragon,dragon,17.0,dragon_adult,14,test
+Ancient Brass Dragon,dragon,20.0,dragon_ancient,14,train
+Ancient White Dragon,dragon,20.0,dragon_ancient,15,test
+Ancient Copper Dragon,dragon,21.0,dragon_ancient,14,train
+Ancient Black Dragon,dragon,21.0,dragon_ancient,14,test
+Ancient Bronze Dragon,dragon,22.0,dragon_ancient,14,train
+Ancient Green Dragon,dragon,22.0,dragon_ancient,14,test
+Ancient Silver Dragon,dragon,23.0,dragon_ancient,14,train
+Ancient Blue Dragon,dragon,23.0,dragon_ancient,14,test
+Ancient Red Dragon,dragon,24.0,dragon_ancient,14,train
+Ancient Gold Dragon,dragon,24.0,dragon_ancient,14,test
+Pseudodragon,dragon,0.25,dragon_other,12,train
+Half-Dragon,Dragon,5.0,dragon_other,9,train
+Half-Red Dragon Veteran,humanoid (human),5.0,dragon_other,9,train
+Dragon Turtle,dragon,17.0,dragon_other,10,train
+Brass Dragon Wyrmling,dragon,1.0,dragon_wyrmling,11,train
+Copper Dragon Wyrmling,dragon,1.0,dragon_wyrmling,11,train
+Black Dragon Wyrmling,dragon,2.0,dragon_wyrmling,11,train
+Bronze Dragon Wyrmling,dragon,2.0,dragon_wyrmling,11,train
+Green Dragon Wyrmling,dragon,2.0,dragon_wyrmling,11,train
+Silver Dragon Wyrmling,dragon,2.0,dragon_wyrmling,11,train
+White Dragon Wyrmling,dragon,2.0,dragon_wyrmling,12,train
+Gold Dragon Wyrmling,dragon,3.0,dragon_wyrmling,11,train
+Blue Dragon Wyrmling,dragon,3.0,dragon_wyrmling,11,train
+Red Dragon Wyrmling,dragon,4.0,dragon_wyrmling,11,train
+Young Brass Dragon,dragon,6.0,dragon_young,11,train
+Young White Dragon,dragon,6.0,dragon_young,12,test
+Young Copper Dragon,dragon,7.0,dragon_young,11,train
+Young Black Dragon,dragon,7.0,dragon_young,11,test
+Young Bronze Dragon,dragon,8.0,dragon_young,11,train
+Young Green Dragon,dragon,8.0,dragon_young,11,test
+Young Blue Dragon,dragon,9.0,dragon_young,11,train
+Young Silver Dragon,dragon,9.0,dragon_young,11,test
+Young Red Dragon,dragon,10.0,dragon_young,11,train
+Young Gold Dragon,dragon,10.0,dragon_young,11,test
+Fire Elemental,elemental,5.0,elemental,8,train
+Earth Elemental,elemental,5.0,elemental,10,train
+Air Elemental,elemental,5.0,elemental,10,train
+Water Elemental,elemental,5.0,elemental,10,train
+Cloud Giant,giant,9.0,giant_cloud,8,train
+Giant Fire Beetle,beast,0.0,giant_fire,8,train
+Fire Giant,giant,9.0,giant_fire,7,train
+Frost Giant,giant,8.0,giant_frost,7,train
+Hill Giant,giant,5.0,giant_hill,7,train
+Giant Insect,Beast,0.0,giant_other,11,train
+Giant Rat,beast,0.125,giant_other,9,train
+Giant Weasel,beast,0.125,giant_other,8,train
+Giant Crab,beast,0.125,giant_other,9,train
+Diseased Giant Rat,beast,0.125,giant_other,9,train
+Giant Bat,beast,0.25,giant_other,10,train
+Giant Badger,beast,0.25,giant_other,9,train
+Giant Owl,beast,0.25,giant_other,9,train
+Giant Wolf Spider,beast,0.25,giant_other,12,train
+Giant Venomous Snake,Beast,0.25,giant_other,9,train
+Giant Frog,beast,0.25,giant_other,12,train
+Giant Poisonous Snake,beast,0.25,giant_other,9,train
+Giant Lizard,beast,0.25,giant_other,9,train
+Giant Centipede,beast,0.25,giant_other,11,train
+Giant Goat,beast,0.5,giant_other,8,train
+Giant Sea Horse,beast,0.5,giant_other,9,train
+Giant Seahorse,Beast,0.5,giant_other,8,train
+Giant Wasp,beast,0.5,giant_other,10,train
+Giant Hyena,beast,1.0,giant_other,7,train
+Giant Eagle,beast,1.0,giant_other,8,train
+Giant Octopus,beast,1.0,giant_other,10,train
+Giant Spider,beast,1.0,giant_other,13,train
+Giant Toad,beast,1.0,giant_other,12,train
+Giant Vulture,beast,1.0,giant_other,9,train
+Giant Elk,beast,2.0,giant_other,8,train
+Giant Constrictor Snake,beast,2.0,giant_other,10,train
+Giant Boar,beast,2.0,giant_other,8,train
+Giant Scorpion,beast,3.0,giant_other,8,train
+Giant Shark,beast,5.0,giant_other,9,train
+Giant Crocodile,beast,5.0,giant_other,10,train
+Giant Ape,beast,7.0,giant_other,8,train
+Stone Giant,giant,7.0,giant_stone,9,train
+Storm Giant,giant,13.0,giant_storm,9,train
+Goblin Minion,Fey (Goblinoid),0.125,goblinoid,8,train
+Goblin,humanoid (goblinoid),0.25,goblinoid,8,train
+Goblin Warrior,Fey (Goblinoid),0.25,goblinoid,8,train
+Hobgoblin Warrior,Fey (Goblinoid),0.5,goblinoid,9,train
+Hobgoblin,humanoid (goblinoid),0.5,goblinoid,9,train
+Goblin Boss,Fey (Goblinoid),1.0,goblinoid,8,train
+Bugbear,humanoid (goblinoid),1.0,goblinoid,8,train
+Bugbear Warrior,Fey (Goblinoid),1.0,goblinoid,8,train
+Hobgoblin Captain,Fey (Goblinoid),3.0,goblinoid,9,train
+Bugbear Stalker,Fey (Goblinoid),3.0,goblinoid,8,train
+Commoner,humanoid (any race),0.0,humanoid_simple,7,train
+Guard,humanoid (any race),0.125,humanoid_simple,7,train
+Cultist,humanoid (any race),0.125,humanoid_simple,9,train
+Bandit,humanoid (any race),0.125,humanoid_simple,7,train
+Noble,humanoid (any race),0.125,humanoid_simple,7,train
+Priest Acolyte,Humanoid (Cleric),0.25,humanoid_simple,7,train
+Acolyte,humanoid (any race),0.25,humanoid_simple,8,train
+Scout,humanoid (any race),0.5,humanoid_simple,7,train
+Bandit Captain,humanoid (any race),2.0,humanoid_simple,7,train
+Cultist Fanatic,Humanoid,2.0,humanoid_simple,7,train
+Priest,humanoid (any race),2.0,humanoid_simple,8,train
+Knight,humanoid (any race),3.0,humanoid_simple,9,train
+Veteran,humanoid (any race),3.0,humanoid_simple,7,train
+Warrior Veteran,Humanoid,3.0,humanoid_simple,7,train
+Guard Captain,Humanoid,4.0,humanoid_simple,7,train
+Shield Guardian,construct,7.0,humanoid_simple,10,train
+Guardian Naga,monstrosity,10.0,humanoid_simple,9,train
+Animated Object (Huge),Construct,0.0,other,9,train
+Animated Object (Tiny),Construct,0.0,other,8,train
+Animated Object (Small or Medium),Construct,0.0,other,8,train
+Animated Object (Large),Construct,0.0,other,9,train
+Badger,beast,0.0,other,9,train
+Baboon,beast,0.0,other,9,train
+Awakened Shrub,plant,0.0,other,7,train
+Avatar of Death,Undead,0.0,other,9,train
+Crab,beast,0.0,other,9,train
+Deer,beast,0.0,other,7,train
+Draconic Spirit,Dragon,0.0,other,11,train
+Owl,beast,0.0,other,9,train
+Piranha,Beast,0.0,other,9,train
+Quipper,beast,0.0,other,9,train
+Raven,beast,0.0,other,8,train
+Scorpion,beast,0.0,other,8,train
+Lemure,fiend (devil),0.0,other,8,train
+Lizard,beast,0.0,other,9,train
+Octopus,beast,0.0,other,9,train
+Otherworldly Steed,Celestial,0.0,other,9,train
+Homunculus,construct,0.0,other,10,train
+Hyena,beast,0.0,other,8,train
+Jackal,beast,0.0,other,8,train
+Shrieker,plant,0.0,other,8,train
+Shrieker Fungus,Plant,0.0,other,8,train
+Vulture,beast,0.0,other,9,train
+Weasel,beast,0.0,other,7,train
+Pony,beast,0.125,other,7,train
+Kobold Warrior,Dragon,0.125,other,9,train
+Merfolk,humanoid (merfolk),0.125,other,8,train
+Merfolk Skirmisher,Elemental,0.125,other,8,train
+Mule,beast,0.125,other,8,train
+Camel,beast,0.125,other,7,train
+Stirge,beast,0.125,other,9,train
+Tribal Warrior,humanoid (any race),0.125,other,8,train
+Slaad Tadpole,Aberration,0.125,other,10,train
+Mastiff,beast,0.125,other,8,train
+Kobold,humanoid (kobold),0.125,other,9,train
+Warrior Infantry,Humanoid,0.125,other,8,train
+Sprite,fey,0.25,other,9,train
+Pteranodon,Beast (Dinosaur),0.25,other,8,train
+Panther,beast,0.25,other,9,train
+Flying Sword,construct,0.25,other,10,train
+Grimlock,humanoid (grimlock),0.25,other,9,train
+Steam Mephit,elemental,0.25,other,10,train
+Swarm of Ravens,swarm of tiny beasts,0.25,other,8,train
+Violet Fungus,plant,0.25,other,8,train
+Elk,beast,0.25,other,8,train
+Dretch,fiend (demon),0.25,other,9,train
+Axe Beak,beast,0.25,other,7,train
+Drow,humanoid (elf),0.25,other,11,train
+Animated Flying Sword,Construct,0.25,other,9,train
+Bullywug Warrior,Fey,0.25,other,8,train
+Boar,beast,0.25,other,8,train
+Magma Mephit,elemental,0.5,other,10,train
+Orc,humanoid (orc),0.5,other,8,train
+Sahuagin Warrior,Fiend,0.5,other,9,train
+Satyr,fey,0.5,other,8,train
+Shadow,undead,0.5,other,8,train
+Rust Monster,monstrosity,0.5,other,8,train
+Lizardfolk,humanoid (lizardfolk),0.5,other,8,train
+Sahuagin,humanoid (sahuagin),0.5,other,9,train
+Deep Gnome (Svirfneblin),humanoid (gnome),0.5,other,10,train
+Darkmantle,monstrosity,0.5,other,11,train
+Dust Mephit,elemental,0.5,other,11,train
+Gnoll Warrior,Fiend,0.5,other,8,train
+Ape,beast,0.5,other,8,train
+Ice Mephit,elemental,0.5,other,10,train
+Gray Ooze,ooze,0.5,other,9,train
+Gnoll,humanoid (gnoll),0.5,other,8,train
+Worg,monstrosity,0.5,other,9,train
+Cockatrice,monstrosity,0.5,other,11,train
+Troll Limb,Giant,0.5,other,9,train
+Swarm of Wasps,swarm of tiny beasts,0.5,other,9,train
+Magmin,elemental,0.5,other,8,train
+Swarm of Beetles,swarm of tiny beasts,0.5,other,10,train
+Swarm of Insects,swarm of tiny beasts,0.5,other,9,train
+Swarm of Centipedes,swarm of tiny beasts,0.5,other,11,train
+Tough,Humanoid,0.5,other,8,train
+Thug,humanoid (any race),0.5,other,8,train
+Imp,"fiend (devil, shapechanger)",1.0,other,10,train
+Quasit,fiend (demon),1.0,other,11,train
+Duergar,humanoid (dwarf),1.0,other,10,train
+Dryad,fey,1.0,other,11,train
+Animated Armor,construct,1.0,other,9,train
+Harpy,monstrosity,1.0,other,10,train
+Sphinx of Wonder,Celestial,1.0,other,10,train
+Swarm of Piranhas,Swarm of Tiny Beasts,1.0,other,9,train
+Spy,humanoid (any race),1.0,other,8,train
+Swarm of Quippers,swarm of tiny beasts,1.0,other,9,train
+Awakened Tree,plant,2.0,other,7,train
+Allosaurus,Beast (Dinosaur),2.0,other,8,train
+Animated Rug of Smothering,Construct,2.0,other,10,train
+Ankheg,monstrosity,2.0,other,10,train
+Azer Sentinel,Elemental,2.0,other,8,train
+Azer,elemental,2.0,other,7,train
+Berserker,humanoid (any race),2.0,other,7,train
+Ettercap,monstrosity,2.0,other,11,train
+Druid,humanoid (any race),2.0,other,8,train
+Centaur Trooper,Fey,2.0,other,8,train
+Carrion Crawler,Monstrosity,2.0,other,11,train
+Centaur,monstrosity,2.0,other,7,train
+Cult Fanatic,humanoid (any race),2.0,other,10,train
+Merrow,monstrosity,2.0,other,9,train
+Ogre,giant,2.0,other,8,train
+Grick,monstrosity,2.0,other,9,train
+Gelatinous Cube,ooze,2.0,other,9,train
+Gargoyle,elemental,2.0,other,9,train
+Ghast,undead,2.0,other,10,train
+Gibbering Mouther,aberration,2.0,other,12,train
+Mimic,monstrosity (shapechanger),2.0,other,8,train
+Ochre Jelly,ooze,2.0,other,9,train
+Plesiosaurus,beast,2.0,other,8,train
+Nothic,Aberration,2.0,other,8,train
+Will-o'-Wisp,undead,2.0,other,9,train
+Rhinoceros,beast,2.0,other,8,train
+Rug of Smothering,construct,2.0,other,11,train
+Sea Hag,fey,2.0,other,10,train
+Ankylosaurus,Beast (Dinosaur),3.0,other,8,train
+Basilisk,monstrosity,3.0,other,11,train
+Nightmare,fiend,3.0,other,8,train
+Mummy,undead,3.0,other,10,train
+Killer Whale,beast,3.0,other,10,train
+Minotaur,monstrosity,3.0,other,9,train
+Green Hag,fey,3.0,other,9,train
+Hell Hound,fiend,3.0,other,9,train
+Manticore,monstrosity,3.0,other,9,train
+Swarm of Crawling Claws,Swarm of Tiny Undead,3.0,other,10,train
+Doppelganger,monstrosity (shapechanger),3.0,other,8,train
+Minotaur of Baphomet,Monstrosity,3.0,other,9,train
+Tough Boss,Humanoid,4.0,other,8,train
+Succubus,Fiend (Shapechanger),4.0,other,10,train
+Succubus (Incubus),fiend (shapechanger),4.0,other,10,train
+Lamia,monstrosity,4.0,other,9,train
+Incubus,Fiend (Shapechanger),4.0,other,10,train
+Hippopotamus,Beast,4.0,other,8,train
+Elephant,beast,4.0,other,8,train
+Bullywug Bog Sage,Fey,4.0,other,8,train
+Wereboar,"humanoid (human, shapechanger)",4.0,other,8,train
+Couatl,celestial,4.0,other,12,train
+Chuul,aberration,4.0,other,11,train
+Archelon,Beast (Dinosaur),4.0,other,8,train
+Ettin,giant,4.0,other,13,train
+Black Pudding,ooze,4.0,other,9,train
+Troll,giant,5.0,other,9,train
+Shambling Mound,plant,5.0,other,11,train
+Salamander,elemental,5.0,other,9,train
+Roper,monstrosity,5.0,other,10,train
+Unicorn,celestial,5.0,other,11,train
+Otyugh,aberration,5.0,other,11,train
+Flesh Golem,construct,5.0,other,9,train
+Gorgon,monstrosity,5.0,other,11,train
+Gladiator,humanoid (any race),5.0,other,9,train
+Night Hag,fiend,5.0,other,10,train
+Bulette,monstrosity,5.0,other,11,train
+Xorn,elemental,5.0,other,10,train
+Chimera,monstrosity,6.0,other,9,train
+Drider,monstrosity,6.0,other,11,train
+Mammoth,beast,6.0,other,8,train
+Mage,humanoid (any race),6.0,other,8,train
+Invisible Stalker,elemental,6.0,other,9,train
+Medusa,monstrosity,6.0,other,11,train
+Wyvern,dragon,6.0,other,9,train
+Oni,giant,7.0,other,11,train
+Cloaker,aberration,8.0,other,11,train
+Assassin,humanoid (any race),8.0,other,8,train
+Tyrannosaurus Rex,beast,8.0,other,8,train
+Spirit Naga,monstrosity,8.0,other,9,train
+Hydra,monstrosity,8.0,other,14,train
+Treant,plant,9.0,other,7,train
+Clay Golem,construct,9.0,other,9,train
+Aboleth,aberration,10.0,other,10,train
+Stone Golem,construct,10.0,other,9,train
+Roc,monstrosity,11.0,other,9,train
+Sphinx of Lore,Celestial,11.0,other,11,train
+Djinni,elemental,11.0,other,11,train
+Efreeti,elemental,11.0,other,10,train
+Behir,monstrosity,11.0,other,12,train
+Gynosphinx,monstrosity,11.0,other,10,train
+Remorhaz,monstrosity,11.0,other,13,train
+Archmage,humanoid (any race),12.0,other,9,train
+Rakshasa,fiend,13.0,other,9,train
+Purple Worm,monstrosity,15.0,other,13,train
+Mummy Lord,undead,15.0,other,17,train
+Iron Golem,construct,16.0,other,9,train
+Sphinx of Valor,Celestial,17.0,other,13,train
+Androsphinx,monstrosity,17.0,other,14,train
+Kraken,monstrosity (titan),23.0,other,12,train
+Tarrasque,monstrosity (titan),30.0,other,14,train
+Hippogriff,monstrosity,1.0,simple_flier,8,train
+Griffon,monstrosity,2.0,simple_flier,9,train
+Pegasus,celestial,2.0,simple_flier,8,train
+Skeleton,undead,0.25,undead,8,train
+Zombie,undead,0.25,undead,8,test
+Warhorse Skeleton,undead,0.5,undead,8,train
+Ghoul,undead,1.0,undead,9,test
+Specter,undead,1.0,undead,9,train
+Minotaur Skeleton,undead,2.0,undead,9,test
+Ogre Zombie,undead,2.0,undead,8,train
+Vampire Familiar,Humanoid,3.0,undead,11,test
+Wight,undead,3.0,undead,8,train
+Ghost,undead,4.0,undead,12,test
+Vampire Spawn,undead,5.0,undead,11,train
+Wraith,undead,5.0,undead,9,test
+Vampire,undead (shapechanger),13.0,undead,14,train
+Lich,undead,21.0,undead,12,test
