@@ -1,0 +1,284 @@
+# Parse specific abilities
+combined_abilities = (df['Traits'].fillna('') + ' ' + df['Actions'].fillna('') + ' ' +
+                     df['Reactions'].fillna('') + ' ' + df['Legendary_Actions'].fillna(''))
+
+# Combat metrics - parse from JSON action structures
+def parse_attack_bonus(actions_str):
+    """Parse attack bonus from JSON-formatted actions"""
+    if pd.isna(actions_str):
+        return 0
+    try:
+        actions = json.loads(actions_str)
+        bonuses = []
+        for action in actions:
+            if isinstance(action, dict) and 'Hit Bonus' in action:
+                try:
+                    bonuses.append(int(action['Hit Bonus']))
+                except (ValueError, TypeError):
+                    pass
+        return max(bonuses) if bonuses else 0
+    except (json.JSONDecodeError, TypeError):
+        return 0
+
+def parse_save_dc(text_str):
+    """Parse save DC from text (traits, actions, reactions, legendary actions)"""
+    if pd.isna(text_str):
+        return 0
+    matches = re.findall(r'dc\s+(\d+)', str(text_str).lower())
+    return max([int(m) for m in matches]) if matches else 0
+
+df['highest_attack_bonus'] = df['Actions'].apply(parse_attack_bonus)
+df['highest_save_dc'] = combined_abilities.apply(parse_save_dc)
+
+# DPR parser - parse from JSON action structures
+def calculate_average_damage(damage_str):
+    """Calculate average damage from dice notation like '2d8 + 5'"""
+    if not damage_str:
+        return 0
+    
+    total = 0
+    # Match patterns like "2d8 + 5" or "1d10+3"
+    patterns = re.findall(r'(\d+)d(\d+)(?:\s*[+\-]\s*(\d+))?', str(damage_str))
+    
+    for match in patterns:
+        num_dice = int(match[0])
+        die_size = int(match[1])
+        modifier = int(match[2]) if match[2] else 0
+        avg = num_dice * (die_size + 1) / 2 + modifier
+        total += avg
+    
+    return total
+
+def parse_dpr_from_json(actions_str):
+    """
+    Parse DPR from JSON action structures.
+    Handles multiattack and calculates total DPR.
+    """
+    if pd.isna(actions_str):
+        return 0
+    
+    try:
+        actions = json.loads(actions_str)
+    except (json.JSONDecodeError, TypeError):
+        return 0
+    
+    # Build a map of attack names to their damage
+    attack_damages = {}
+    multiattack_desc = None
+    
+    for action in actions:
+        if not isinstance(action, dict):
+            continue
+        
+        name = action.get('Name', '').lower()
+        
+        if name == 'multiattack':
+            multiattack_desc = action.get('Desc', '').lower()
+        elif 'Damage' in action:
+            # Calculate base damage
+            damage = calculate_average_damage(action.get('Damage', ''))
+            
+            # Add secondary damage if present
+            if 'Damage 2' in action:
+                damage += calculate_average_damage(action.get('Damage 2', ''))
+            
+            attack_damages[name] = damage
+    
+    # If no attacks found, return 0
+    if not attack_damages:
+        return 0
+    
+    # If no multiattack, return highest single attack damage
+    if not multiattack_desc:
+        return max(attack_damages.values())
+    
+    # Parse multiattack description to determine attack counts
+    total_dpr = 0
+    attacks_counted = set()
+    
+    for attack_name, damage in attack_damages.items():
+        # Look for patterns like "two beak attacks" or "one with its bite"
+        patterns = [
+            rf'(\w+)\s+{re.escape(attack_name)}\s+attacks?',
+            rf'(\w+)\s+with\s+(?:its\s+)?{re.escape(attack_name)}',
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, multiattack_desc)
+            if match:
+                count_word = match.group(1).lower()
+                # Convert word to number
+                number_map = {
+                    'one': 1, 'a': 1, 'an': 1, 'two': 2, 'three': 3, 
+                    'four': 4, 'five': 5, 'six': 6
+                }
+                count = number_map.get(count_word, 0)
+                if count == 0:
+                    try:
+                        count = int(count_word)
+                    except ValueError:
+                        count = 0
+                
+                if count > 0:
+                    total_dpr += count * damage
+                    attacks_counted.add(attack_name)
+                break
+    
+    # If we didn't find specific attacks in multiattack description,
+    # use a heuristic based on total attacks mentioned
+    if total_dpr == 0:
+        # Look for generic "makes three attacks" pattern
+        match = re.search(r'makes?\s+(\w+)\s+attacks?', multiattack_desc)
+        if match:
+            count_word = match.group(1).lower()
+            number_map = {
+                'one': 1, 'a': 1, 'an': 1, 'two': 2, 'three': 3,
+                'four': 4, 'five': 5, 'six': 6
+            }
+            count = number_map.get(count_word, 2)  # Default to 2
+            total_dpr = count * max(attack_damages.values())
+        else:
+            # Default: assume 2 attacks with highest damage
+            total_dpr = 2 * max(attack_damages.values())
+    
+    return total_dpr
+
+# Legendary Actions Parser - extracts DPR and conditions
+def parse_legendary_actions_dpr(legendary_str):
+    """
+    Parse legendary actions to extract damage dice, conditions, and calculate DPR.
+    Returns: (legendary_dpr, list_of_conditions)
+    
+    Uses knapsack-style optimization to find damage-maximizing combination within action budget.
+    """
+    if pd.isna(legendary_str) or str(legendary_str).strip() == '':
+        return 0, []
+    
+    text = str(legendary_str)
+    
+    # Determine action budget (default 3)
+    budget_match = re.search(r'(\d+)\s+legendary\s+actions?', text.lower())
+    action_budget = int(budget_match.group(1)) if budget_match else 3
+    
+    # Split into individual legendary actions
+    # Actions are typically separated by double newlines or asterisks
+    action_blocks = re.split(r'\n\s*\n|\n\*\s*', text)
+    
+    legendary_actions = []
+    conditions_found = []
+    
+    condition_keywords = [
+        'poisoned', 'blinded', 'charmed', 'deafened', 'frightened',
+        'incapacitated', 'paralyzed', 'petrified', 'prone', 'restrained', 'stunned'
+    ]
+    
+    for block in action_blocks:
+        if not block.strip():
+            continue
+        
+        # Skip the preamble text
+        if 'can take' in block.lower() or 'only one legendary action' in block.lower():
+            continue
+        
+        # Parse action cost (default 1)
+        cost_match = re.search(r'\(costs?\s+(\d+)\s+actions?\)', block, re.IGNORECASE)
+        cost = int(cost_match.group(1)) if cost_match else 1
+        
+        # Parse damage from dice notation
+        damage = 0
+        # Find all damage dice patterns (e.g., "17 (2d6 + 10)" or "2d8+5")
+        damage_matches = re.findall(r'(\d+)\s*\((\d+d\d+(?:\s*[+\-]\s*\d+)?)\)', block)
+        if damage_matches:
+            # Use the average from the first match (number before parentheses)
+            damage = int(damage_matches[0][0])
+        else:
+            # Try to find bare dice notation
+            dice_matches = re.findall(r'(\d+)d(\d+)(?:\s*[+\-]\s*(\d+))?', block)
+            if dice_matches:
+                for match in dice_matches:
+                    num_dice = int(match[0])
+                    die_size = int(match[1])
+                    modifier = int(match[2]) if match[2] else 0
+                    damage += num_dice * (die_size + 1) / 2 + modifier
+        
+        # Parse conditions inflicted
+        action_conditions = []
+        for condition in condition_keywords:
+            if condition in block.lower():
+                action_conditions.append(condition)
+        
+        if damage > 0 or action_conditions:
+            legendary_actions.append({
+                'cost': cost,
+                'damage': damage,
+                'conditions': action_conditions
+            })
+            conditions_found.extend(action_conditions)
+    
+    # Knapsack-style optimization: find damage-maximizing combination
+    # dp[i] = (max_damage, actions_used)
+    dp = {0: (0, [])}
+    
+    for action in legendary_actions:
+        cost = action['cost']
+        damage = action['damage']
+        
+        # Update dp table
+        new_entries = {}
+        for budget_used, (current_damage, actions_used) in dp.items():
+            new_budget = budget_used + cost
+            if new_budget <= action_budget:
+                new_damage = current_damage + damage
+                if new_budget not in dp or new_damage > dp[new_budget][0]:
+                    new_entries[new_budget] = (new_damage, actions_used + [action])
+        
+        dp.update(new_entries)
+    
+    # Find the maximum damage achievable within budget
+    max_damage = 0
+    for budget_used in range(action_budget + 1):
+        if budget_used in dp:
+            max_damage = max(max_damage, dp[budget_used][0])
+    
+    return max_damage, list(set(conditions_found))
+
+df['estimated_dpr'] = df['Actions'].apply(parse_dpr_from_json)
+
+# Parse legendary actions for DPR and conditions
+legendary_results = df['Legendary_Actions'].apply(parse_legendary_actions_dpr)
+df['legendary_dpr'] = legendary_results.apply(lambda x: x[0])
+df['legendary_conditions'] = legendary_results.apply(lambda x: x[1])
+
+# Calculate total DPR (regular actions + legendary actions)
+df['total_dpr'] = df['estimated_dpr'] + df['legendary_dpr']
+
+# Special traits
+df['has_legendary_resistance'] = combined_abilities.str.contains('legendary resistance', case=False, na=False).astype(int)
+df['has_magic_resistance'] = combined_abilities.str.contains('magic resistance', case=False, na=False).astype(int)
+df['has_regeneration'] = combined_abilities.str.contains('regeneration', case=False, na=False).astype(int)
+
+# Spellcasting
+def parse_spellcasting(text_str):
+    if pd.isna(text_str):
+        return 0, 0
+    text = str(text_str).lower()
+    if 'spellcasting' not in text and 'innate spellcasting' not in text:
+        return 0, 0
+    has_spellcasting = 1
+    level_match = re.search(r'(\d+)(?:st|nd|rd|th)[-\s]level\s+spellcaster', text)
+    if level_match:
+        return has_spellcasting, int(level_match.group(1))
+    return has_spellcasting, 0
+
+df[['has_spellcasting', 'spellcaster_level']] = df['Traits'].apply(
+    lambda x: pd.Series(parse_spellcasting(x))
+)
+
+# Size ordinal
+size_map = {'Tiny': 0, 'Small': 1, 'Medium': 2, 'Large': 3, 'Huge': 4, 'Gargantuan': 5}
+df['size_ordinal'] = df['Size'].map(size_map).fillna(2)
+
+# Grapple
+df['has_grapple'] = combined_abilities.str.contains('grapple', case=False, na=False).astype(int)
+
+print("✅ Special abilities parsed")
