@@ -49,6 +49,7 @@ from .parsers import (
     parse_hp,
     parse_hp_avg,
     parse_bonus,
+    adjust_hp_baseline,
     parse_ac,
     parse_speed,
     SIZE_ORDINAL_MAP,

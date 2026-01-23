@@ -44,6 +44,12 @@ def parse_hp_avg(hp_str):
     match = re.match(r'(\d+)', str(hp_str))
     return int(match.group(1)) if match else 0
 
+def adjust_hp_baseline(row):
+    """Adjust HP baselines: +50% for CR <= 1, +20% for CR >= 2"""
+    if row['cr_numeric'] <= 1.0:
+        return row['hp_baseline'] * 1.5
+    else:
+        return row['hp_baseline'] * 1.2
 
 def parse_bonus(bonus_str):
     """Parse attack bonus - handles both numeric (3) and '+3' format."""
