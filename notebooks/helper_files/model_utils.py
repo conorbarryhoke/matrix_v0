@@ -7,6 +7,9 @@ evaluating predictions, and investigating individual creature predictions.
 
 import numpy as np
 import pandas as pd
+import os
+
+from datetime import datetime
 from scipy.optimize import minimize, Bounds
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
@@ -274,3 +277,83 @@ def load_model(filepath):
     import pickle
     with open(filepath, 'rb') as f:
         return pickle.load(f)
+
+
+# =============================================================================
+# 📊 MODEL CHANGE TRACKING
+# =============================================================================
+# This cell logs model performance after each run to track the impact of changes
+
+import os
+from datetime import datetime
+
+def log_model_performance(change_summary, results, in_nb_dir):
+    """
+    Log model performance to a CSV file for tracking changes over time.
+    
+    Parameters:
+    - change_summary: str, brief description of changes made
+    - r2_scores: dict with keys 'cr1', 'cr2', 'cr3', 'cr4', 'cr5' containing R² values
+    """
+    if change_summary.lower() == 'skip':
+        print("⚠️  Skipping model performance logging as per user request.")
+        return None
+    
+    if in_nb_dir:
+        log_file = 'model_change_log.csv'
+    else:
+        log_file = './notebooks/model_change_log.csv'
+    # Use the same R² values calculated during training (full HP prediction, not just residuals)
+    # These test_r2_crX variables are calculated in the training cells using:
+    #   R² = 1 - SS_res/SS_tot where predictions = hp_after_phase2 + residual_prediction
+    r2_scores = {
+    'cr1': results['cr1']['test_r2'],
+    'cr2': results['cr2']['test_r2'],
+    'cr3': results['cr3']['test_r2'],
+    'cr4': results['cr4']['test_r2'],
+    'cr5': results['cr5']['test_r2'],
+    }
+
+    # Check if file exists to determine if we need headers
+    file_exists = os.path.exists(log_file)
+    
+    # Determine save number
+    if file_exists:
+        existing_df = pd.read_csv(log_file)
+        save_number = len(existing_df) + 1
+    else:
+        save_number = 1
+    
+    # Create new row
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    new_row = {
+        'Save': save_number,
+        'Timestamp': timestamp,
+        'R2_CR_lt_1': r2_scores.get('cr1', None),
+        'R2_CR_1_4': r2_scores.get('cr2', None),
+        'R2_CR_5_10': r2_scores.get('cr3', None),
+        'R2_CR_11_16': r2_scores.get('cr4', None),
+        'R2_CR_gt_16': r2_scores.get('cr5', None),
+        'Changes': change_summary
+    }
+    
+    # Append to CSV
+    new_df = pd.DataFrame([new_row])
+    if file_exists:
+        new_df.to_csv(log_file, mode='a', header=False, index=False)
+    else:
+        new_df.to_csv(log_file, index=False)
+    
+    print(f"✅ Logged model performance (Save #{save_number})")
+    print(f"   Timestamp: {timestamp}")
+    print(f"   R² scores (full HP prediction):")
+    print(f"      CR<1:    {r2_scores.get('cr1', 'N/A'):.4f}")
+    print(f"      CR1-4:   {r2_scores.get('cr2', 'N/A'):.4f}")
+    print(f"      CR5-10:  {r2_scores.get('cr3', 'N/A'):.4f}")
+    print(f"      CR11-16: {r2_scores.get('cr4', 'N/A'):.4f}")
+    print(f"      CR>16:   {r2_scores.get('cr5', 'N/A'):.4f}")
+    print(f"   Changes: {change_summary}")
+    
+    return save_number
+
+# Example usage: log_model_performance(CHANGE_SUMMARY, results, IN_NB_DIR)

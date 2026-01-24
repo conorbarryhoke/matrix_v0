@@ -90,6 +90,7 @@ from .model_utils import (
     evaluate_model,
     save_model,
     load_model,
+    log_model_performance,
 )
 
 from .model_analysis import (
