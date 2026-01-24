@@ -386,11 +386,13 @@ def summarize_model_performance(results):
     print("=" * 80)
 
 
+
 # =============================================================================
 # MODEL PERSISTENCE
 # =============================================================================
 
-def save_model(model, scaler, feature_names, filepath):
+def save_model(
+        model, scaler, feature_names, train_count, test_r2, test_mae, filepath):
     """
     Save a model, scaler, and feature names to a pickle file.
 
@@ -406,6 +408,9 @@ def save_model(model, scaler, feature_names, filepath):
             'model': model,
             'scaler': scaler,
             'feature_names': feature_names,
+            'train_count': train_count,
+            'test_r2': test_r2,
+            'test_mae': test_mae,
         }, f)
 
 
