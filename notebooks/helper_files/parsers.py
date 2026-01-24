@@ -756,3 +756,194 @@ def extract_family(name):
         return 'aberration'
 
     return name  # Use the name itself as the family
+
+
+# =============================================================================
+# SPELL PARSERS
+# =============================================================================
+
+# Creatures per square foot baseline (3 creatures in 500 sq ft = 0.006)
+CREATURES_PER_SQ_FT = 3 / 500
+
+
+def estimate_aoe_targets(aoe_type, size_ft, width_ft=5):
+    """
+    Estimate number of creatures affected by an AoE spell.
+
+    Args:
+        aoe_type: Type of AoE ('radius', 'cone', 'line', 'cube', 'sphere', etc.)
+        size_ft: Primary dimension in feet
+        width_ft: Width for line spells (default 5ft)
+
+    Returns:
+        float: Estimated number of targets
+    """
+    import math
+
+    if aoe_type in ('radius', 'sphere'):
+        # Circle area: π × r²
+        area = math.pi * (size_ft ** 2)
+    elif aoe_type == 'cone':
+        # Cone approximated as triangle: 0.5 × length × width_at_end
+        # In D&D, cone width at end equals length
+        area = 0.5 * size_ft * size_ft
+    elif aoe_type == 'line':
+        # Rectangle: length × width
+        area = size_ft * width_ft
+    elif aoe_type in ('cube', 'square'):
+        # Square: side²
+        area = size_ft ** 2
+    elif aoe_type == 'cylinder':
+        # Circle area (top-down view): π × r²
+        area = math.pi * (size_ft ** 2)
+    else:
+        # Unknown type, estimate conservatively
+        area = size_ft * 10  # Assume 10ft width
+
+    estimated = area * CREATURES_PER_SQ_FT
+    # Round to 1 decimal, minimum 1 target for any AoE
+    return max(1, round(estimated, 1))
+
+
+def parse_spell_targets(description):
+    """
+    Parse spell description to extract target information.
+
+    Returns:
+        dict with keys:
+            - target_count: int or None (None for AoE)
+            - is_aoe: bool
+            - aoe_type: str ('cone', 'line', 'radius', 'cube', 'sphere', '')
+            - aoe_size: str (e.g., '20-foot', '60-foot')
+            - estimated_targets: float (for AoE, based on area)
+    """
+    if pd.isna(description):
+        return {
+            'target_count': None,
+            'is_aoe': False,
+            'aoe_type': '',
+            'aoe_size': '',
+            'estimated_targets': None
+        }
+
+    desc = str(description).lower()
+
+    result = {
+        'target_count': None,
+        'is_aoe': False,
+        'aoe_type': '',
+        'aoe_size': '',
+        'estimated_targets': None
+    }
+
+    # Check for AoE patterns first
+    # Pattern for line with explicit dimensions (e.g., "100 feet long and 5 feet wide")
+    line_match = re.search(r'(\d+)[- ]feet? long.*?(\d+)[- ]feet? wide', desc)
+    if line_match:
+        length = int(line_match.group(1))
+        width = int(line_match.group(2))
+        result['is_aoe'] = True
+        result['aoe_type'] = 'line'
+        result['aoe_size'] = f"{length}-foot"
+        result['estimated_targets'] = estimate_aoe_targets('line', length, width)
+        return result
+
+    aoe_patterns = [
+        (r'(\d+)-foot[- ]radius', 'radius'),
+        (r'(\d+)-foot[- ]cone', 'cone'),
+        (r'line[- ]of[- ](\d+)[- ]feet', 'line'),
+        (r'(\d+)-foot[- ]line', 'line'),
+        (r'(\d+)-foot[- ]cube', 'cube'),
+        (r'(\d+)-foot[- ]sphere', 'sphere'),
+        (r'(\d+)-foot[- ]square', 'square'),
+        (r'(\d+)-foot[- ]cylinder', 'cylinder'),
+    ]
+
+    for pattern, aoe_type in aoe_patterns:
+        match = re.search(pattern, desc)
+        if match:
+            size = int(match.group(1))
+            result['is_aoe'] = True
+            result['aoe_type'] = aoe_type
+            result['aoe_size'] = f"{size}-foot"
+            result['estimated_targets'] = estimate_aoe_targets(aoe_type, size)
+            return result
+
+    # Check for "each creature" patterns (also indicates AoE without explicit shape)
+    if re.search(r'each creature (?:within|in|of your choice within)', desc):
+        result['is_aoe'] = True
+        result['aoe_type'] = 'area'
+        result['estimated_targets'] = 3  # Default estimate for undefined AoE
+        return result
+
+    # Check for specific target counts
+    # Patterns like "three darts", "three rays", "three bolts"
+    number_words = {
+        'one': 1, 'a ': 1, 'an ': 1,
+        'two': 2, 'three': 3, 'four': 4, 'five': 5,
+        'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10
+    }
+
+    # Look for "X darts/rays/bolts/beams/missiles" (allowing adjectives between)
+    projectile_pattern = r'(one|two|three|four|five|six|seven|eight|nine|ten|\d+)\s+(?:\w+\s+)?(darts?|rays?|bolts?|beams?|missiles?|streaks?|projectiles?|arrows?)'
+    match = re.search(projectile_pattern, desc)
+    if match:
+        count_str = match.group(1)
+        if count_str in number_words:
+            result['target_count'] = number_words[count_str]
+        else:
+            try:
+                result['target_count'] = int(count_str)
+            except ValueError:
+                pass
+        return result
+
+    # Look for "up to X creatures/targets"
+    up_to_pattern = r'up to (one|two|three|four|five|six|seven|eight|nine|ten|\d+)\s+(?:creature|target|humanoid|willing creature)'
+    match = re.search(up_to_pattern, desc)
+    if match:
+        count_str = match.group(1)
+        if count_str in number_words:
+            result['target_count'] = number_words[count_str]
+        else:
+            try:
+                result['target_count'] = int(count_str)
+            except ValueError:
+                pass
+        return result
+
+    # Look for "X creatures/targets"
+    creatures_pattern = r'(one|two|three|four|five|six|seven|eight|nine|ten|\d+)\s+(?:creature|target|humanoid|willing creature)s?(?:\s+(?:of your choice|you can see|within range))?'
+    match = re.search(creatures_pattern, desc)
+    if match:
+        count_str = match.group(1)
+        if count_str in number_words:
+            result['target_count'] = number_words[count_str]
+        else:
+            try:
+                result['target_count'] = int(count_str)
+            except ValueError:
+                pass
+        return result
+
+    # Single target patterns
+    single_target_patterns = [
+        r'a creature (?:you touch|within range|of your choice|you can see)',
+        r'one creature',
+        r'the target',
+        r'choose a (?:creature|humanoid|target)',
+        r'target a creature',
+        r'creature you touch',
+    ]
+
+    for pattern in single_target_patterns:
+        if re.search(pattern, desc):
+            result['target_count'] = 1
+            return result
+
+    # Self-targeting spells
+    if re.search(r'^(?:you |your )', desc) or 'range: self' in desc:
+        result['target_count'] = 1
+        return result
+
+    return result

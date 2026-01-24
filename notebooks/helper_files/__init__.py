@@ -74,6 +74,7 @@ from .parsers import (
     get_resistance_multiplier,
     get_immunity_multiplier,
     extract_family,
+    parse_spell_targets,
 )
 
 from .model_utils import (
