@@ -88,10 +88,16 @@ from .model_utils import (
     calculate_mae,
     calculate_mape,
     evaluate_model,
-    investigate_creature,
-    summarize_model_performance,
     save_model,
     load_model,
+)
+
+from .model_analysis import (
+    investigate_creature,
+    summarize_model_performance,
+    analyze_predictions_by_cr,
+    plot_performance_scatter,
+    plot_error_hist
 )
 
 __version__ = '1.0.0'
