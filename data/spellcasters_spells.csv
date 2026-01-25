@@ -1,0 +1,305 @@
+Name,spell
+Acolyte,light
+Acolyte,sacred flame
+Acolyte,thaumaturgy
+Acolyte,bless
+Acolyte,cure wounds
+Acolyte,sanctuary
+Androsphinx,sacred flame
+Androsphinx,spare the dying
+Androsphinx,thaumaturgy
+Androsphinx,command
+Androsphinx,detect evil and good
+Androsphinx,detect magic
+Androsphinx,lesser restoration
+Androsphinx,zone of truth
+Androsphinx,dispel magic
+Androsphinx,tongues
+Androsphinx,banishment
+Androsphinx,freedom of movement
+Androsphinx,flame strike
+Androsphinx,greater restoration
+Androsphinx,heroes' feast
+Archmage,fire bolt
+Archmage,light
+Archmage,mage hand
+Archmage,prestidigitation
+Archmage,shocking grasp
+Archmage,detect magic
+Archmage,identify
+Archmage,mage armor
+Archmage,magic missile
+Archmage,detect thoughts
+Archmage,mirror image
+Archmage,misty step
+Archmage,counterspell
+Archmage,fly
+Archmage,lightning bolt
+Archmage,banishment
+Archmage,fire shield
+Archmage,stoneskin
+Archmage,cone of cold
+Archmage,scrying
+Archmage,wall of force
+Archmage,globe of invulnerability
+Archmage,teleport
+Archmage,mind blank
+Archmage,time stop
+Cloud Giant,detect magic
+Cloud Giant,fog cloud
+Cloud Giant,light
+Cloud Giant,feather fall
+Cloud Giant,fly
+Cloud Giant,misty step
+Cloud Giant,telekinesis
+Cloud Giant,control weather
+Cloud Giant,gaseous form
+Couatl,detect evil and good
+Couatl,detect magic
+Couatl,detect thoughts
+Couatl,bless
+Couatl,create food and water
+Couatl,cure wounds
+Couatl,lesser restoration
+Couatl,protection from poison
+Couatl,sanctuary
+Couatl,shield
+Couatl,dream
+Couatl,greater restoration
+Couatl,scrying
+Cult Fanatic,light
+Cult Fanatic,sacred flame
+Cult Fanatic,thaumaturgy
+Cult Fanatic,command
+Cult Fanatic,inflict wounds
+Cult Fanatic,shield of faith
+Cult Fanatic,hold person
+Cult Fanatic,spiritual weapon
+Deep Gnome (Svirfneblin),nondetection
+Deep Gnome (Svirfneblin),blindness/deafness
+Deep Gnome (Svirfneblin),blur
+Deep Gnome (Svirfneblin),disguise self
+Deva,detect evil and good
+Deva,commune
+Deva,raise dead
+Djinni,at will: detect evil and good
+Djinni,detect magic
+Djinni,thunderwave
+Djinni,tongues
+Djinni,wind walk
+Djinni,creation
+Djinni,gaseous form
+Djinni,invisibility
+Djinni,major image
+Djinni,plane shift
+Drider,dancing lights
+Drider,darkness
+Drider,faerie fire
+Drow,dancing lights
+Drow,darkness
+Drow,faerie fire
+Druid,druidcraft
+Druid,produce flame
+Druid,shillelagh
+Druid,entangle
+Druid,longstrider
+Druid,speak with animals
+Druid,thunderwave
+Druid,animal messenger
+Druid,barkskin
+Dryad,druidcraft
+Dryad,entangle
+Dryad,goodberry
+Dryad,barkskin
+Dryad,pass without trace
+Dryad,shillelagh
+Efreeti,detect magic
+Efreeti,enlarge/reduce
+Efreeti,tongues
+Efreeti,gaseous form
+Efreeti,invisibility
+Efreeti,major image
+Efreeti,plane shift
+Efreeti,wall of fire
+Glabrezu,darkness
+Glabrezu,detect magic
+Glabrezu,dispel magic
+Glabrezu,confusion
+Glabrezu,fly
+Glabrezu,power word: stun
+Green Hag,dancing lights
+Green Hag,minor illusion
+Green Hag,vicious mockery
+Guardian Naga,mending
+Guardian Naga,sacred flame
+Guardian Naga,thaumaturgy
+Guardian Naga,command
+Guardian Naga,cure wounds
+Guardian Naga,shield of faith
+Guardian Naga,calm emotions
+Guardian Naga,hold person
+Guardian Naga,bestow curse
+Guardian Naga,clairvoyance
+Guardian Naga,banishment
+Guardian Naga,freedom of movement
+Guardian Naga,flame strike
+Guardian Naga,geas
+Guardian Naga,true seeing
+Gynosphinx,mage hand
+Gynosphinx,minor illusion
+Gynosphinx,prestidigitation
+Gynosphinx,detect magic
+Gynosphinx,identify
+Gynosphinx,shield
+Gynosphinx,darkness
+Gynosphinx,locate object
+Gynosphinx,suggestion
+Gynosphinx,dispel magic
+Gynosphinx,remove curse
+Gynosphinx,tongues
+Gynosphinx,banishment
+Gynosphinx,greater invisibility
+Gynosphinx,legend lore
+Lamia,disguise self
+Lamia,major image
+Lamia,charm person
+Lamia,mirror image
+Lamia,scrying
+Lamia,suggestion
+Lamia,geas
+Lich,mage hand
+Lich,prestidigitation
+Lich,ray of frost
+Lich,detect magic
+Lich,magic missile
+Lich,shield
+Lich,thunderwave
+Lich,detect thoughts
+Lich,invisibility
+Lich,acid arrow
+Lich,mirror image
+Lich,animate dead
+Lich,counterspell
+Lich,dispel magic
+Lich,fireball
+Lich,blight
+Lich,dimension door
+Lich,cloudkill
+Lich,scrying
+Lich,disintegrate
+Lich,globe of invulnerability
+Lich,finger of death
+Lich,plane shift
+Lich,dominate monster
+Lich,power word: stun
+Lich,power word: kill
+Mage,fire bolt
+Mage,light
+Mage,mage hand
+Mage,prestidigitation
+Mage,detect magic
+Mage,mage armor
+Mage,magic missile
+Mage,shield
+Mage,misty step
+Mage,suggestion
+Mage,counterspell
+Mage,fireball
+Mage,fly
+Mage,greater invisibility
+Mage,ice storm
+Mage,cone of cold
+Mummy Lord,sacred flame
+Mummy Lord,thaumaturgy
+Mummy Lord,command
+Mummy Lord,guiding bolt
+Mummy Lord,shield of faith
+Mummy Lord,hold person
+Mummy Lord,silence
+Mummy Lord,spiritual weapon
+Mummy Lord,animate dead
+Mummy Lord,dispel magic
+Mummy Lord,divination
+Mummy Lord,guardian of faith
+Mummy Lord,contagion
+Mummy Lord,insect plague
+Mummy Lord,harm
+Night Hag,detect magic
+Night Hag,magic missile
+Night Hag,plane shift
+Night Hag,ray of enfeeblement
+Night Hag,sleep
+Oni,darkness
+Oni,invisibility
+Oni,charm person
+Oni,cone of cold
+Oni,gaseous form
+Oni,sleep
+Pit Fiend,detect magic
+Pit Fiend,fireball
+Pit Fiend,hold monster
+Pit Fiend,wall of fire
+Planetar,detect evil and good
+Planetar,invisibility
+Planetar,blade barrier
+Planetar,dispel evil and good
+Planetar,flame strike
+Planetar,raise dead
+Planetar,commune
+Planetar,control weather
+Planetar,insect plague
+Priest,light
+Priest,sacred flame
+Priest,thaumaturgy
+Priest,cure wounds
+Priest,guiding bolt
+Priest,sanctuary
+Priest,lesser restoration
+Priest,spiritual weapon
+Priest,dispel magic
+Priest,spirit guardians
+Rakshasa,detect thoughts
+Rakshasa,disguise self
+Rakshasa,mage hand
+Rakshasa,minor illusion
+Rakshasa,charm person
+Rakshasa,detect magic
+Rakshasa,invisibility
+Rakshasa,major image
+Rakshasa,suggestion
+Rakshasa,dominate person
+Rakshasa,fly
+Rakshasa,plane shift
+Rakshasa,true seeing
+Solar,detect evil and good
+Solar,invisibility
+Solar,blade barrier
+Solar,dispel evil and good
+Solar,resurrection
+Solar,commune
+Solar,control weather
+Spirit Naga,mage hand
+Spirit Naga,minor illusion
+Spirit Naga,ray of frost
+Spirit Naga,charm person
+Spirit Naga,detect magic
+Spirit Naga,sleep
+Spirit Naga,detect thoughts
+Spirit Naga,hold person
+Spirit Naga,lightning bolt
+Spirit Naga,water breathing
+Spirit Naga,blight
+Spirit Naga,dimension door
+Spirit Naga,dominate person
+Storm Giant,detect magic
+Storm Giant,feather fall
+Storm Giant,levitate
+Storm Giant,light
+Storm Giant,control weather
+Storm Giant,water breathing
+Unicorn,detect evil and good
+Unicorn,druidcraft
+Unicorn,pass without trace
+Unicorn,calm emotions
+Unicorn,dispel evil and good
+Unicorn,entangle
