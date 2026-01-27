@@ -7,6 +7,20 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 from .feature_config import CR_TIERS
+from matplotlib.patches import Patch
+
+# =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
+
+def _is_binary_feature(analysis_dfs, feature_name):
+    """Check if feature has only 0/1 or True/False values across all tiers."""
+    all_values = []
+    for tier_df in analysis_dfs.values():
+        if feature_name in tier_df.columns:
+            all_values.extend(tier_df[feature_name].dropna().tolist())
+    unique_vals = set(all_values)
+    return unique_vals <= {0, 1, True, False, 0.0, 1.0}
 
 # =============================================================================
 # INVESTIGATION HELPERS
@@ -162,18 +176,18 @@ def summarize_model_performance(results):
 
 def analyze_predictions(df_tier, tier_name):
     """Analyze prediction accuracy for a tier."""
-    # Create analysis dataframe
+    # Create analysis dataframe - start with copy of all columns for highlight support
+    analysis = df_tier.copy()
+
+    # Add/rename standard analysis columns
     y_actual = df_tier['actual_hp'].values
     y_pred = df_tier['predicted_hp'].values
-    analysis = pd.DataFrame({
-        'Name': df_tier['Name'].values,
-        'CR': df_tier['cr_numeric'].values,
-        'Actual_HP': y_actual,
-        'Predicted_HP': y_pred,
-        'Error': y_actual - y_pred,
-        'Abs_Error': np.abs(y_actual - y_pred),
-        'Pct_Error': ((y_actual - y_pred) / y_actual) * 100
-    })
+    analysis['Actual_HP'] = y_actual
+    analysis['Predicted_HP'] = y_pred
+    analysis['CR'] = df_tier['cr_numeric'].values
+    analysis['Error'] = y_actual - y_pred
+    analysis['Abs_Error'] = np.abs(y_actual - y_pred)
+    analysis['Pct_Error'] = ((y_actual - y_pred) / y_actual) * 100
     
     # Sort by absolute error
     analysis = analysis.sort_values('Abs_Error')
@@ -212,9 +226,24 @@ def analyze_predictions_by_cr(df):
 # =============================================================================
 
 # Helper function for scatter plots
-def plot_performance_cr_scatter(ax, analysis, title):
-    ax.scatter(analysis['Actual_HP'], analysis['Predicted_HP'],
-               alpha=0.6, s=50, color='blue')
+def plot_performance_cr_scatter(ax, analysis, title, highlight_feature=None, is_binary=None, vmin=None, vmax=None):
+    scatter = None
+    if highlight_feature is None or highlight_feature not in analysis.columns:
+        # Default behavior - all blue
+        ax.scatter(analysis['Actual_HP'], analysis['Predicted_HP'],
+                   alpha=0.6, s=50, color='blue')
+    elif is_binary:
+        # Binary coloring - blue for 0/False, orange for 1/True
+        colors = ['blue' if v in (0, False, 0.0) else 'orange'
+                  for v in analysis[highlight_feature]]
+        ax.scatter(analysis['Actual_HP'], analysis['Predicted_HP'],
+                   alpha=0.6, s=50, c=colors)
+    else:
+        # Gradient coloring
+        scatter = ax.scatter(analysis['Actual_HP'], analysis['Predicted_HP'],
+                   alpha=0.6, s=50, c=analysis[highlight_feature],
+                   cmap='viridis', vmin=vmin, vmax=vmax)
+
     max_val = max(analysis['Actual_HP'].max(), analysis['Predicted_HP'].max())
     ax.plot([0, max_val], [0, max_val], 'k--', alpha=0.5, label='Perfect Prediction')
     ax.set_xlabel('Actual HP')
@@ -222,13 +251,28 @@ def plot_performance_cr_scatter(ax, analysis, title):
     ax.set_title(f'{title}\nMAE: {analysis["Abs_Error"].mean():.2f} HP ({len(analysis)} creatures)')
     ax.legend(loc='upper left', fontsize=8)
     ax.grid(True, alpha=0.3)
+    return scatter
 
-def plot_performance_scatter(analysis_dfs):
+def plot_performance_scatter(analysis_dfs, highlight_feature=None):
     # Create visualizations - 5 CR buckets
 
     print("\n" + "=" * 80)
     print("📊 VISUALIZATION: Actual vs Predicted HP (5 CR Buckets)")
     print("=" * 80)
+
+    # Detect if binary and calculate vmin/vmax for gradient
+    is_binary = None
+    vmin, vmax = None, None
+    if highlight_feature is not None:
+        is_binary = _is_binary_feature(analysis_dfs, highlight_feature)
+        if not is_binary:
+            # Calculate global vmin/vmax for consistent gradient across tiers
+            all_vals = []
+            for tier_df in analysis_dfs.values():
+                if highlight_feature in tier_df.columns:
+                    all_vals.extend(tier_df[highlight_feature].dropna().tolist())
+            if all_vals:
+                vmin, vmax = min(all_vals), max(all_vals)
 
     analysis_cr1 = analysis_dfs['cr1']
     analysis_cr2 = analysis_dfs['cr2']
@@ -239,14 +283,25 @@ def plot_performance_scatter(analysis_dfs):
     fig, axes = plt.subplots(2, 3, figsize=(18, 10))
     axes = axes.flatten()
 
-    plot_performance_cr_scatter(axes[0], analysis_cr1, 'CR < 1')
-    plot_performance_cr_scatter(axes[1], analysis_cr2, 'CR 1-4')
-    plot_performance_cr_scatter(axes[2], analysis_cr3, 'CR 5-10')
-    plot_performance_cr_scatter(axes[3], analysis_cr4, 'CR 11-16')
-    plot_performance_cr_scatter(axes[4], analysis_cr5, 'CR > 16')
+    plot_performance_cr_scatter(axes[0], analysis_cr1, 'CR < 1', highlight_feature, is_binary, vmin, vmax)
+    plot_performance_cr_scatter(axes[1], analysis_cr2, 'CR 1-4', highlight_feature, is_binary, vmin, vmax)
+    plot_performance_cr_scatter(axes[2], analysis_cr3, 'CR 5-10', highlight_feature, is_binary, vmin, vmax)
+    plot_performance_cr_scatter(axes[3], analysis_cr4, 'CR 11-16', highlight_feature, is_binary, vmin, vmax)
+    scatter = plot_performance_cr_scatter(axes[4], analysis_cr5, 'CR > 16', highlight_feature, is_binary, vmin, vmax)
 
-    # Hide the 6th subplot (empty)
-    axes[5].axis('off')
+    # Use 6th subplot for legend/colorbar or hide it
+    if highlight_feature and not is_binary and scatter is not None:
+        # Add colorbar for gradient
+        plt.colorbar(scatter, ax=axes[5], label=highlight_feature)
+        axes[5].axis('off')
+    elif highlight_feature and is_binary:
+        # Add legend for binary
+        legend_elements = [Patch(facecolor='blue', label=f'{highlight_feature}=0'),
+                          Patch(facecolor='orange', label=f'{highlight_feature}=1')]
+        axes[5].legend(handles=legend_elements, loc='center', fontsize=12)
+        axes[5].axis('off')
+    else:
+        axes[5].axis('off')
 
     plt.tight_layout()
     plt.show()
