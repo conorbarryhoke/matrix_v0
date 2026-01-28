@@ -113,6 +113,7 @@ Dryad,goodberry
 Dryad,barkskin
 Dryad,pass without trace
 Dryad,shillelagh
+Dust Mephit,sleep
 Efreeti,detect magic
 Efreeti,enlarge/reduce
 Efreeti,tongues
@@ -160,6 +161,7 @@ Gynosphinx,tongues
 Gynosphinx,banishment
 Gynosphinx,greater invisibility
 Gynosphinx,legend lore
+Ice Mephit,fog cloud
 Lamia,disguise self
 Lamia,major image
 Lamia,charm person
@@ -209,6 +211,7 @@ Mage,fly
 Mage,greater invisibility
 Mage,ice storm
 Mage,cone of cold
+Magma Mephit,heat metal
 Mummy Lord,sacred flame
 Mummy Lord,thaumaturgy
 Mummy Lord,command
@@ -291,6 +294,7 @@ Spirit Naga,water breathing
 Spirit Naga,blight
 Spirit Naga,dimension door
 Spirit Naga,dominate person
+Steam Mephit,blur
 Storm Giant,detect magic
 Storm Giant,feather fall
 Storm Giant,levitate

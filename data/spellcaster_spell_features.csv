@@ -12,14 +12,17 @@ Drider,0.0,False,False,False,False,False,False,False,False,False,False,False,Fal
 Drow,0.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,False,3.0
 Druid,12.6,False,False,False,False,False,False,False,False,False,True,False,False,0.0,0.0,0.0,False,False,3.0
 Dryad,0.0,False,False,False,False,False,False,False,False,False,True,False,False,0.0,0.0,0.0,False,False,3.0
+Dust Mephit,22.5,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,False,False,1.0
 Efreeti,67.5,False,False,False,False,False,False,False,False,False,False,False,True,0.0,0.0,0.0,False,True,13.0
 Glabrezu,0.0,False,False,False,False,False,False,False,False,False,False,True,True,0.0,0.0,0.0,False,False,15.0
 Green Hag,2.5,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,True,0.0
 Guardian Naga,27.5,False,True,False,True,False,True,False,False,False,True,False,False,2.0,0.0,0.0,True,True,11.0
 Gynosphinx,0.0,False,True,False,False,False,False,False,False,False,False,False,False,5.0,0.0,0.0,False,False,9.0
+Ice Mephit,0.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,False,False,1.0
 Lamia,27.5,False,True,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,False,False,9.0
 Lich,112.0,False,True,False,False,False,False,False,False,False,False,True,False,5.0,0.0,0.0,False,False,17.0
 Mage,144.0,False,True,False,False,False,False,False,False,False,False,False,True,5.0,0.0,0.0,False,False,9.0
+Magma Mephit,9.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,True,3.0
 Mummy Lord,88.0,False,False,False,False,False,True,False,False,False,False,False,False,2.0,0.0,0.0,True,True,11.0
 Night Hag,22.5,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,False,False,13.0
 Oni,144.0,False,False,False,False,False,False,False,False,False,False,False,True,0.0,0.0,0.0,False,False,9.0
@@ -29,5 +32,6 @@ Priest,14.0,False,False,False,False,False,False,False,False,False,False,False,Fa
 Rakshasa,0.0,False,True,False,False,False,False,False,False,False,False,False,True,0.0,0.0,0.0,False,False,13.0
 Solar,33.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,True,15.0
 Spirit Naga,84.0,False,True,False,False,False,True,False,False,False,False,False,False,0.0,0.0,0.0,False,False,9.0
+Steam Mephit,0.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,True,3.0
 Storm Giant,0.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,False,False,15.0
 Unicorn,0.0,False,True,False,True,False,False,False,False,False,True,False,False,0.0,0.0,0.0,True,True,9.0
