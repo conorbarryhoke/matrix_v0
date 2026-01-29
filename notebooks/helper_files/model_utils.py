@@ -295,14 +295,8 @@ def log_model_performance(change_summary, results, in_nb_dir):
     - change_summary: str, brief description of changes made
     - r2_scores: dict with keys 'cr1', 'cr2', 'cr3', 'cr4', 'cr5' containing R² values
     """
-    if change_summary.lower() == 'skip':
-        print("⚠️  Skipping model performance logging as per user request.")
-        return None
-    
-    if in_nb_dir:
-        log_file = 'model_change_log.csv'
-    else:
-        log_file = './notebooks/model_change_log.csv'
+
+
     # Use the same R² values calculated during training (full HP prediction, not just residuals)
     # These test_r2_crX variables are calculated in the training cells using:
     #   R² = 1 - SS_res/SS_tot where predictions = hp_after_phase2 + residual_prediction
@@ -313,6 +307,23 @@ def log_model_performance(change_summary, results, in_nb_dir):
     'cr4': results['cr4']['test_r2'],
     'cr5': results['cr5']['test_r2'],
     }
+
+    print(f"   R² scores (full HP prediction):")
+    print(f"      CR<1:    {r2_scores.get('cr1', 'N/A'):.4f}")
+    print(f"      CR1-4:   {r2_scores.get('cr2', 'N/A'):.4f}")
+    print(f"      CR5-10:  {r2_scores.get('cr3', 'N/A'):.4f}")
+    print(f"      CR11-16: {r2_scores.get('cr4', 'N/A'):.4f}")
+    print(f"      CR>16:   {r2_scores.get('cr5', 'N/A'):.4f}")
+
+    # Save if requested
+    if change_summary.lower() == 'skip':
+        print("⚠️  Skipping model performance logging as per user request.")
+        return None
+    
+    if in_nb_dir:
+        log_file = 'model_change_log.csv'
+    else:
+        log_file = './notebooks/model_change_log.csv'
 
     # Check if file exists to determine if we need headers
     file_exists = os.path.exists(log_file)
@@ -343,17 +354,11 @@ def log_model_performance(change_summary, results, in_nb_dir):
         new_df.to_csv(log_file, mode='a', header=False, index=False)
     else:
         new_df.to_csv(log_file, index=False)
-    
+
+    print(f"   Changes: {change_summary}")    
     print(f"✅ Logged model performance (Save #{save_number})")
     print(f"   Timestamp: {timestamp}")
-    print(f"   R² scores (full HP prediction):")
-    print(f"      CR<1:    {r2_scores.get('cr1', 'N/A'):.4f}")
-    print(f"      CR1-4:   {r2_scores.get('cr2', 'N/A'):.4f}")
-    print(f"      CR5-10:  {r2_scores.get('cr3', 'N/A'):.4f}")
-    print(f"      CR11-16: {r2_scores.get('cr4', 'N/A'):.4f}")
-    print(f"      CR>16:   {r2_scores.get('cr5', 'N/A'):.4f}")
-    print(f"   Changes: {change_summary}")
-    
+
     return save_number
 
 # Example usage: log_model_performance(CHANGE_SUMMARY, results, IN_NB_DIR)

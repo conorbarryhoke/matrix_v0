@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import seaborn as sns
-from .feature_config import CR_TIERS
+from .feature_config import CR_TIERS, PHASE2_FEATURES
 from matplotlib.patches import Patch
 
 # =============================================================================
@@ -63,41 +63,53 @@ def investigate_creature(creature_name, export_df, contributions_df):
     print(f"\nPHASE 1: CR BASELINE")
     print(f"  HP Baseline (CR {creature_contrib['CR']}):                          {creature_contrib['hp_baseline']:>8.0f}")
 
-    # Phase 1.5: Resistances/Immunities
-    print(f"\nPHASE 1.5: RESISTANCES & IMMUNITIES")
-    res_penalty = creature_contrib.get('phase1_5_resistance_penalty', 0)
-    imm_penalty = creature_contrib.get('phase1_5_immunity_penalty', 0)
-
-    if res_penalty != 0 or imm_penalty != 0:
-        print(f"  Resistance Penalty:                              {res_penalty:>8.0f}")
-        print(f"  Immunity Penalty:                                {imm_penalty:>8.0f}")
-        print(f"  Total Penalty:                                   {creature_contrib.get('phase1_5_total_penalty', 0):>8.0f}")
-    else:
-        print(f"  No resistances or immunities")
-    print(f"  HP after Phase 1.5:                              {creature_contrib['hp_after_phase1_5']:>8.0f}")
-
-    # Phase 2: Combat Stats
+    # Phase 2: Combat Stats (now applied BEFORE resistance/immunity)
     print(f"\nPHASE 2: COMBAT STATS")
-    combat_stats = [
-        ('AC Contribution', 'phase2_ac_contribution'),
-        ('Attack Bonus Contribution', 'phase2_attack_contribution'),
-        ('DPR Contribution', 'phase2_dpr_contribution'),
-        ('Save DC Contribution', 'phase2_save_dc_contribution'),
-        ('Flying Contribution', 'phase2_flying_contribution'),
-        ('Advantage Condition', 'phase2_advantage_contribution'),
-        ('Disadvantage Condition', 'phase2_disadvantage_contribution'),
-        ('Attackers Have Advantage', 'phase2_attackers_advantage_contribution'),
-        ('Inflicts Prone', 'phase2_prone_contribution'),
-    ]
 
-    for label, col in combat_stats:
-        val = creature_contrib.get(col, 0)
-        if val != 0:
-            print(f"  {label:<45} {val:>8.0f}")
+    # Map feature names to contribution column names
+    phase2_contrib_map = {
+        'ac_deviation': 'phase2_ac_contribution',
+        'attack_deviation': 'phase2_attack_contribution',
+        'dpr_deviation': 'phase2_dpr_contribution',
+        'save_dc_deviation': 'phase2_save_dc_contribution',
+        'has_flying': 'phase2_flying_contribution',
+        'has_advantage_condition': 'phase2_advantage_contribution',
+        'has_disadvantage_condition': 'phase2_disadvantage_contribution',
+        'has_attackers_advantage': 'phase2_attackers_advantage_contribution',
+        'inflicts_prone': 'phase2_prone_contribution',
+    }
+
+    for feature in PHASE2_FEATURES:
+        # Get raw feature value
+        feature_value = creature_contrib.get(feature, 0)
+
+        # Get HP contribution
+        contrib_col = phase2_contrib_map.get(feature, f'phase2_{feature}_contribution')
+        hp_impact = creature_contrib.get(contrib_col, 0)
+
+        try:
+            val_str = f"{float(feature_value):.1f}"
+        except:
+            val_str = str(feature_value)
+
+        print(f"  Feature: {feature:<30} value: {val_str:>6}  hp impact: {hp_impact:>6.0f}")
 
     print(f"  {'-' * 53}")
     print(f"  Phase 2 Total:                                   {creature_contrib.get('phase2_total_contribution', 0):>8.0f}")
     print(f"  HP after Phase 2:                                {creature_contrib['hp_after_phase2']:>8.0f}")
+
+    # Resistance/Immunity Penalties (now applied AFTER Phase 2)
+    print(f"\nRESISTANCE/IMMUNITY PENALTIES")
+    res_penalty = creature_contrib.get('resist_immun_resistance_penalty', 0)
+    imm_penalty = creature_contrib.get('resist_immun_immunity_penalty', 0)
+
+    if res_penalty != 0 or imm_penalty != 0:
+        print(f"  Resistance Penalty:                              {res_penalty:>8.0f}")
+        print(f"  Immunity Penalty:                                {imm_penalty:>8.0f}")
+        print(f"  Total Penalty:                                   {creature_contrib.get('resist_immun_total_penalty', 0):>8.0f}")
+    else:
+        print(f"  No resistances or immunities")
+    print(f"  HP after Resist/Immun:                           {creature_contrib['hp_after_resist_immun_penalty']:>8.0f}")
 
     # Phase 3: Individual Features
     print(f"\nPHASE 3: INDIVIDUAL FEATURES")
@@ -108,7 +120,7 @@ def investigate_creature(creature_name, export_df, contributions_df):
                    and col != 'phase3_total_contribution'
                    and col != 'phase3_intercept']
 
-    for col in phase3_cols:
+    for col in sorted(phase3_cols):
         feature_name = col.replace('phase3_', '')
         hp_impact = creature_contrib.get(col, 0)
 

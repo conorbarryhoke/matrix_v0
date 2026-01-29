@@ -254,7 +254,7 @@ EXPORT_COLUMNS = [
     'ac_deviation', 'attack_deviation', 'dpr_deviation', 'save_dc_deviation',
 
     # Phase intermediates
-    'hp_after_phase1_5', 'hp_after_phase2', 'residual_hp',
+    'hp_after_phase2', 'hp_after_resist_immun_penalty', 'residual_hp',
 
     # Phase 3: Scaled features
     'has_legendary_resistance_scaled',

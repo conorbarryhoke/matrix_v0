@@ -197,17 +197,9 @@ def run_feature_engineering(data_dir):
     print_step(6, "Applying Phase 1.5 resistance/immunity penalties")
     df_valid = df[df['actual_hp'] > 0].copy()
     df_valid['hp_after_phase1'] = df_valid['hp_baseline']
+    # Calculate resistance/immunity multipliers (penalties applied after Phase 2)
     df_valid['resistance_multiplier'] = df_valid['cr_numeric'].apply(get_resistance_multiplier)
     df_valid['immunity_multiplier'] = df_valid['cr_numeric'].apply(get_immunity_multiplier)
-    df_valid['resistance_penalty'] = (
-        df_valid['resistance_multiplier'] * df_valid['hp_after_phase1'] * (df_valid['resistance_count'] > 0)
-    )
-    df_valid['immunity_penalty'] = (
-        df_valid['immunity_multiplier'] * df_valid['hp_after_phase1'] * (df_valid['immunity_count'] > 0)
-    )
-    df_valid['total_defensive_penalty'] = df_valid['immunity_penalty'] + df_valid['resistance_penalty']
-    df_valid['total_defensive_penalty'] = df_valid['total_defensive_penalty'].clip(upper=0.75 * df_valid['hp_after_phase1'])
-    df_valid['hp_after_phase1_5'] = df_valid['hp_after_phase1'] - df_valid['total_defensive_penalty']
     print(f"  Valid samples: {len(df_valid)} monsters with HP > 0")
 
     # Split by CR tier and apply Phase 2
@@ -219,15 +211,39 @@ def run_feature_engineering(data_dir):
     df_cr5 = df_valid[df_valid['cr_numeric'] > 16.0].copy()
 
     def apply_phase2_penalties(df_tier, tier_key):
+        """Apply Phase 2 penalties and then resistance/immunity penalties."""
         penalties = PHASE2_PENALTIES[tier_key]
-        df_tier['hp_after_phase2'] = df_tier['hp_after_phase1_5'].copy()
+
+        # Phase 2: Combat stat penalties starting from hp_after_phase1
+        df_tier['hp_after_phase2'] = df_tier['hp_after_phase1'].copy()
         for feature, penalty in penalties.items():
             if feature in df_tier.columns:
                 df_tier['hp_after_phase2'] += df_tier[feature] * penalty
-        df_tier['has_legendary_resistance_scaled'] = df_tier['has_legendary_resistance'] * df_tier['hp_after_phase2']
-        df_tier['has_magic_resistance_scaled'] = df_tier['has_magic_resistance'] * df_tier['hp_after_phase2']
-        df_tier['has_regeneration_scaled'] = df_tier['has_regeneration'] * df_tier['hp_after_phase2']
-        df_tier['residual_hp'] = df_tier['actual_hp'] - df_tier['hp_after_phase2']
+
+        # Apply resistance/immunity penalties AFTER Phase 2
+        df_tier['resistance_penalty'] = (
+            df_tier['resistance_multiplier'] *
+            df_tier['hp_after_phase2'] *
+            (df_tier['resistance_count'] > 0)
+        )
+        df_tier['immunity_penalty'] = (
+            df_tier['immunity_multiplier'] *
+            df_tier['hp_after_phase2'] *
+            (df_tier['immunity_count'] > 0)
+        )
+        df_tier['total_defensive_penalty'] = (
+            df_tier['immunity_penalty'] + df_tier['resistance_penalty']
+        ).clip(upper=0.75 * df_tier['hp_after_phase2'])
+
+        df_tier['hp_after_resist_immun_penalty'] = df_tier['hp_after_phase2'] - df_tier['total_defensive_penalty']
+
+        # Calculate scaled features from hp_after_resist_immun_penalty
+        df_tier['has_legendary_resistance_scaled'] = df_tier['has_legendary_resistance'] * df_tier['hp_after_resist_immun_penalty']
+        df_tier['has_magic_resistance_scaled'] = df_tier['has_magic_resistance'] * df_tier['hp_after_resist_immun_penalty']
+        df_tier['has_regeneration_scaled'] = df_tier['has_regeneration'] * df_tier['hp_after_resist_immun_penalty']
+
+        # Calculate residual HP from final value
+        df_tier['residual_hp'] = df_tier['actual_hp'] - df_tier['hp_after_resist_immun_penalty']
         df_tier['family'] = df_tier['Name'].apply(extract_family)
         df_tier['cr_tier'] = tier_key
         return df_tier
@@ -336,9 +352,9 @@ def run_model_training(df):
         coefficients, intercept = train_constrained_model(X_train_scaled, y_train, phase3_features, scaler)
         model = ConstrainedModel(coefficients, intercept)
 
-        # Evaluate
+        # Evaluate (residual is based on hp_after_resist_immun_penalty)
         y_pred_residual = model.predict(X_test_scaled)
-        y_pred_hp = test_df['hp_after_phase2'].values + y_pred_residual
+        y_pred_hp = test_df['hp_after_resist_immun_penalty'].values + y_pred_residual
         y_actual_hp = test_df['actual_hp'].values
 
         r2 = calculate_r2(y_actual_hp, y_pred_hp)
@@ -386,7 +402,8 @@ def run_model_analysis(df, models, scalers, data_dir):
         X = np.array([[row.get(f, 0) if pd.notna(row.get(f, 0)) else 0 for f in phase3_features]])
         X_scaled = scalers[tier].transform(X)
         residual_pred = models[tier].predict(X_scaled)[0]
-        return row['hp_after_phase2'] + residual_pred
+        # Residual is based on hp_after_resist_immun_penalty
+        return row['hp_after_resist_immun_penalty'] + residual_pred
 
     df['predicted_hp'] = df.apply(get_prediction_for_creature, axis=1)
     df['hp_delta'] = df['predicted_hp'] - df['actual_hp']
@@ -406,7 +423,7 @@ def run_model_analysis(df, models, scalers, data_dir):
         'hp_baseline', 'ac_baseline', 'attack_baseline', 'dpr_baseline', 'dc_baseline',
         'highest_attack_bonus', 'highest_save_dc', 'estimated_dpr', 'legendary_dpr', 'total_dpr',
         'ac_deviation', 'attack_deviation', 'dpr_deviation', 'save_dc_deviation',
-        'hp_after_phase1_5', 'hp_after_phase2', 'residual_hp',
+        'hp_after_phase2', 'hp_after_resist_immun_penalty', 'residual_hp',
     ]
     export_cols = [c for c in export_columns if c in df.columns]
     export_df = df[export_cols].sort_values('cr_numeric')
@@ -428,8 +445,8 @@ def run_model_analysis(df, models, scalers, data_dir):
             'hp_error': row['hp_delta'],
             'hp_error_pct': row['hp_delta_pct'],
             'hp_baseline': row['hp_baseline'],
-            'hp_after_phase1_5': row['hp_after_phase1_5'],
             'hp_after_phase2': row['hp_after_phase2'],
+            'hp_after_resist_immun_penalty': row['hp_after_resist_immun_penalty'],
         }
 
         # Phase 2 contributions
