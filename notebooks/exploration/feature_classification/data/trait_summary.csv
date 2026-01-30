@@ -1,0 +1,164 @@
+trait_name,count,patterns
+Amphibious,34,
+Magic Resistance,33,magic_resistance
+Innate Spellcasting,24,spellcasting|innate_spellcasting
+Legendary Resistance,23,
+Pack Tactics,22,aura
+Keen Smell,18,
+False Appearance,16,
+Spider Climb,14,
+Keen Hearing and Smell,13,
+Shapechanger,13,shapechange|revert_form
+Swarm,13,cant_regain_hp|regains_hp
+Charge,13,inflicts_prone|has_saving_throw
+Water Breathing,13,
+Spellcasting,12,spellcasting|teleport
+Magic Weapons,12,
+Hold Breath,9,
+Sunlight Sensitivity,8,advantage_on_attack
+Devil's Sight,8,
+Keen Sight,7,
+Web Walker,7,
+Blood Frenzy,6,advantage_on_attack
+Edits Required,6,spellcasting|extra_damage|multiattack
+Regeneration,6,damage_on_start_turn|regains_hp|regeneration|regeneration_prevention
+Illumination,5,extra_damage
+Death Burst,5,inflicts_blinded|explodes_on_death|save_or_effect|repeat_save|has_saving_throw|death_burst|half_damage_on_save
+Web Sense,5,
+Trampling Charge,5,inflicts_prone|has_saving_throw
+Pounce,5,inflicts_prone|has_saving_throw
+Stone Camouflage,5,
+Echolocation,5,
+Incorporeal Movement,5,incorporeal
+Siege Monster,4,
+Standing Leap,4,
+Amorphous,4,
+Immutable Form,4,
+Rejuvenation,4,aura
+Telepathic Bond,4,
+Keen Hearing,4,
+Inscrutable,4,
+Flyby,4,
+Heated Body,3,aura
+Keen Hearing and Sight,3,
+Ice Walk,3,
+Antimagic Susceptibility,3,inflicts_incapacitated|inflicts_unconscious
+Sure-Footed,3,
+Relentless (Recharges after a Short or Long Rest),3,
+Angelic Weapons,3,extra_damage
+Keen Sight and Smell,3,
+Underwater Camouflage,2,
+Stench,2,inflicts_poisoned|aura|has_saving_throw
+Undead Fortitude,2,
+Fire Aura,2,aura
+Reckless,2,
+Rampage,2,
+Petrifying Gaze,2,gaze_attack|save_or_effect|inflicts_restrained|inflicts_petrified|repeat_save|has_saving_throw
+Damage Transfer,2,inflicts_grappled
+Dark Devotion,2,
+Divine Awareness,2,
+Berserk,2,explodes_on_death|aura|has_saving_throw
+Brute,2,
+Abduct,2,
+Brave,2,
+Wakeful,2,
+Vampire Weaknesses,2,inflicts_paralyzed|explodes_on_death|inflicts_incapacitated|advantage_on_attack
+Shark Telepathy,2,aura
+Speak with Frogs and Toads,2,
+Surprise Attack,2,surprise_attack
+Limited Amphibiousness,2,
+Elemental Demise,2,
+Heated Weapons,2,
+Mimicry,2,has_saving_throw
+Sneak Attack (1/Turn),2,advantage_on_attack
+Lightning Absorption,2,heals_on_damage
+Fey Ancestry,2,
+Earth Glide,2,
+Limited Telepathy,2,
+"Legendary Resistance (3/Day, or 4/Day in Lair)",2,
+Cunning Action,1,
+Corrode Metal,1,
+Death Throes,1,explodes_on_death|save_or_effect|aura|has_saving_throw|death_burst|half_damage_on_save
+Corrosive Form,1,aura
+Beast of Burden,1,
+Blind Senses,1,
+Ambusher,1,surprise_attack|advantage_on_attack
+Aggressive,1,
+Aberrant Ground,1,has_saving_throw|speed_reduction
+Acid Absorption,1,heals_on_damage
+Bound,1,aura
+Confer Fire Resistance,1,damage_resistance
+Consume Life,1,aura|has_saving_throw
+Air Form,1,
+Adhesive,1,inflicts_grappled|escape_dc
+Assassinate,1,surprise_attack|advantage_on_attack
+Avatar's PB,1,
+Aura of Authority,1,advantage_on_attack
+Aversion of Fire,1,advantage_on_attack
+Barbed Hide,1,
+Hellish Weapons,1,
+Ephemeral,1,
+Mucous Cloud,1,has_saving_throw
+Misty Escape,1,shapechange|inflicts_paralyzed|regains_hp
+Martial Advantage,1,
+Limited Magic Immunity,1,
+Light Sensitivity,1,advantage_on_attack
+Labyrinthine Recall,1,
+Life Bond,1,aura|regains_hp
+Keen Senses,1,
+Horrific Appearance,1,save_or_effect|advantage_on_attack|aura|repeat_save|has_saving_throw|inflicts_frightened|surprise_attack
+Iron Scent,1,aura
+Invisibility,1,
+Ignited Illumination,1,extra_damage
+Edits Needed,1,multiattack|breath_weapon
+Divine Eminence,1,
+Duergar Resilience,1,
+Draconic Origin,1,
+Fear Aura,1,save_or_effect|aura|has_saving_throw|inflicts_frightened|inflicts_incapacitated
+Faultless Tracker,1,
+Ethereal Sight,1,ethereal
+Evasion,1,
+Ethereal Jaunt,1,ethereal
+Freedom of Movement,1,inflicts_restrained
+Fire Absorption,1,heals_on_damage
+Fire Form,1,ongoing_damage
+Gnome Cunning,1,
+Gibbering,1,aura|has_saving_throw
+Freeze,1,speed_reduction
+Grappler,1,inflicts_grappled|advantage_on_attack
+HP Notes,1,
+Grasping Tendrils,1,damage_immunity|has_saving_throw
+Hellish Rejuvenation,1,
+Probing Telepathy,1,
+Spell Storing,1,
+Speak with Beasts and Plants,1,
+Snow Camouflage,1,
+Rust Metal,1,
+Shadow Stealth,1,
+Sense Magic,1,aura
+Shared Resistances,1,
+Shielded Mind,1,
+Running Leap,1,
+Night Hag Items,1,ethereal
+Nimble Escape,1,
+Ooze Cube,1,aura|has_saving_throw|swallow
+Multiple Heads,1,explodes_on_death|damage_on_end_turn|regains_hp
+Reactive,1,
+Reactive Heads,1,
+Reflective Carapace,1,
+Troll Spawn,1,
+Tree Stride,1,
+Treasure Sense,1,
+Transparent,1,has_saving_throw|surprise_attack
+Tail Spike Regrowth,1,
+Sunlight Weakness,1,advantage_on_attack
+Steadfast,1,inflicts_frightened|aura
+Tunneler,1,
+Two-Headed,1,
+Turn Defiance,1,
+Turn Resistance,1,
+Two Heads,1,
+Vampiric Connection,1,
+Variable Illumination,1,
+Water Susceptibility,1,
+Water Form,1,
