@@ -1,14 +1,14 @@
 trait_name,count,patterns
 Amphibious,34,
 Magic Resistance,33,magic_resistance
-Innate Spellcasting,24,spellcasting|innate_spellcasting
+Innate Spellcasting,24,innate_spellcasting|spellcasting
 Legendary Resistance,23,
 Pack Tactics,22,aura
 Keen Smell,18,
 False Appearance,16,
 Spider Climb,14,
 Keen Hearing and Smell,13,
-Shapechanger,13,shapechange|revert_form
+Shapechanger,13,revert_form|shapechange
 Swarm,13,cant_regain_hp|regains_hp
 Charge,13,inflicts_prone|has_saving_throw
 Water Breathing,13,
@@ -20,14 +20,14 @@ Devil's Sight,8,
 Keen Sight,7,
 Web Walker,7,
 Blood Frenzy,6,advantage_on_attack
-Edits Required,6,spellcasting|extra_damage|multiattack
-Regeneration,6,damage_on_start_turn|regains_hp|regeneration|regeneration_prevention
+Edits Required,6,extra_damage|multiattack|spellcasting
+Regeneration,6,regains_hp|regeneration|damage_on_start_turn|regeneration_prevention
 Illumination,5,extra_damage
-Death Burst,5,inflicts_blinded|explodes_on_death|save_or_effect|repeat_save|has_saving_throw|death_burst|half_damage_on_save
+Death Burst,5,inflicts_blinded|explodes_on_death|death_burst|repeat_save|has_saving_throw|save_or_effect|half_damage_on_save
 Web Sense,5,
 Trampling Charge,5,inflicts_prone|has_saving_throw
 Pounce,5,inflicts_prone|has_saving_throw
-Stone Camouflage,5,
+Stone Camouflage,5,stealth_advantage
 Echolocation,5,
 Incorporeal Movement,5,incorporeal
 Siege Monster,4,
@@ -47,22 +47,22 @@ Sure-Footed,3,
 Relentless (Recharges after a Short or Long Rest),3,
 Angelic Weapons,3,extra_damage
 Keen Sight and Smell,3,
-Underwater Camouflage,2,
-Stench,2,inflicts_poisoned|aura|has_saving_throw
+Underwater Camouflage,2,stealth_advantage
+Stench,2,aura|inflicts_poisoned|has_saving_throw
 Undead Fortitude,2,
 Fire Aura,2,aura
 Reckless,2,
 Rampage,2,
-Petrifying Gaze,2,gaze_attack|save_or_effect|inflicts_restrained|inflicts_petrified|repeat_save|has_saving_throw
+Petrifying Gaze,2,gaze_attack|inflicts_petrified|repeat_save|has_saving_throw|save_or_effect|inflicts_restrained
 Damage Transfer,2,inflicts_grappled
 Dark Devotion,2,
 Divine Awareness,2,
-Berserk,2,explodes_on_death|aura|has_saving_throw
+Berserk,2,aura|explodes_on_death|has_saving_throw
 Brute,2,
 Abduct,2,
 Brave,2,
 Wakeful,2,
-Vampire Weaknesses,2,inflicts_paralyzed|explodes_on_death|inflicts_incapacitated|advantage_on_attack
+Vampire Weaknesses,2,inflicts_incapacitated|inflicts_paralyzed|explodes_on_death|advantage_on_attack
 Shark Telepathy,2,aura
 Speak with Frogs and Toads,2,
 Surprise Attack,2,surprise_attack
@@ -78,7 +78,7 @@ Limited Telepathy,2,
 "Legendary Resistance (3/Day, or 4/Day in Lair)",2,
 Cunning Action,1,
 Corrode Metal,1,
-Death Throes,1,explodes_on_death|save_or_effect|aura|has_saving_throw|death_burst|half_damage_on_save
+Death Throes,1,aura|explodes_on_death|death_burst|has_saving_throw|save_or_effect|half_damage_on_save
 Corrosive Form,1,aura
 Beast of Burden,1,
 Blind Senses,1,
@@ -90,7 +90,7 @@ Bound,1,aura
 Confer Fire Resistance,1,damage_resistance
 Consume Life,1,aura|has_saving_throw
 Air Form,1,
-Adhesive,1,inflicts_grappled|escape_dc
+Adhesive,1,escape_dc|inflicts_grappled
 Assassinate,1,surprise_attack|advantage_on_attack
 Avatar's PB,1,
 Aura of Authority,1,advantage_on_attack
@@ -99,14 +99,14 @@ Barbed Hide,1,
 Hellish Weapons,1,
 Ephemeral,1,
 Mucous Cloud,1,has_saving_throw
-Misty Escape,1,shapechange|inflicts_paralyzed|regains_hp
+Misty Escape,1,inflicts_paralyzed|shapechange|regains_hp
 Martial Advantage,1,
 Limited Magic Immunity,1,
 Light Sensitivity,1,advantage_on_attack
 Labyrinthine Recall,1,
 Life Bond,1,aura|regains_hp
 Keen Senses,1,
-Horrific Appearance,1,save_or_effect|advantage_on_attack|aura|repeat_save|has_saving_throw|inflicts_frightened|surprise_attack
+Horrific Appearance,1,aura|save_or_effect|repeat_save|has_saving_throw|advantage_on_attack|surprise_attack|inflicts_frightened
 Iron Scent,1,aura
 Invisibility,1,
 Ignited Illumination,1,extra_damage
@@ -114,7 +114,7 @@ Edits Needed,1,multiattack|breath_weapon
 Divine Eminence,1,
 Duergar Resilience,1,
 Draconic Origin,1,
-Fear Aura,1,save_or_effect|aura|has_saving_throw|inflicts_frightened|inflicts_incapacitated
+Fear Aura,1,aura|inflicts_incapacitated|has_saving_throw|save_or_effect|inflicts_frightened
 Faultless Tracker,1,
 Ethereal Sight,1,ethereal
 Evasion,1,
@@ -127,32 +127,32 @@ Gibbering,1,aura|has_saving_throw
 Freeze,1,speed_reduction
 Grappler,1,inflicts_grappled|advantage_on_attack
 HP Notes,1,
-Grasping Tendrils,1,damage_immunity|has_saving_throw
+Grasping Tendrils,1,has_saving_throw|damage_immunity
 Hellish Rejuvenation,1,
 Probing Telepathy,1,
 Spell Storing,1,
 Speak with Beasts and Plants,1,
-Snow Camouflage,1,
+Snow Camouflage,1,stealth_advantage
 Rust Metal,1,
-Shadow Stealth,1,
+Shadow Stealth,1,bonus_action_hide
 Sense Magic,1,aura
 Shared Resistances,1,
 Shielded Mind,1,
 Running Leap,1,
 Night Hag Items,1,ethereal
-Nimble Escape,1,
+Nimble Escape,1,bonus_action_hide
 Ooze Cube,1,aura|has_saving_throw|swallow
-Multiple Heads,1,explodes_on_death|damage_on_end_turn|regains_hp
+Multiple Heads,1,damage_on_end_turn|explodes_on_death|regains_hp
 Reactive,1,
 Reactive Heads,1,
 Reflective Carapace,1,
 Troll Spawn,1,
 Tree Stride,1,
 Treasure Sense,1,
-Transparent,1,has_saving_throw|surprise_attack
+Transparent,1,surprise_attack|has_saving_throw
 Tail Spike Regrowth,1,
 Sunlight Weakness,1,advantage_on_attack
-Steadfast,1,inflicts_frightened|aura
+Steadfast,1,aura|inflicts_frightened
 Tunneler,1,
 Two-Headed,1,
 Turn Defiance,1,

@@ -1,87 +1,87 @@
 action_name,count,patterns
-Multiattack,165,inflicts_grappled|spellcasting|swallow|fear_effect|escape_dc|breath_weapon|life_drain|multiattack
-Bite,148,inflicts_blinded|inflicts_prone|save_or_effect|inflicts_restrained|swallow|ongoing_damage|escape_dc|inflicts_grappled|heals_on_damage|advantage_on_attack|inflicts_unconscious|inflicts_petrified|repeat_save|aura|has_saving_throw|inflicts_paralyzed|reduces_hp_max|inflicts_poisoned|regains_hp|half_damage_on_save
-Claw,61,inflicts_grappled|repeat_save|has_saving_throw|inflicts_poisoned|escape_dc
-Tail,33,inflicts_grappled|inflicts_prone|inflicts_restrained|has_saving_throw|escape_dc
-Claws,31,repeat_save|has_saving_throw|escape_dc|inflicts_paralyzed
-Frightful Presence,21,repeat_save|aura|has_saving_throw|inflicts_frightened|fear_effect
-Breath Weapons,20,save_or_effect|inflicts_unconscious|repeat_save|inflicts_paralyzed|has_saving_throw|half_damage_on_save|breath_weapon
+Multiattack,165,inflicts_grappled|life_drain|multiattack|breath_weapon|escape_dc|fear_effect|swallow|spellcasting
+Bite,148,inflicts_paralyzed|inflicts_grappled|inflicts_petrified|heals_on_damage|repeat_save|has_saving_throw|inflicts_restrained|escape_dc|aura|inflicts_poisoned|reduces_hp_max|inflicts_blinded|inflicts_unconscious|inflicts_prone|advantage_on_attack|ongoing_damage|regains_hp|save_or_effect|half_damage_on_save|swallow
+Claw,61,inflicts_poisoned|inflicts_grappled|repeat_save|has_saving_throw|escape_dc
+Tail,33,inflicts_grappled|inflicts_prone|has_saving_throw|escape_dc|inflicts_restrained
+Claws,31,inflicts_paralyzed|repeat_save|has_saving_throw|escape_dc
+Frightful Presence,21,aura|repeat_save|has_saving_throw|fear_effect|inflicts_frightened
+Breath Weapons,20,inflicts_paralyzed|inflicts_unconscious|repeat_save|has_saving_throw|breath_weapon|save_or_effect|half_damage_on_save
 Spear,18,
-Slam,18,has_saving_throw|reduces_hp_max
+Slam,18,reduces_hp_max|has_saving_throw
 Longsword,16,
 Hooves,13,
-Change Shape,12,legendary_resistance|shapechange|revert_form
+Change Shape,12,revert_form|shapechange|legendary_resistance
 Beak,12,
 Longbow,12,inflicts_poisoned|has_saving_throw
-Shortsword,10,has_saving_throw|save_or_effect|half_damage_on_save
+Shortsword,10,has_saving_throw|half_damage_on_save|save_or_effect
 Javelin,10,
-Bites (swarm has more than half HP),9,inflicts_poisoned|has_saving_throw|save_or_effect|half_damage_on_save
-Bites (swarm has half HP or less),9,inflicts_poisoned|has_saving_throw|save_or_effect|half_damage_on_save
+Bites (swarm has more than half HP),9,inflicts_poisoned|has_saving_throw|half_damage_on_save|save_or_effect
+Bites (swarm has half HP or less),9,inflicts_poisoned|has_saving_throw|half_damage_on_save|save_or_effect
 Rock,9,inflicts_prone|has_saving_throw
 Scimitar,9,extra_damage
-Talons,8,inflicts_grappled|escape_dc|inflicts_restrained
+Talons,8,escape_dc|inflicts_grappled|inflicts_restrained
 Gore,8,
-Fire Breath,8,has_saving_throw|save_or_effect|half_damage_on_save
+Fire Breath,8,has_saving_throw|half_damage_on_save|save_or_effect
 Ram,7,
 Heavy Crossbow,7,
 Greatsword,7,
-Shortbow,6,inflicts_poisoned|extra_damage|has_saving_throw|inflicts_unconscious
+Shortbow,6,inflicts_poisoned|has_saving_throw|extra_damage|inflicts_unconscious
 Greataxe,6,
 Mace,6,
-Sting,6,save_or_effect|inflicts_unconscious|repeat_save|inflicts_paralyzed|has_saving_throw|inflicts_poisoned|half_damage_on_save
+Sting,6,inflicts_poisoned|inflicts_paralyzed|inflicts_unconscious|repeat_save|has_saving_throw|save_or_effect|half_damage_on_save
 Dagger,6,
-Lightning Breath,5,has_saving_throw|save_or_effect|half_damage_on_save
+Lightning Breath,5,has_saving_throw|half_damage_on_save|save_or_effect
 Etherealness,5,ethereal
 Fist,5,
 Dagger (Melee),5,
-Cold Breath,5,has_saving_throw|save_or_effect|half_damage_on_save
+Cold Breath,5,has_saving_throw|half_damage_on_save|save_or_effect
 Dagger (Ranged),5,
 Pseudopod,5,
-Poison Breath,5,has_saving_throw|save_or_effect|half_damage_on_save
-Swallow,5,inflicts_blinded|inflicts_restrained|aura|has_saving_throw|swallow|ongoing_damage
+Poison Breath,5,has_saving_throw|half_damage_on_save|save_or_effect
+Swallow,5,aura|inflicts_blinded|swallow|has_saving_throw|ongoing_damage|inflicts_restrained
 Teleport,5,teleport
 Spellcasting,5,spellcasting
 Healing Touch,4,
-Acid Breath,4,has_saving_throw|save_or_effect|half_damage_on_save
-Constrict,4,inflicts_grappled|escape_dc|inflicts_restrained
-Charm,4,repeat_save|aura|has_saving_throw|charm_effect|inflicts_charmed
+Acid Breath,4,has_saving_throw|half_damage_on_save|save_or_effect
+Constrict,4,escape_dc|inflicts_grappled|inflicts_restrained
+Charm,4,aura|inflicts_charmed|repeat_save|has_saving_throw|charm_effect
 Club,4,
 Invisibility,4,
 Rend,4,
-Tentacles,4,inflicts_grappled|inflicts_restrained|repeat_save|has_saving_throw|inflicts_paralyzed|inflicts_poisoned|escape_dc
+Tentacles,4,inflicts_paralyzed|inflicts_poisoned|inflicts_grappled|repeat_save|has_saving_throw|escape_dc|inflicts_restrained
 Morningstar,4,
 Stomp,3,
 War Pick,3,
-Tentacle,3,inflicts_grappled|cant_regain_hp|inflicts_restrained|has_saving_throw|regains_hp|escape_dc
+Tentacle,3,inflicts_grappled|regains_hp|has_saving_throw|cant_regain_hp|inflicts_restrained|escape_dc
 Javelin (Ranged),3,
 Hurl Flame,3,
 Javelin (Melee),3,
-Life Drain,3,has_saving_throw|reduces_hp_max
+Life Drain,3,reduces_hp_max|has_saving_throw
 Bites,3,inflicts_prone|has_saving_throw
 Greatclub,3,
-Draining Kiss,3,save_or_effect|has_saving_throw|reduces_hp_max|charm_effect|half_damage_on_save
+Draining Kiss,3,reduces_hp_max|has_saving_throw|charm_effect|save_or_effect|half_damage_on_save
 Hand Crossbow,3,inflicts_poisoned|has_saving_throw
 Glaive,3,has_saving_throw
 Warhammer,3,
 Spear (Ranged),3,
-Dreadful Glare,2,save_or_effect|aura|has_saving_throw|inflicts_paralyzed|inflicts_frightened
+Dreadful Glare,2,aura|inflicts_paralyzed|has_saving_throw|save_or_effect|inflicts_frightened
 Harpoon,2,
-Rotting Fist,2,cant_regain_hp|has_saving_throw|regains_hp|reduces_hp_max
-Web,2,damage_immunity|has_saving_throw|inflicts_restrained
+Rotting Fist,2,cant_regain_hp|has_saving_throw|reduces_hp_max|regains_hp
+Web,2,has_saving_throw|inflicts_restrained|damage_immunity
 Bites (Bloodied),2,
-Engulf,2,inflicts_blinded|inflicts_grappled|save_or_effect|inflicts_restrained|aura|has_saving_throw|swallow|ongoing_damage
-Light Crossbow,2,has_saving_throw|save_or_effect|half_damage_on_save
+Engulf,2,aura|inflicts_grappled|inflicts_blinded|swallow|has_saving_throw|ongoing_damage|save_or_effect|inflicts_restrained
+Light Crossbow,2,has_saving_throw|half_damage_on_save|save_or_effect
 Rapier,2,
 Horns,2,
 Illusory Appearance,2,has_saving_throw
 Pike,2,
-Pincer,2,inflicts_grappled|escape_dc
+Pincer,2,escape_dc|inflicts_grappled
 Touch,2,ongoing_damage
 Tusk,2,
 Ink Cloud (Recharges after a Short or Long Rest),2,
-Roar,2,inflicts_prone|save_or_effect|repeat_save|aura|has_saving_throw|inflicts_paralyzed|inflicts_frightened|fear_effect
-Smother,2,ongoing_damage|inflicts_grappled|escape_dc|inflicts_restrained
-Steam Breath,2,has_saving_throw|save_or_effect|half_damage_on_save
+Roar,2,aura|inflicts_paralyzed|repeat_save|has_saving_throw|inflicts_prone|fear_effect|save_or_effect|inflicts_frightened
+Smother,2,escape_dc|inflicts_grappled|inflicts_restrained|ongoing_damage
+Steam Breath,2,has_saving_throw|half_damage_on_save|save_or_effect
 Spear (One-Handed),2,
 Spear (Two-Handed),2,
 Haste,1,
@@ -89,20 +89,20 @@ Heart Sight,1,has_saving_throw|save_or_effect
 Fetid Cloud,1,inflicts_poisoned|has_saving_throw
 Ethereal Stride,1,aura|ethereal
 Enthralling Panache,1,
-Fey Charm,1,charm_effect|repeat_save|has_saving_throw
+Fey Charm,1,repeat_save|has_saving_throw|charm_effect
 Grab,1,escape_dc
-Frost Breath,1,has_saving_throw|save_or_effect|half_damage_on_save
-Enslave,1,charm_effect|repeat_save|has_saving_throw
+Frost Breath,1,has_saving_throw|half_damage_on_save|save_or_effect
+Enslave,1,repeat_save|has_saving_throw|charm_effect
 Enlarge (Recharges after a Short or Long Rest),1,
 Horn,1,
 Heavy Club,1,
 Burning Hammer,1,
-Chain,1,inflicts_grappled|ongoing_damage|escape_dc|inflicts_restrained
+Chain,1,escape_dc|inflicts_grappled|inflicts_restrained|ongoing_damage
 Blood Drain,1,
 Bog Staff,1,
 Bone Bow,1,
 Breath Weapon,1,
-Crush,1,advantage_on_attack|has_saving_throw|swallow
+Crush,1,has_saving_throw|advantage_on_attack|swallow
 Create Whirlwind,1,aura|has_saving_throw|inflicts_restrained
 Create Specter,1,aura
 Club (with shillelagh),1,
@@ -110,20 +110,20 @@ Darkness Aura,1,
 Deadly Leap,1,extra_damage|inflicts_prone|has_saving_throw
 Death Glare,1,fear_effect|has_saving_throw
 Dragon’s Breath,1,
-Blinding Spittle,1,inflicts_blinded|explodes_on_death|aura|has_saving_throw
-Blinding Breath,1,inflicts_blinded|repeat_save|has_saving_throw
+Blinding Spittle,1,aura|explodes_on_death|has_saving_throw|inflicts_blinded
+Blinding Breath,1,repeat_save|has_saving_throw|inflicts_blinded
 Animate Trees,1,aura
-Animate Chains (Recharges after a Short or Long Rest),1,damage_immunity|aura|inflicts_incapacitated|damage_resistance|multiattack
-Beard,1,cant_regain_hp|repeat_save|has_saving_throw|inflicts_poisoned|regains_hp
+Animate Chains (Recharges after a Short or Long Rest),1,aura|damage_immunity|inflicts_incapacitated|multiattack|damage_resistance
+Beard,1,inflicts_poisoned|regains_hp|repeat_save|has_saving_throw|cant_regain_hp
 Beaks (swarm has more than half HP),1,
 Abyssal Glaive,1,
-Acid Spray,1,has_saving_throw|save_or_effect|half_damage_on_save
+Acid Spray,1,has_saving_throw|half_damage_on_save|save_or_effect
 Battleaxe,1,
 Antennae,1,aura|has_saving_throw
 Beaks (swarm has half HP or less),1,
 Bite.,1,has_saving_throw
 First Roar,1,
-Fling,1,inflicts_grappled|inflicts_prone|has_saving_throw
+Fling,1,inflicts_prone|inflicts_grappled|has_saving_throw
 Flying Sword,1,
 Fork,1,
 Children of the Night,1,
@@ -132,14 +132,14 @@ Maul,1,
 Mind-Rending Roar,1,
 Longsword (One-Handed),1,
 Longsword (Two-Handed),1,
-Lightning Strike,1,has_saving_throw|aura|save_or_effect|half_damage_on_save
-Luring Song,1,repeat_save|has_saving_throw|charm_effect|inflicts_charmed|inflicts_incapacitated
-Moan,1,inflicts_frightened|has_saving_throw|aura
+Lightning Strike,1,aura|has_saving_throw|half_damage_on_save|save_or_effect
+Luring Song,1,inflicts_charmed|inflicts_incapacitated|repeat_save|has_saving_throw|charm_effect
+Moan,1,aura|has_saving_throw|inflicts_frightened
 Invisible Passage,1,
 Leadership (Recharges after a Short or Long Rest),1,inflicts_incapacitated
 Intoxicating Touch,1,
-Horror Nimbus,1,has_saving_throw|inflicts_frightened|repeat_save|aura
-Horrifying Visage,1,has_saving_throw|inflicts_frightened|fear_effect|repeat_save
+Horror Nimbus,1,aura|repeat_save|has_saving_throw|inflicts_frightened
+Horrifying Visage,1,fear_effect|has_saving_throw|inflicts_frightened|repeat_save
 Invisibility (Recharges after a Short or Long Rest),1,
 Insectile Rapier,1,
 Reel,1,inflicts_grappled
@@ -151,33 +151,33 @@ Quarterstaff (Two-Handed),1,
 Radiant Flame,1,
 Rake,1,
 Poisoned Dart,1,inflicts_poisoned|repeat_save|has_saving_throw
-Possession,1,has_saving_throw|inflicts_incapacitated
+Possession,1,inflicts_incapacitated|has_saving_throw
 Otherworldly Slam,1,
-Paralyzing Touch,1,repeat_save|has_saving_throw|inflicts_paralyzed
+Paralyzing Touch,1,inflicts_paralyzed|repeat_save|has_saving_throw
 Phantasms (Recharges after a Short or Long Rest),1,
-Petrifying Breath,1,save_or_effect|inflicts_restrained|inflicts_petrified|repeat_save|has_saving_throw
+Petrifying Breath,1,inflicts_petrified|repeat_save|has_saving_throw|save_or_effect|inflicts_restrained
 Pistol,1,
 Poison Jab,1,
 Ocean Spear (Melee),1,
-Nightmare Haunting,1,ethereal|reduces_hp_max
+Nightmare Haunting,1,reduces_hp_max|ethereal
 Morningstar (Advantage if target is Grappled by bugbear),1,
 Ocean Spear (Ranged),1,
 Pact Blade,1,
 Paralyzing Tentacles,1,
 "Light Hammer (Ranged, Advantage if target is Grappled by bugbear)",1,
 "Light Hammer (Melee, Advantage if target is Grappled by bugbear)",1,
-Lightning Storm,1,has_saving_throw|aura|save_or_effect|half_damage_on_save
-Slow,1,has_saving_throw|repeat_save|save_or_effect
+Lightning Storm,1,aura|has_saving_throw|half_damage_on_save|save_or_effect
+Slow,1,repeat_save|has_saving_throw|save_or_effect
 Slaying Longbow,1,has_saving_throw
 Slash,1,
 Shriek,1,aura
 Sling,1,
 Rotting Touch,1,
-Scare,1,has_saving_throw|inflicts_frightened|repeat_save
-Stinger,1,has_saving_throw|save_or_effect|half_damage_on_save
+Scare,1,repeat_save|has_saving_throw|inflicts_frightened
+Stinger,1,has_saving_throw|half_damage_on_save|save_or_effect
 Spiked Shield,1,
-Spit Poison,1,has_saving_throw|save_or_effect|half_damage_on_save
-Spores,1,inflicts_poisoned|ongoing_damage|repeat_save|has_saving_throw
+Spit Poison,1,has_saving_throw|half_damage_on_save|save_or_effect
+Spores,1,inflicts_poisoned|repeat_save|has_saving_throw|ongoing_damage
 Spiked Bone Club,1,
 Snake Hair,1,
 Spear (Melee),1,
@@ -188,21 +188,21 @@ Second Roar,1,
 Swarm of Grasping Hands (Bloodied),1,
 Tail Spike,1,
 Sword,1,
-Stunning Screech,1,inflicts_stunned|aura|has_saving_throw
+Stunning Screech,1,aura|inflicts_stunned|has_saving_throw
 Strength Drain,1,
 Third Roar,1,
-Tentacle Slam,1,inflicts_grappled|inflicts_stunned|has_saving_throw
-Tail Stinger,1,has_saving_throw|save_or_effect|half_damage_on_save
-Tendril,1,inflicts_grappled|escape_dc|inflicts_restrained
+Tentacle Slam,1,inflicts_stunned|inflicts_grappled|has_saving_throw
+Tail Stinger,1,has_saving_throw|half_damage_on_save|save_or_effect
+Tendril,1,escape_dc|inflicts_grappled|inflicts_restrained
 Swarm of Grasping Hands,1,
 Umbral Dagger (Ranged),1,
 Tusks,1,has_saving_throw
 Umbral Dagger (Melee),1,
-Wall of Ice,1,explodes_on_death|damage_immunity|save_or_effect|aura|has_saving_throw|death_burst|inflicts_incapacitated|half_damage_on_save
+Wall of Ice,1,aura|damage_immunity|explodes_on_death|death_burst|inflicts_incapacitated|has_saving_throw|save_or_effect|half_damage_on_save
 Variant: Summon Mephits,1,aura
 Unarmed Strike,1,escape_dc
 Web Bolt (Spider Only),1,speed_reduction
-Whelm,1,inflicts_grappled|inflicts_restrained|aura|has_saving_throw|escape_dc
+Whelm,1,aura|inflicts_grappled|has_saving_throw|escape_dc|inflicts_restrained
 Whip,1,has_saving_throw
 Whirlwind,1,inflicts_prone|has_saving_throw
 Withering Touch,1,

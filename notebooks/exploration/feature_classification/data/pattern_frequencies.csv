@@ -32,6 +32,7 @@ explodes_on_death,11
 inflicts_unconscious,10
 ethereal,10
 charm_effect,10
+stealth_advantage,8
 legendary_resistance,8
 death_burst,7
 teleport,6
@@ -46,6 +47,7 @@ inflicts_petrified,3
 speed_reduction,3
 damage_on_start_turn,3
 gaze_attack,2
+bonus_action_hide,2
 damage_resistance,2
 inflicts_stunned,2
 damage_on_end_turn,1
