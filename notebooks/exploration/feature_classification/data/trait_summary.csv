@@ -1,164 +1,151 @@
 trait_name,count,patterns_notebook,patterns_core,patterns_any
-Amphibious,34,,,
-Magic Resistance,33,magic_resistance,,magic_resistance
-Innate Spellcasting,24,innate_spellcasting|spellcasting,core_multiattack_with,core_multiattack_with|innate_spellcasting|spellcasting
+Magic Resistance,31,magic_resistance,,magic_resistance
+Amphibious,30,,,
+Innate Spellcasting,24,innate_spellcasting|spellcasting,core_multiattack_with,innate_spellcasting|core_multiattack_with|spellcasting
 Legendary Resistance,23,,,
-Pack Tactics,22,aura,core_has_advantage_attack,aura|core_has_advantage_attack
 Keen Smell,18,,,
+Pack Tactics,17,aura,core_has_advantage_attack,core_has_advantage_attack|aura
 False Appearance,16,,,
-Spider Climb,14,,,
+Shapechanger,13,shapechange|revert_form,core_multiattack_with,shapechange|revert_form|core_multiattack_with
 Keen Hearing and Smell,13,,,
-Shapechanger,13,revert_form|shapechange,core_multiattack_with,revert_form|shapechange|core_multiattack_with
-Swarm,13,cant_regain_hp|regains_hp,,cant_regain_hp|regains_hp
-Charge,13,inflicts_prone|has_saving_throw,core_multiattack_with|core_knocked_prone,core_multiattack_with|inflicts_prone|has_saving_throw|core_knocked_prone
-Water Breathing,13,,,
-Spellcasting,12,spellcasting|teleport,core_multiattack_with|core_spellcaster_level,core_multiattack_with|core_spellcaster_level|spellcasting|teleport
+Charge,13,inflicts_prone|has_saving_throw,core_multiattack_with|core_knocked_prone,core_knocked_prone|inflicts_prone|core_multiattack_with|has_saving_throw
+Spider Climb,12,,,
 Magic Weapons,12,,,
-Hold Breath,9,,,
-Sunlight Sensitivity,8,advantage_on_attack,,advantage_on_attack
+Spellcasting,12,teleport|spellcasting,core_spellcaster_level|core_multiattack_with,teleport|core_spellcaster_level|core_multiattack_with|spellcasting
+Swarm,10,regains_hp|cant_regain_hp,,regains_hp|cant_regain_hp
+Water Breathing,9,,,
 Devil's Sight,8,,,
+Hold Breath,8,,,
 Keen Sight,7,,,
+Sunlight Sensitivity,7,advantage_on_attack,,advantage_on_attack
 Web Walker,7,,,
-Blood Frenzy,6,advantage_on_attack,core_advantage_against|core_has_advantage_attack,core_advantage_against|advantage_on_attack|core_has_advantage_attack
-Edits Required,6,extra_damage|multiattack|spellcasting,,extra_damage|multiattack|spellcasting
-Regeneration,6,regains_hp|regeneration|damage_on_start_turn|regeneration_prevention,core_multiattack_with,core_multiattack_with|damage_on_start_turn|regains_hp|regeneration|regeneration_prevention
-Illumination,5,extra_damage,,extra_damage
-Death Burst,5,inflicts_blinded|explodes_on_death|death_burst|repeat_save|has_saving_throw|save_or_effect|half_damage_on_save,core_taking_damage,inflicts_blinded|core_taking_damage|explodes_on_death|death_burst|repeat_save|has_saving_throw|save_or_effect|half_damage_on_save
-Web Sense,5,,core_multiattack_with,core_multiattack_with
-Trampling Charge,5,inflicts_prone|has_saving_throw,core_multiattack_with|core_knocked_prone,core_multiattack_with|inflicts_prone|has_saving_throw|core_knocked_prone
-Pounce,5,inflicts_prone|has_saving_throw,core_multiattack_with|core_knocked_prone,core_multiattack_with|inflicts_prone|has_saving_throw|core_knocked_prone
-Stone Camouflage,5,stealth_advantage,,stealth_advantage
+Blood Frenzy,5,,core_has_advantage_attack,core_has_advantage_attack
 Echolocation,5,,,
-Incorporeal Movement,5,incorporeal,core_takes_damage,incorporeal|core_takes_damage
-Siege Monster,4,,,
-Standing Leap,4,,core_multiattack_with,core_multiattack_with
+Death Burst,5,inflicts_blinded|half_damage_on_save|death_burst|repeat_save|explodes_on_death|save_or_effect|has_saving_throw,core_taking_damage,inflicts_blinded|half_damage_on_save|core_taking_damage|death_burst|repeat_save|explodes_on_death|save_or_effect|has_saving_throw
+Regeneration,5,regeneration|regains_hp|damage_on_start_turn|regeneration_prevention,core_multiattack_with,regeneration_prevention|damage_on_start_turn|regeneration|regains_hp|core_multiattack_with
+Trampling Charge,5,inflicts_prone|has_saving_throw,core_multiattack_with|core_knocked_prone,core_knocked_prone|inflicts_prone|core_multiattack_with|has_saving_throw
+Web Sense,5,,core_multiattack_with,core_multiattack_with
+Pounce,5,inflicts_prone|has_saving_throw,core_multiattack_with|core_knocked_prone,core_knocked_prone|inflicts_prone|core_multiattack_with|has_saving_throw
+Stone Camouflage,5,stealth_advantage,,stealth_advantage
 Amorphous,4,,,
-Immutable Form,4,,,
-Rejuvenation,4,aura,,aura
+Siege Monster,4,,,
 Telepathic Bond,4,,core_multiattack_with,core_multiattack_with
+Illumination,4,extra_damage,,extra_damage
+Rejuvenation,4,aura,,aura
+Standing Leap,4,,core_multiattack_with,core_multiattack_with
+Incorporeal Movement,4,incorporeal,core_takes_damage,core_takes_damage|incorporeal
+Immutable Form,4,,,
 Keen Hearing,4,,,
-Inscrutable,4,,core_multiattack_with,core_multiattack_with
-Flyby,4,,,
-Heated Body,3,aura,core_multiattack_with|core_takes_damage,core_multiattack_with|core_takes_damage|aura
 Keen Hearing and Sight,3,,,
+Angelic Weapons,3,extra_damage,core_multiattack_with,extra_damage|core_multiattack_with
+Antimagic Susceptibility,3,inflicts_unconscious|inflicts_incapacitated,,inflicts_unconscious|inflicts_incapacitated
+Heated Body,3,aura,core_takes_damage|core_multiattack_with,core_takes_damage|aura|core_multiattack_with
 Ice Walk,3,,,
-Antimagic Susceptibility,3,inflicts_incapacitated|inflicts_unconscious,,inflicts_incapacitated|inflicts_unconscious
-Sure-Footed,3,,,
+Flyby,3,,,
 Relentless (Recharges after a Short or Long Rest),3,,,
-Angelic Weapons,3,extra_damage,core_multiattack_with,core_multiattack_with|extra_damage
+Sure-Footed,3,,,
 Keen Sight and Smell,3,,,
-Underwater Camouflage,2,stealth_advantage,,stealth_advantage
-Stench,2,aura|inflicts_poisoned|has_saving_throw,,aura|inflicts_poisoned|has_saving_throw
+Mimicry,2,has_saving_throw,core_multiattack_with,core_multiattack_with|has_saving_throw
+Surprise Attack,2,surprise_attack,core_multiattack_with,surprise_attack|core_multiattack_with
+Stench,2,inflicts_poisoned|aura|has_saving_throw,,inflicts_poisoned|aura|has_saving_throw
+Vampire Weaknesses,2,inflicts_paralyzed|advantage_on_attack|inflicts_incapacitated|explodes_on_death,,advantage_on_attack|inflicts_paralyzed|inflicts_incapacitated|explodes_on_death
 Undead Fortitude,2,,core_multiattack_with,core_multiattack_with
-Fire Aura,2,aura,core_multiattack_with|core_takes_damage,aura|core_takes_damage|core_multiattack_with
-Reckless,2,,core_attackers_advantage_1,core_attackers_advantage_1
-Rampage,2,,core_multiattack_with,core_multiattack_with
-Petrifying Gaze,2,gaze_attack|inflicts_petrified|repeat_save|has_saving_throw|save_or_effect|inflicts_restrained,core_multiattack_with,gaze_attack|core_multiattack_with|inflicts_petrified|repeat_save|has_saving_throw|save_or_effect|inflicts_restrained
-Damage Transfer,2,inflicts_grappled,,inflicts_grappled
-Dark Devotion,2,,,
-Divine Awareness,2,,,
-Berserk,2,aura|explodes_on_death|has_saving_throw,core_multiattack_with,core_multiattack_with|explodes_on_death|has_saving_throw|aura
-Brute,2,,core_multiattack_with,core_multiattack_with
-Abduct,2,,,
+Berserk,2,aura|has_saving_throw|explodes_on_death,core_multiattack_with,aura|explodes_on_death|core_multiattack_with|has_saving_throw
 Brave,2,,,
+Brute,2,,core_multiattack_with,core_multiattack_with
+Dark Devotion,2,,,
+Fey Ancestry,2,,,
 Wakeful,2,,,
-Vampire Weaknesses,2,inflicts_incapacitated|inflicts_paralyzed|explodes_on_death|advantage_on_attack,,inflicts_incapacitated|inflicts_paralyzed|explodes_on_death|advantage_on_attack
-Shark Telepathy,2,aura,,aura
-Speak with Frogs and Toads,2,,,
-Surprise Attack,2,surprise_attack,core_multiattack_with,core_multiattack_with|surprise_attack
-Limited Amphibiousness,2,,,
+Underwater Camouflage,2,stealth_advantage,,stealth_advantage
+Petrifying Gaze,2,gaze_attack|repeat_save|save_or_effect|inflicts_restrained|inflicts_petrified|has_saving_throw,core_multiattack_with,gaze_attack|repeat_save|core_multiattack_with|save_or_effect|inflicts_restrained|inflicts_petrified|has_saving_throw
+Earth Glide,2,,,
+Divine Awareness,2,,,
+Damage Transfer,2,inflicts_grappled,,inflicts_grappled
+Inscrutable,2,,,
+Limited Telepathy,2,,core_multiattack_with,core_multiattack_with
 Elemental Demise,2,,,
 Heated Weapons,2,,core_multiattack_with,core_multiattack_with
-Mimicry,2,has_saving_throw,core_multiattack_with,core_multiattack_with|has_saving_throw
-Sneak Attack (1/Turn),2,advantage_on_attack,core_multiattack_with|core_has_advantage_attack,core_multiattack_with|advantage_on_attack|core_has_advantage_attack
 Lightning Absorption,2,heals_on_damage,,heals_on_damage
-Fey Ancestry,2,,,
-Earth Glide,2,,,
-Limited Telepathy,2,,core_multiattack_with,core_multiattack_with
-"Legendary Resistance (3/Day, or 4/Day in Lair)",2,,,
-Cunning Action,1,,,
-Corrode Metal,1,,,
-Death Throes,1,aura|explodes_on_death|death_burst|has_saving_throw|save_or_effect|half_damage_on_save,core_taking_damage,aura|core_taking_damage|explodes_on_death|death_burst|has_saving_throw|save_or_effect|half_damage_on_save
-Corrosive Form,1,aura,core_multiattack_with|core_takes_damage,aura|core_takes_damage|core_multiattack_with
-Beast of Burden,1,,,
+Sneak Attack (1/Turn),2,advantage_on_attack,core_has_advantage_attack|core_multiattack_with,core_has_advantage_attack|advantage_on_attack|core_multiattack_with
+Reckless,2,,core_attackers_advantage_1,core_attackers_advantage_1
+Rampage,2,,core_multiattack_with,core_multiattack_with
+Confer Fire Resistance,1,damage_resistance,,damage_resistance
+Bound,1,aura,,aura
 Blind Senses,1,,,
-Ambusher,1,surprise_attack|advantage_on_attack,core_advantage_against|core_has_advantage_attack,core_advantage_against|surprise_attack|advantage_on_attack|core_has_advantage_attack
+Beast of Burden,1,,,
+Assassinate,1,surprise_attack|advantage_on_attack,core_has_advantage_attack|core_advantage_against,core_has_advantage_attack|surprise_attack|advantage_on_attack|core_advantage_against
+Aversion of Fire,1,advantage_on_attack,,advantage_on_attack
+Barbed Hide,1,,,
+Ambusher,1,surprise_attack|advantage_on_attack,core_has_advantage_attack|core_advantage_against,core_has_advantage_attack|surprise_attack|advantage_on_attack|core_advantage_against
+Adhesive,1,inflicts_grappled|escape_dc,,inflicts_grappled|escape_dc
 Aggressive,1,,,
 Aberrant Ground,1,has_saving_throw|speed_reduction,,has_saving_throw|speed_reduction
 Acid Absorption,1,heals_on_damage,,heals_on_damage
-Bound,1,aura,,aura
-Confer Fire Resistance,1,damage_resistance,,damage_resistance
-Consume Life,1,aura|has_saving_throw,,aura|has_saving_throw
 Air Form,1,,,
-Adhesive,1,escape_dc|inflicts_grappled,,escape_dc|inflicts_grappled
-Assassinate,1,surprise_attack|advantage_on_attack,core_advantage_against|core_has_advantage_attack,core_advantage_against|surprise_attack|advantage_on_attack|core_has_advantage_attack
-Avatar's PB,1,,,
-Aura of Authority,1,advantage_on_attack,core_have_advantage_attack,advantage_on_attack|core_have_advantage_attack
-Aversion of Fire,1,advantage_on_attack,,advantage_on_attack
-Barbed Hide,1,,,
-Hellish Weapons,1,,,
-Ephemeral,1,,,
-Mucous Cloud,1,has_saving_throw,core_multiattack_with,core_multiattack_with|has_saving_throw
-Misty Escape,1,inflicts_paralyzed|shapechange|regains_hp,core_multiattack_with,core_multiattack_with|inflicts_paralyzed|shapechange|regains_hp
-Martial Advantage,1,,core_multiattack_with,core_multiattack_with
+Gnome Cunning,1,,,
+Grappler,1,advantage_on_attack|inflicts_grappled,core_has_advantage_attack|core_advantage_against,core_has_advantage_attack|advantage_on_attack|inflicts_grappled|core_advantage_against
+Death Throes,1,half_damage_on_save|death_burst|aura|explodes_on_death|save_or_effect|has_saving_throw,core_taking_damage,half_damage_on_save|core_taking_damage|death_burst|aura|explodes_on_death|save_or_effect|has_saving_throw
 Limited Magic Immunity,1,,,
+Limited Amphibiousness,1,,,
 Light Sensitivity,1,advantage_on_attack,,advantage_on_attack
 Labyrinthine Recall,1,,,
-Life Bond,1,aura|regains_hp,,aura|regains_hp
 Keen Senses,1,,,
-Horrific Appearance,1,aura|save_or_effect|repeat_save|has_saving_throw|advantage_on_attack|surprise_attack|inflicts_frightened,core_multiattack_with|core_advantage_against,aura|core_multiattack_with|surprise_attack|core_advantage_against|repeat_save|has_saving_throw|advantage_on_attack|save_or_effect|inflicts_frightened
-Iron Scent,1,aura,,aura
-Invisibility,1,,,
 Ignited Illumination,1,extra_damage,,extra_damage
-Edits Needed,1,multiattack|breath_weapon,,multiattack|breath_weapon
-Divine Eminence,1,,,
+Invisibility,1,,,
+Iron Scent,1,aura,,aura
+Horrific Appearance,1,inflicts_frightened|surprise_attack|aura|advantage_on_attack|repeat_save|save_or_effect|has_saving_throw,core_advantage_against|core_multiattack_with,inflicts_frightened|surprise_attack|aura|advantage_on_attack|repeat_save|core_multiattack_with|core_advantage_against|save_or_effect|has_saving_throw
+Hellish Weapons,1,,,
+Grasping Tendrils,1,damage_immunity|has_saving_throw,,damage_immunity|has_saving_throw
+Hellish Rejuvenation,1,,core_multiattack_with,core_multiattack_with
+Consume Life,1,aura|has_saving_throw,,aura|has_saving_throw
+Corrode Metal,1,,,
+Corrosive Form,1,aura,core_takes_damage|core_multiattack_with,core_takes_damage|aura|core_multiattack_with
+Cunning Action,1,,,
+Ephemeral,1,,,
 Duergar Resilience,1,,,
-Draconic Origin,1,,core_multiattack_with,core_multiattack_with
-Fear Aura,1,aura|inflicts_incapacitated|has_saving_throw|save_or_effect|inflicts_frightened,,aura|inflicts_incapacitated|has_saving_throw|save_or_effect|inflicts_frightened
-Faultless Tracker,1,,,
+Divine Eminence,1,,,
 Ethereal Sight,1,ethereal,,ethereal
 Evasion,1,,,
+Faultless Tracker,1,,,
+Fear Aura,1,inflicts_frightened|has_saving_throw|aura|save_or_effect|inflicts_incapacitated,,inflicts_frightened|has_saving_throw|aura|save_or_effect|inflicts_incapacitated
 Ethereal Jaunt,1,ethereal,,ethereal
-Freedom of Movement,1,inflicts_restrained,,inflicts_restrained
 Fire Absorption,1,heals_on_damage,,heals_on_damage
-Fire Form,1,ongoing_damage,core_multiattack_with|core_takes_damage,core_multiattack_with|core_takes_damage|ongoing_damage
-Gnome Cunning,1,,,
-Gibbering,1,aura|has_saving_throw,,aura|has_saving_throw
+Fire Aura,1,aura,core_takes_damage|core_multiattack_with,core_takes_damage|aura|core_multiattack_with
+Fire Form,1,ongoing_damage,core_takes_damage|core_multiattack_with,core_takes_damage|ongoing_damage|core_multiattack_with
+Freedom of Movement,1,inflicts_restrained,,inflicts_restrained
 Freeze,1,speed_reduction,,speed_reduction
-Grappler,1,inflicts_grappled|advantage_on_attack,core_advantage_against|core_has_advantage_attack,core_advantage_against|inflicts_grappled|advantage_on_attack|core_has_advantage_attack
-HP Notes,1,,,
-Grasping Tendrils,1,has_saving_throw|damage_immunity,,has_saving_throw|damage_immunity
-Hellish Rejuvenation,1,,core_multiattack_with,core_multiattack_with
-Probing Telepathy,1,,core_multiattack_with,core_multiattack_with
+Gibbering,1,aura|has_saving_throw,,aura|has_saving_throw
+Ooze Cube,1,swallow|aura|has_saving_throw,core_takes_damage,core_takes_damage|aura|swallow|has_saving_throw
+Nimble Escape,1,bonus_action_hide,,bonus_action_hide
 Spell Storing,1,,core_multiattack_with,core_multiattack_with
 Speak with Beasts and Plants,1,,core_multiattack_with,core_multiattack_with
 Snow Camouflage,1,stealth_advantage,,stealth_advantage
-Rust Metal,1,,,
-Shadow Stealth,1,bonus_action_hide,,bonus_action_hide
-Sense Magic,1,aura,,aura
-Shared Resistances,1,,,
 Shielded Mind,1,,,
+Shark Telepathy,1,aura,,aura
+Rust Metal,1,,,
+Sense Magic,1,aura,,aura
+Shadow Stealth,1,bonus_action_hide,,bonus_action_hide
+Reflective Carapace,1,,,
 Running Leap,1,,core_multiattack_with,core_multiattack_with
 Night Hag Items,1,ethereal,core_multiattack_with,core_multiattack_with|ethereal
-Nimble Escape,1,bonus_action_hide,,bonus_action_hide
-Ooze Cube,1,aura|has_saving_throw|swallow,core_takes_damage,aura|core_takes_damage|has_saving_throw|swallow
-Multiple Heads,1,damage_on_end_turn|explodes_on_death|regains_hp,,damage_on_end_turn|explodes_on_death|regains_hp
+Multiple Heads,1,damage_on_end_turn|regains_hp|explodes_on_death,,damage_on_end_turn|regains_hp|explodes_on_death
+Mucous Cloud,1,has_saving_throw,core_multiattack_with,core_multiattack_with|has_saving_throw
+Probing Telepathy,1,,core_multiattack_with,core_multiattack_with
 Reactive,1,,,
 Reactive Heads,1,,,
-Reflective Carapace,1,,,
-Troll Spawn,1,,,
-Tree Stride,1,,,
+Martial Advantage,1,,core_multiattack_with,core_multiattack_with
+Misty Escape,1,shapechange|regains_hp|inflicts_paralyzed,core_multiattack_with,shapechange|regains_hp|inflicts_paralyzed|core_multiattack_with
 Treasure Sense,1,,,
+Sunlight Weakness,1,advantage_on_attack,,advantage_on_attack
+Steadfast,1,inflicts_frightened|aura,,inflicts_frightened|aura
 Transparent,1,surprise_attack|has_saving_throw,,surprise_attack|has_saving_throw
 Tail Spike Regrowth,1,,,
-Sunlight Weakness,1,advantage_on_attack,,advantage_on_attack
-Steadfast,1,aura|inflicts_frightened,,aura|inflicts_frightened
-Tunneler,1,,,
+Tree Stride,1,,,
+Two Heads,1,,,
 Two-Headed,1,,,
 Turn Defiance,1,,,
 Turn Resistance,1,,,
-Two Heads,1,,,
-Vampiric Connection,1,,core_multiattack_with,core_multiattack_with
+Tunneler,1,,,
 Variable Illumination,1,,,
 Water Susceptibility,1,,,
 Water Form,1,,,
