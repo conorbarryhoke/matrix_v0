@@ -28,18 +28,51 @@ Features may be rejected for any reason (low impact, edge cases, complexity, etc
 ---
 
 ## Phase 1: Pattern Extraction
-**Status**: IN PROGRESS
+**Status**: COMPLETE
 **Notebook**: `notebooks/1_pattern_extraction.ipynb`
 
 ### Objectives
 - Extract all unique trait names and action names with frequencies
 - Identify text patterns using regex (saving throws, damage types, conditions, etc.)
 - Catalog wording variations for similar effects
+- Integrate patterns from core parsers (`parsers.py`) alongside notebook-defined patterns
+- Analyze multiattack string complexity and categorize parsing difficulty
+
+### Notebook Structure (8 sections, 49 cells)
+1. **Section 1: Extract All Traits** — 574 trait instances, 167 unique names
+2. **Section 2: Extract All Actions** — 1006 action instances, 237 unique names
+3. **Section 3: Pattern Detection** — 61 notebook patterns (PATTERN_DEFINITIONS) + 30 core patterns (CORE_PATTERN_DEFINITIONS from parsers.py)
+4. **Section 4: Identify Unmatched Traits/Actions** — Uses combined `pattern_count_any` to find gaps
+5. **Section 5: High-Priority Pattern Analysis** — HP max reduction, shapechange, death burst, undead fortitude, ethereal movement
+6. **Section 6: Save Outputs** — Exports parquet and CSV files
+7. **Section 7: Quick Reference** — Trait and action summaries with notebook, core, and combined pattern columns
+8. **Section 8: Multiattack Pattern Analysis** — 21 multiattack-specific patterns, complexity categorization
+
+### Pattern Sources
+- **PATTERN_DEFINITIONS** (61 patterns): Saving throws, conditions, damage, HP manipulation, defensive abilities, regeneration, movement, shapechanging, attack modifiers, stealth/hide, recharge, death effects, spellcasting, aura, multiattack, swallow, charm, fear, gaze, life drain
+- **CORE_PATTERN_DEFINITIONS** (30 patterns from parsers.py): Advantage/disadvantage conditions, charge/pounce/rampage, spellcaster level, legendary actions, multiattack counts, conditional damage, prone infliction
+- **MULTIATTACK_PATTERNS** (21 patterns): Attack counts, OR alternatives, specific attack references, constraints, conditionals, form-dependent, weapon-specific
+
+### Column Schema
+Each catalog (trait/action) includes three pattern tracking layers:
+- `patterns`, `pattern_count`, `patterns_str` — Notebook patterns only
+- `patterns_core`, `pattern_count_core`, `patterns_str_core` — Core parsers.py patterns only
+- `patterns_any`, `pattern_count_any`, `patterns_str_any` — Combined (union of both sources)
 
 ### Outputs
-- `data/trait_catalog.parquet` - All traits with metadata
-- `data/action_catalog.parquet` - All actions with metadata
-- `data/pattern_frequencies.csv` - Pattern occurrence counts
+- `data/trait_catalog.parquet` - All traits with pattern detection columns
+- `data/action_catalog.parquet` - All actions with pattern detection columns
+- `data/trait_summary.csv` - Unique traits by name with frequency and pattern coverage
+- `data/action_summary.csv` - Unique actions by name with frequency and pattern coverage
+- `data/pattern_frequencies.csv` - Pattern occurrence counts (53 patterns detected at least once)
+- `data/multiattack_analysis.csv` - 160 multiattack descriptions with complexity categories
+- `data/multiattack_pattern_frequencies.csv` - Multiattack-specific pattern counts
+
+### Key Results
+- Traits with notebook patterns: 230/574 (40.1%)
+- Actions with notebook patterns: 377/1006 (37.5%)
+- Multiattack creatures: 160, of which 31 (19.4%) have potentially problematic parsing patterns
+- Multiattack complexity: 55.6% simple_specific, 15.0% or_alternative, 6.9% simple_count, 3.1% conditional
 
 ### Key Patterns to Detect
 1. **Damage patterns**: "Xd6 damage", "plus X damage", "taking X damage"
@@ -49,6 +82,8 @@ Features may be rejected for any reason (low impact, edge cases, complexity, etc
 5. **Defensive patterns**: "resistance to", "immune to", "regenerates"
 6. **Movement patterns**: "can't move", "speed is reduced", "teleport"
 7. **Special mechanics**: "reduce hit point maximum", "can't regain hit points"
+8. **Stealth/Hide patterns**: "Hide action as a bonus action", "advantage on Stealth checks"
+9. **Core parser patterns**: Pack Tactics, Blood Frenzy, Sunlight Sensitivity, Charge, Pounce, etc.
 
 ---
 
@@ -143,8 +178,12 @@ Workflow:
 
 | Date | Phase | Action | Notes |
 |------|-------|--------|-------|
-| 2026-01-29 | Setup | Created folder structure and documentation | |
-| 2026-01-29 | Phase 1 | Started pattern extraction notebook | |
+| 2026-01-29 | Setup | Created folder structure and documentation | CONTEXT.md, PLAN.md |
+| 2026-01-29 | Phase 1 | Created pattern extraction notebook | Sections 1-7, 61 patterns |
+| 2026-01-30 | Phase 1 | Added Section 8: Multiattack Pattern Analysis | 21 multiattack patterns, complexity categorization |
+| 2026-01-30 | Phase 1 | Added Hide/Stealth patterns | bonus_action_hide, stealth_advantage |
+| 2026-01-30 | Phase 1 | Integrated core patterns from parsers.py | 30 patterns, 3-layer column schema (notebook/core/combined) |
+| 2026-01-30 | Phase 1 | Updated Section 4 to use combined patterns | pattern_count_any for gap analysis |
 
 ---
 
