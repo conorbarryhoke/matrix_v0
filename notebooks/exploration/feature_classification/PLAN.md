@@ -37,10 +37,11 @@ Features may be rejected for any reason (low impact, edge cases, complexity, etc
 - Catalog wording variations for similar effects
 - Integrate patterns from core parsers (`parsers.py`) alongside notebook-defined patterns
 - Analyze multiattack string complexity and categorize parsing difficulty
+- Consolidate action names into weapon/natural weapon categories
 
-### Notebook Structure (8 sections, 49 cells)
+### Notebook Structure (8 sections, 51 cells)
 1. **Section 1: Extract All Traits** — 574 trait instances, 167 unique names
-2. **Section 2: Extract All Actions** — 1006 action instances, 237 unique names
+2. **Section 2: Extract All Actions** — 1006 action instances, 104 unique normalized names (consolidated from 207)
 3. **Section 3: Pattern Detection** — 61 notebook patterns (PATTERN_DEFINITIONS) + 30 core patterns (CORE_PATTERN_DEFINITIONS from parsers.py)
 4. **Section 4: Identify Unmatched Traits/Actions** — Uses combined `pattern_count_any` to find gaps
 5. **Section 5: High-Priority Pattern Analysis** — HP max reduction, shapechange, death burst, undead fortitude, ethereal movement
@@ -52,6 +53,17 @@ Features may be rejected for any reason (low impact, edge cases, complexity, etc
 - **PATTERN_DEFINITIONS** (61 patterns): Saving throws, conditions, damage, HP manipulation, defensive abilities, regeneration, movement, shapechanging, attack modifiers, stealth/hide, recharge, death effects, spellcasting, aura, multiattack, swallow, charm, fear, gaze, life drain
 - **CORE_PATTERN_DEFINITIONS** (30 patterns from parsers.py): Advantage/disadvantage conditions, charge/pounce/rampage, spellcaster level, legendary actions, multiattack counts, conditional damage, prone infliction
 - **MULTIATTACK_PATTERNS** (21 patterns): Attack counts, OR alternatives, specific attack references, constraints, conditionals, form-dependent, weapon-specific
+
+### Action Name Consolidation
+Action `name_normalized` consolidates attack types using `data/dnd5e_weapons.csv` and a curated natural weapons set:
+- **Melee Weapon** (150 instances) — Manufactured melee weapons matched via CSV lookup + aliases + substring matching
+- **Ranged Weapon** (51 instances) — Manufactured ranged weapons; thrown melee weapons with explicit `(Ranged)` suffix
+- **Natural Weapon** (413 instances) — Strict body-part attacks: bite, claw, tail, slam, gore, hooves, beak, talons, sting, etc. (35 entries)
+- **Unconsolidated** (~392 instances) — Multiattack, breath weapons, special abilities, etc. retain their original normalized names
+
+Trait `name_normalized` is unaffected — traits use the original `normalize_trait_name()` (parenthetical stripping only).
+
+Candidates for manual review (not auto-classified): rock, fist, unarmed strike, rotting fist, fling, blood drain, slash, rotting touch, withering touch, poison jab, shock.
 
 ### Column Schema
 Each catalog (trait/action) includes three pattern tracking layers:
@@ -184,6 +196,8 @@ Workflow:
 | 2026-01-30 | Phase 1 | Added Hide/Stealth patterns | bonus_action_hide, stealth_advantage |
 | 2026-01-30 | Phase 1 | Integrated core patterns from parsers.py | 30 patterns, 3-layer column schema (notebook/core/combined) |
 | 2026-01-30 | Phase 1 | Updated Section 4 to use combined patterns | pattern_count_any for gap analysis |
+| 2026-02-04 | Data | Created `data/dnd5e_weapons.csv` | 37 SRD weapons with weapon_category, average_damage |
+| 2026-02-04 | Phase 1 | Added action name consolidation | Melee/Ranged/Natural Weapon categories, 207→104 unique names |
 
 ---
 
