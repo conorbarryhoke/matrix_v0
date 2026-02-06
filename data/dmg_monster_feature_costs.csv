@@ -1,0 +1,73 @@
+monster_feature,example_monster,effect_on_challenge_rating
+Aggressive,Orc,Increase the monster's effective per-round damage output by 2
+Ambusher,Doppelganger,Increase the monster's effective attack bonus by 1
+Amorphous,Black Pudding,—
+Amphibious,Kuo-toa,—
+Angelic Weapons,Deva,Increase the monster's effective per-round damage output by 2
+Antimagic Susceptibility,Flying Sword,—
+Avoidance,Demilich,Increase the monster's effective AC by 1
+Blind Senses,Grimlock,—
+Blood Frenzy,Sahuagin,Increase the monster's effective attack bonus by 4
+Breath Weapon,Ancient Black Dragon,"Increase the monster's effective per-round damage output for 1 round, and the number of rounds depends on the recharge"
+Brute,Bugbear,Increase the monster's effective per-round damage output by 1d4+1 per attack
+Charge,Centaur,Increase the monster's effective per-round damage output by the extra damage of the charge attack
+Charm,Vampire,"Compare with similar enchantment spells, taking into account the target, effect, and duration"
+Constrict,Constrictor Snake,Increase the monster's effective per-round damage output by the constrict damage
+Damage Absorption,Flesh Golem,—
+Damage Transfer,Shield Guardian,Double the monster's effective hit points. Add the transferred damage to the other creature's effective per-round damage output
+Death Burst,Magmin,Increase the monster's effective per-round damage output by the burst damage of the attack
+Etherealness,Night Hag,—
+Frightful Presence,Ancient Black Dragon,Increase the monster's effective AC by 1
+Grapple,Mimic,"See Restrain, below"
+Hold Breath,Lizardfolk,—
+Horrifying Visage,Banshee,See Frightful Presence
+Illumination,Flameskull,—
+Immutable Form,Iron Golem,—
+Innate Spellcasting,Djinni,"See Spellcasting, below"
+Invisibility,Imp,Increase the monster's effective AC by 1
+Keen Senses,Hell Hound,—
+Labyrinthine Recall,Minotaur,—
+Leadership,Hobgoblin Captain,—
+Legendary Resistance,Ancient Red Dragon,"Each per-day use of this trait increases the monster's effective hit points based on the expected challenge rating: 1-4, 10 hp; 5-10, 20 hp; 11-16, 30 hp; 17+, 40 hp"
+Life Drain,Wight,"Increase the effective per-round damage output by the life drain damage, and see Reduce Max Hit Points"
+Light Sensitivity,Shadow Demon,—
+Magic Resistance,Balor,Increase the monster's effective AC by 2
+Magic Weapons,Balor,—
+Martial Advantage,Hobgoblin,Increase the effective per-round damage output by one extra damage die
+Multiattack,Marilith,"Factor in all damage from multiattack into the monster's per-round damage output, and see Calculating a Monster's Effective Damage"
+Nightmare Haunting,Night Hag,See Life Drain
+Pack Tactics,Kobold,Increase the monster's effective attack bonus by 1
+Parry,Hobgoblin Captain,Increase the monster's effective AC by 1
+Possession,Ghost,"Double the monster's effective hit points, and see Spellcasting"
+Pounce,Tiger,"Increase the monster's effective per-round damage output by the pounce extra damage, and see Prone"
+Prone,Wolf,"If the monster can knock a target prone and it has advantage on attacks against prone targets, increase effective attack bonus by 2"
+Psychic Defense,Githzerai Monk,Increase the monster's effective AC by the bonus granted
+Rampage,Gnoll,Increase the monster's effective per-round damage output by the rampage damage
+Read Thoughts,Doppelganger,See Frightful Presence
+Reckless,Minotaur,—
+Redirect Attack,Goblin Boss,—
+Regeneration,Troll,"Increase the monster's effective hit points by 3 x the HP regained per round"
+Rejuvenation,Lich,—
+Relentless,Wereboar,Increase the monster's effective hit points by the relentless HP threshold
+Shadow Stealth,Shadow Demon,Increase the monster's effective AC by 2
+Shapechange,Ancient Brass Dragon,—
+Siege Monster,Earth Elemental,—
+Sneak Attack,Assassin,Increase the effective per-round damage output by one sneak attack per round
+Spell Immunity,Rakshasa,—
+Spellcasting,"Lich, Mage",See chapter 13 of the DMG for how to determine a monster's effective per-round damage output and effective hit points based on its available spells
+Spider Climb,Ettercap,—
+Stench,Troglodyte,Increase the monster's effective AC by 1
+Sunlight Sensitivity,Kobold,—
+Superior Invisibility,Faerie Dragon,Increase the monster's effective AC by 2
+Sure-Footed,Dao,—
+Surprise Attack,Bugbear,Increase the monster's effective per-round damage output by the surprise attack damage
+Swallow,Behir,Assume the monster swallows one creature and deals 2 rounds of acid damage to it
+Teleport,Balor,—
+Terrain Camouflage,Bullywug,—
+Threatening Reach,Reaper,—
+Tunneler,Umber Hulk,—
+Turn Immunity,Revenant,—
+Turn Resistance,Lich,—
+Two Heads,Ettin,Increase the monster's effective AC by 1
+Undead Fortitude,Zombie,Increase the monster's effective hit points by the relentless HP threshold
+Web,Giant Spider,"Increase the monster's effective AC by 1, similar to Restrain"
