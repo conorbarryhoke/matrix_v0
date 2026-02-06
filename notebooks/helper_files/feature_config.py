@@ -6,6 +6,47 @@ used across the feature engineering, model training, and analysis notebooks.
 """
 
 # =============================================================================
+# COMBAT ASSUMPTIONS
+# =============================================================================
+
+EXPECTED_COMBAT_ROUNDS = 3  # DMG assumes 3-round combat for CR calculation
+
+
+# =============================================================================
+# DMG MONSTER FEATURE COSTS
+# =============================================================================
+# From DMG pp.280-281 "Monster Features" table.
+# These adjust a monster's effective AC or attack bonus for CR purposes.
+# Keys are lowercase trait/action names matched against creature data.
+
+DMG_AC_ADJUSTMENTS = {
+    'magic resistance': 2,
+    'shadow stealth': 4,
+    'stench': 1,
+    'invisibility': 1,
+    'nimble escape': 4,
+    'constrict': 1,
+    'web': 1,
+}
+
+DMG_ATTACK_ADJUSTMENTS = {
+    'pack tactics': 1,
+    'blood frenzy': 4,
+    'ambusher': 1,
+    'nimble escape': 4,
+}
+
+# Features that override has_advantage_condition when detected (known cost)
+DMG_ADVANTAGE_OVERRIDES = [
+    'pack_tactics', 'blood_frenzy', 'ambusher', 'reckless', 'grappler',
+]
+
+# Features that override has_attackers_advantage when detected (known cost)
+DMG_ATTACKERS_ADVANTAGE_OVERRIDES = [
+    'reckless',
+]
+
+# =============================================================================
 # CR TIER BOUNDARIES
 # =============================================================================
 # Each tier has its own model with tier-specific penalties
@@ -130,7 +171,6 @@ PHASE2_PENALTIES = {
 
 PHASE3_FEATURES_BASE = [
     'has_legendary_resistance_scaled',
-    'has_magic_resistance_scaled',
     'has_regeneration_scaled',
     'speed_ground_deviation', 'speed_fly_deviation', 'speed_swim', 'speed_burrow', 'speed_climb',
     'movement_types_count',
@@ -216,7 +256,6 @@ MODEL_CONFIG = {
     # Boolean features must have non-positive coefficients (reduce HP)
     'constrained_features': [
         'has_legendary_resistance_scaled',
-        'has_magic_resistance_scaled',
         'has_regeneration_scaled',
         'has_darkvision',
         'has_blindsight',
@@ -247,8 +286,17 @@ EXPORT_COLUMNS = [
     # Baselines
     'hp_baseline', 'ac_baseline', 'attack_baseline', 'dpr_baseline', 'dc_baseline',
 
-    # Combat stats
-    'highest_attack_bonus', 'highest_save_dc', 'estimated_dpr', 'legendary_dpr', 'total_dpr',
+    # Combat stats (4-layer: estimated + feature + legendary = total)
+    'highest_attack_bonus', 'highest_save_dc',
+    'estimated_dpr', 'feature_dpr', 'legendary_dpr', 'total_dpr',
+    'feature_ac', 'total_ac',
+    'feature_attack', 'total_attack',
+
+    # DMG feature flags
+    'feature_magic_resistance', 'feature_shadow_stealth', 'feature_stench',
+    'feature_invisibility', 'feature_nimble_escape', 'feature_constrict', 'feature_web',
+    'feature_pack_tactics', 'feature_blood_frenzy', 'feature_ambusher',
+    'feature_reckless', 'feature_grappler',
 
     # Phase 2: Deviations
     'ac_deviation', 'attack_deviation', 'dpr_deviation', 'save_dc_deviation',
@@ -257,8 +305,7 @@ EXPORT_COLUMNS = [
     'hp_after_phase2', 'hp_after_resist_immun_penalty', 'residual_hp',
 
     # Phase 3: Scaled features
-    'has_legendary_resistance_scaled',
-    'has_magic_resistance_scaled', 'has_regeneration_scaled',
+    'has_legendary_resistance_scaled', 'has_regeneration_scaled',
 
     # Phase 3: Movement
     'speed_ground', 'speed_fly', 'speed_swim', 'speed_burrow', 'speed_climb',

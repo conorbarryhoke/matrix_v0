@@ -9,6 +9,12 @@ import re
 import json
 import pandas as pd
 
+from .feature_config import (
+    EXPECTED_COMBAT_ROUNDS,
+    DMG_AC_ADJUSTMENTS,
+    DMG_ATTACK_ADJUSTMENTS,
+)
+
 
 # =============================================================================
 # BASIC PARSERS
@@ -423,8 +429,8 @@ def parse_charge_bonus_attack(traits_str, actions_str):
                 attack_name = match.group(1).lower()
                 for action_name, damage in attack_damages.items():
                     if attack_name in action_name:
-                        # 50% chance for charge/pounce
-                        bonus_dpr += damage * 0.5
+                        # Burst effect: amortize over expected combat rounds
+                        bonus_dpr += damage * (1 / EXPECTED_COMBAT_ROUNDS)
                         break
 
         # Check for rampage ability
@@ -434,8 +440,8 @@ def parse_charge_bonus_attack(traits_str, actions_str):
                 attack_name = match.group(1).lower()
                 for action_name, damage in attack_damages.items():
                     if attack_name in action_name:
-                        # 25% chance for rampage
-                        bonus_dpr += damage * 0.25
+                        # Burst effect: amortize over expected combat rounds
+                        bonus_dpr += damage * (1 / EXPECTED_COMBAT_ROUNDS)
                         break
 
     return bonus_dpr
@@ -688,6 +694,109 @@ def has_attackers_advantage(row):
             return 1
 
     return 0
+
+
+# =============================================================================
+# DMG FEATURE DETECTION
+# =============================================================================
+
+def parse_dmg_features(row):
+    """
+    Detect DMG Monster Features from a creature's traits and actions.
+    Returns a dict of feature_{name}: 0/1 flags.
+
+    Scans trait names and action names for known DMG features that have
+    specified AC, attack, or DPR costs.
+    """
+    features = {
+        'feature_magic_resistance': 0,
+        'feature_shadow_stealth': 0,
+        'feature_stench': 0,
+        'feature_invisibility': 0,
+        'feature_nimble_escape': 0,
+        'feature_constrict': 0,
+        'feature_web': 0,
+        'feature_pack_tactics': 0,
+        'feature_blood_frenzy': 0,
+        'feature_ambusher': 0,
+        'feature_reckless': 0,
+        'feature_grappler': 0,
+    }
+
+    trait_names = []
+    action_names = []
+
+    if pd.notna(row.get('Traits')) and row.get('Traits') != '—':
+        try:
+            traits = json.loads(row['Traits'])
+            for trait in traits:
+                if isinstance(trait, dict):
+                    trait_names.append(trait.get('Name', '').lower())
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    if pd.notna(row.get('Actions')) and row.get('Actions') != '—':
+        try:
+            actions = json.loads(row['Actions'])
+            for action in actions:
+                if isinstance(action, dict):
+                    action_names.append(action.get('Name', '').lower())
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    all_names = trait_names + action_names
+
+    # Match trait names against DMG features
+    for name in all_names:
+        if 'magic resistance' in name:
+            features['feature_magic_resistance'] = 1
+        if 'shadow stealth' in name:
+            features['feature_shadow_stealth'] = 1
+        if 'stench' in name:
+            features['feature_stench'] = 1
+        if name.startswith('invisibility') or name == 'invisible':
+            features['feature_invisibility'] = 1
+        if 'nimble escape' in name:
+            features['feature_nimble_escape'] = 1
+        if 'pack tactics' in name:
+            features['feature_pack_tactics'] = 1
+        if 'blood frenzy' in name:
+            features['feature_blood_frenzy'] = 1
+        if name == 'ambusher' or name.startswith('ambusher'):
+            features['feature_ambusher'] = 1
+        if 'reckless' in name:
+            features['feature_reckless'] = 1
+        if 'grappler' in name:
+            features['feature_grappler'] = 1
+
+    # Action-specific detections
+    for name in action_names:
+        if name == 'constrict' or name.startswith('constrict'):
+            features['feature_constrict'] = 1
+        if name.startswith('web') and 'sense' not in name and 'walker' not in name:
+            features['feature_web'] = 1
+
+    return features
+
+
+def calculate_feature_ac(row):
+    """Sum effective AC adjustments from detected DMG features."""
+    total = 0
+    for feature_name, ac_bonus in DMG_AC_ADJUSTMENTS.items():
+        col = f'feature_{feature_name.replace(" ", "_")}'
+        if row.get(col, 0) == 1:
+            total += ac_bonus
+    return total
+
+
+def calculate_feature_attack(row):
+    """Sum effective attack bonus adjustments from detected DMG features."""
+    total = 0
+    for feature_name, attack_bonus in DMG_ATTACK_ADJUSTMENTS.items():
+        col = f'feature_{feature_name.replace(" ", "_")}'
+        if row.get(col, 0) == 1:
+            total += attack_bonus
+    return total
 
 
 # =============================================================================
