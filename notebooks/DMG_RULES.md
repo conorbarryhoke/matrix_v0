@@ -13,6 +13,7 @@ Reactions: Assume they are used once per turn.
 
 ## Speed
 Every monster has a walking speed. (Immobile monsters have a walking speed of 0 feet). In addition to its walking speed, a monster might have one or more other speeds, including a burrowing, climbing, flying, or swimming speed.
+
 ### Flying Monster
 Increase the mosnter's effective Armor Class by 2 if it can fly and deal damage at range and if its expected challenge rating is 10 or lower.
 
