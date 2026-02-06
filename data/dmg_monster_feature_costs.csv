@@ -3,64 +3,82 @@ Aggressive,Orc,Increase the monster's effective per-round damage output by 2
 Ambusher,Doppelganger,Increase the monster's effective attack bonus by 1
 Amorphous,Black Pudding,—
 Amphibious,Kuo-toa,—
-Angelic Weapons,Deva,Increase the monster's effective per-round damage output by 2
+Angelic Weapons,Deva,Increase the monster's effective per-round damage output by the amount noted in the trait
 Antimagic Susceptibility,Flying Sword,—
 Avoidance,Demilich,Increase the monster's effective AC by 1
 Blind Senses,Grimlock,—
 Blood Frenzy,Sahuagin,Increase the monster's effective attack bonus by 4
-Breath Weapon,Ancient Black Dragon,"Increase the monster's effective per-round damage output for 1 round, and the number of rounds depends on the recharge"
-Brute,Bugbear,Increase the monster's effective per-round damage output by 1d4+1 per attack
-Charge,Centaur,Increase the monster's effective per-round damage output by the extra damage of the charge attack
-Charm,Vampire,"Compare with similar enchantment spells, taking into account the target, effect, and duration"
-Constrict,Constrictor Snake,Increase the monster's effective per-round damage output by the constrict damage
+Breath Weapon,Ancient Black Dragon,"For the purpose of determining effective damage output, assume the breath weapon hits two targets, and that each target fails its saving throw."
+Brute,Bugbear,Increase the monster's effective per-round damage output by the amount noted in the trait (60%)
+Charge,Centaur,Increase the monster's damage on one attack by the amount noted in the trait
+Charm,Vampire,—
+Constrict,Constrictor Snake,Increase the monster's effective AC by 1
 Damage Absorption,Flesh Golem,—
-Damage Transfer,Shield Guardian,Double the monster's effective hit points. Add the transferred damage to the other creature's effective per-round damage output
-Death Burst,Magmin,Increase the monster's effective per-round damage output by the burst damage of the attack
+Damage Transfer,Shield Guardian,Double the monster's effective hit points. Add one-third of the monster's hit points to its per-round damage
+Death Burst,Magmin,"Increase the monster's effective damage for 1 round by the amount noted in the trait, and assume it affects two creatures"
+Devil's Sight,Barbed Devil,—
+Dive Attack,Aarakocra,Increase the monster's damage on one attack by the amount noted in the trait
+Echolocation,Hook Horror,—
+Elemental Body,Azer,Increase the monster's effective per-round damage by the amount noted in the trait
+Enlarge,Duergar,Increase the monster's effective per-round damage by the amount noted in the trait
 Etherealness,Night Hag,—
-Frightful Presence,Ancient Black Dragon,Increase the monster's effective AC by 1
+False Appearance,Gargoyle,—
+Fey Ancestry,Drow,—
+Fiendish Blessing,Cambion,Apply the monster's Charisma modifier to its actual AC
+Flyby,Peryton,—
+Frightful Presence,Ancient Black Dragon,Increase the monster's effective hit points by 25% if the monster is meant to face characters of 10th level or lower
 Grapple,Mimic,"See Restrain, below"
+Grappler,Mimic,—
 Hold Breath,Lizardfolk,—
 Horrifying Visage,Banshee,See Frightful Presence
 Illumination,Flameskull,—
 Immutable Form,Iron Golem,—
+Incorporeal Movement,Ghost,—
 Innate Spellcasting,Djinni,"See Spellcasting, below"
 Invisibility,Imp,Increase the monster's effective AC by 1
 Keen Senses,Hell Hound,—
 Labyrinthine Recall,Minotaur,—
 Leadership,Hobgoblin Captain,—
 Legendary Resistance,Ancient Red Dragon,"Each per-day use of this trait increases the monster's effective hit points based on the expected challenge rating: 1-4, 10 hp; 5-10, 20 hp; 11-16, 30 hp; 17+, 40 hp"
-Life Drain,Wight,"Increase the effective per-round damage output by the life drain damage, and see Reduce Max Hit Points"
+Life Drain,Wight,—
 Light Sensitivity,Shadow Demon,—
 Magic Resistance,Balor,Increase the monster's effective AC by 2
 Magic Weapons,Balor,—
-Martial Advantage,Hobgoblin,Increase the effective per-round damage output by one extra damage die
+Martial Advantage,Hobgoblin,Increase the effective per-round damage output by the amount gained from this trait
+Mimicry,Kenku,—
 Multiattack,Marilith,"Factor in all damage from multiattack into the monster's per-round damage output, and see Calculating a Monster's Effective Damage"
 Nightmare Haunting,Night Hag,See Life Drain
+Nimble Escape,Goblin,Increase the monster's effective AC and effective attack bonus by 4 (assumes the monster hides every round)
+Otherworldly Perception,Kuo-toa,—
 Pack Tactics,Kobold,Increase the monster's effective attack bonus by 1
 Parry,Hobgoblin Captain,Increase the monster's effective AC by 1
-Possession,Ghost,"Double the monster's effective hit points, and see Spellcasting"
-Pounce,Tiger,"Increase the monster's effective per-round damage output by the pounce extra damage, and see Prone"
+Possession,Ghost,Double the monster's effective hit points
+Pounce,Tiger,Increase the monster's effective damage for 1 round by the amount it deals with the bonus action gained from this trait.
 Prone,Wolf,"If the monster can knock a target prone and it has advantage on attacks against prone targets, increase effective attack bonus by 2"
 Psychic Defense,Githzerai Monk,Increase the monster's effective AC by the bonus granted
-Rampage,Gnoll,Increase the monster's effective per-round damage output by the rampage damage
+Rampage,Gnoll,Increase the monster's effective per-round damage output by 2
 Read Thoughts,Doppelganger,See Frightful Presence
 Reckless,Minotaur,—
 Redirect Attack,Goblin Boss,—
+Reel,Roper,—
 Regeneration,Troll,"Increase the monster's effective hit points by 3 x the HP regained per round"
 Rejuvenation,Lich,—
-Relentless,Wereboar,Increase the monster's effective hit points by the relentless HP threshold
-Shadow Stealth,Shadow Demon,Increase the monster's effective AC by 2
+Relentless,Wereboar,"Increase the monster's effective hit points based on the expected challenge rating: 1-4, 7 hp; 5-10, 14 hp; 11-16, 21 hp; 17+, 28 hp"
+Shadow Stealth,Shadow Demon,Increase the monster's effective AC by 4
 Shapechange,Ancient Brass Dragon,—
 Siege Monster,Earth Elemental,—
+Slippery,Kuo-toa Archpriest,—
 Sneak Attack,Assassin,Increase the effective per-round damage output by one sneak attack per round
 Spell Immunity,Rakshasa,—
 Spellcasting,"Lich, Mage",See chapter 13 of the DMG for how to determine a monster's effective per-round damage output and effective hit points based on its available spells
 Spider Climb,Ettercap,—
+Standing Leap,Bullywug,—
+Steadfast,Bearded Devil,—
 Stench,Troglodyte,Increase the monster's effective AC by 1
 Sunlight Sensitivity,Kobold,—
 Superior Invisibility,Faerie Dragon,Increase the monster's effective AC by 2
 Sure-Footed,Dao,—
-Surprise Attack,Bugbear,Increase the monster's effective per-round damage output by the surprise attack damage
+Surprise Attack,Bugbear,Increase the monster's effective damage for 1 round by the amount noted in the trait
 Swallow,Behir,Assume the monster swallows one creature and deals 2 rounds of acid damage to it
 Teleport,Balor,—
 Terrain Camouflage,Bullywug,—
@@ -68,6 +86,9 @@ Threatening Reach,Reaper,—
 Tunneler,Umber Hulk,—
 Turn Immunity,Revenant,—
 Turn Resistance,Lich,—
-Two Heads,Ettin,Increase the monster's effective AC by 1
+Two Heads,Ettin,—
 Undead Fortitude,Zombie,Increase the monster's effective hit points by the relentless HP threshold
 Web,Giant Spider,"Increase the monster's effective AC by 1, similar to Restrain"
+Web Sense,Giant Spider,—
+Web Walker,Giant Spider,—
+Wounded Fury,Quaggoth,Increase the monster's damage for 1 round by the amount noted in the trait
