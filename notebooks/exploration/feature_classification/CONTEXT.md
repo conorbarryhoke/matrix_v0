@@ -79,8 +79,10 @@ All outputs go to `notebooks/exploration/feature_classification/data/`:
 - `multiattack_analysis.csv` - Multiattack descriptions with complexity categorization
 - `multiattack_pattern_frequencies.csv` - Multiattack-specific pattern counts
 
+### Phase 2 Outputs (Feature Mapping)
+- `feature_mapping.csv` - All patterns with feature mapping, type, and occurrence count
+- `unmapped_patterns.csv` - Gap patterns with occurrence counts and affected monster lists
+
 ### Future Phase Outputs
-- `feature_mapping.csv` - Map of patterns to engineered features (Phase 2)
-- `unmapped_patterns.csv` - Patterns with no corresponding feature / gaps (Phase 2)
 - `feature_hp_costs.csv` - HP costs aggregated by feature (Phase 3)
 - `trait_menu.csv` - Final menu for custom monster building (Phase 4)

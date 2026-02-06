@@ -1,0 +1,91 @@
+pattern,features,mapping_type,notes,count
+inflicts_grappled,has_grapple,direct,Maps to has_grapple (Phase 3),37
+inflicts_prone,inflicts_prone,direct,Phase 2 fixed penalty,37
+inflicts_restrained,inflicts_restrained,direct,Phase 3 condition feature,37
+spellcasting,has_spellcasting|spellcaster_level,direct,Phase 3 features,34
+inflicts_frightened,inflicts_frightened,direct,Phase 3 condition feature,31
+magic_resistance,has_magic_resistance_scaled,direct,Phase 3 scaled feature,31
+inflicts_poisoned,inflicts_poisoned,direct,Phase 3 condition feature,26
+innate_spellcasting,has_spellcasting|spellcaster_level,direct,Phase 3 features,24
+advantage_on_attack,has_advantage_condition,direct,Phase 2 fixed penalty,21
+inflicts_paralyzed,inflicts_paralyzed,direct,Phase 3 condition feature,18
+inflicts_blinded,inflicts_blinded,direct,Phase 3 condition feature,12
+inflicts_incapacitated,inflicts_incapacitated,direct,Phase 3 condition feature,11
+legendary_resistance,has_legendary_resistance_scaled,direct,Phase 3 scaled feature,8
+inflicts_charmed,inflicts_charmed,direct,Phase 3 condition feature,5
+regeneration,has_regeneration_scaled,direct,Phase 3 scaled feature,5
+inflicts_petrified,inflicts_petrified,direct,Phase 3 condition feature,3
+inflicts_stunned,inflicts_stunned,direct,Phase 3 condition feature,2
+pack_tactics,has_advantage_condition,direct,Phase 2 fixed penalty (subset),0
+core_pack_tactics,has_advantage_condition,direct,Parsed by has_advantage_condition(),0
+core_blood_frenzy,has_advantage_condition,direct,Parsed by has_advantage_condition(),0
+core_reckless,has_advantage_condition|has_attackers_advantage,direct,Also gives attackers advantage,0
+core_ambusher,has_advantage_condition,direct,Parsed by has_advantage_condition(),0
+core_assassinate,has_advantage_condition,direct,Parsed by has_advantage_condition(),0
+core_grappler,has_advantage_condition,direct,Parsed by has_advantage_condition(),0
+core_has_advantage_attack,has_advantage_condition,direct,Generic advantage on attack rolls,0
+core_have_advantage_attack,has_advantage_condition,direct,Plural variant,0
+core_advantage_against,has_advantage_condition,direct,Advantage on attack rolls against,0
+core_sunlight_sensitivity,has_disadvantage_condition,direct,Parsed by has_disadvantage_condition(),0
+core_sunlight_weakness,has_disadvantage_condition,direct,Parsed by has_disadvantage_condition(),0
+core_light_sensitivity,has_disadvantage_condition,direct,Parsed by has_disadvantage_condition(),0
+core_attackers_advantage_1,has_attackers_advantage,direct,Parsed by has_attackers_advantage(),0
+core_attackers_advantage_2,has_attackers_advantage,direct,Parsed by has_attackers_advantage(),0
+core_legendary_actions,legendary_action_count|legendary_actions_per_round,direct,Parsed by parse_legendary_actions(),0
+core_spellcaster_level,spellcaster_level|has_spellcasting,direct,Parsed by extract_spellcaster_level(),0
+core_casts_as_level,spellcaster_level|has_spellcasting,direct,Alternative spellcaster level pattern,0
+has_saving_throw,save_dc_deviation,indirect,Save DC extracted by parse_save_dc(),232
+multiattack,dpr_deviation,indirect,Captured by parse_dpr_from_json(),99
+save_or_effect,save_dc_deviation,indirect,Indicates save-or-suck effect,91
+half_damage_on_save,save_dc_deviation,indirect,Half-damage save mechanic,79
+repeat_save,save_dc_deviation,indirect,Repeating save mechanic,65
+escape_dc,has_grapple,indirect,Escape DC implies grapple/restrain,31
+breath_weapon,dpr_deviation,indirect,Damage captured by DPR parsing,20
+extra_damage,dpr_deviation,indirect,Conditional damage captured in DPR,9
+damage_immunity,resist_immun_immunity_penalty,indirect,Captured by resist/immun penalty phase,5
+damage_resistance,resist_immun_resistance_penalty,indirect,Captured by resist/immun penalty phase,2
+recharge,dpr_deviation,indirect,Recharge abilities parsed for DPR,0
+core_charge,dpr_deviation,indirect,Parsed by parse_charge_bonus_attack(),0
+core_pounce,dpr_deviation,indirect,Parsed by parse_charge_bonus_attack(),0
+core_rampage,dpr_deviation,indirect,Parsed by parse_charge_bonus_attack(),0
+core_trampling,dpr_deviation,indirect,Parsed by parse_charge_bonus_attack(),0
+core_multiattack_two,dpr_deviation,indirect,Parsed by parse_dpr_from_json(),0
+core_multiattack_three,dpr_deviation,indirect,Parsed by parse_dpr_from_json(),0
+core_multiattack_with,dpr_deviation,indirect,Parsed by parse_dpr_from_json(),0
+core_taking_damage,dpr_deviation,indirect,Conditional damage parsed in DPR,0
+core_takes_damage,dpr_deviation,indirect,Conditional damage parsed in DPR,0
+core_plus_damage,dpr_deviation,indirect,Conditional damage parsed in DPR,0
+condition_immunity,condition_immunity_count,indirect,"Parsed from stat block, not description text",0
+core_knocked_prone,inflicts_prone,indirect,Contributes to inflicts_prone detection,0
+core_falls_prone,inflicts_prone,indirect,Contributes to inflicts_prone detection,0
+aura,,unmapped,Broad aura pattern - partially captured by specific conditions,63
+fear_effect,,unmapped,Frightful Presence / fear aura (beyond inflicts_frightened),45
+shapechange,,unmapped,No feature for shapechange ability,26
+regains_hp,,unmapped,HP recovery abilities (beyond regeneration),25
+revert_form,,unmapped,Paired with shapechange,24
+cant_regain_hp,,unmapped,Prevents target HP recovery,14
+ongoing_damage,,unmapped,Recurring damage each turn,14
+swallow,,unmapped,Swallow/engulf mechanic,13
+reduces_hp_max,,unmapped,"HP max reduction (vampires, wraiths)",12
+explodes_on_death,,unmapped,Explosion on death,11
+ethereal,,unmapped,Ethereal plane access,10
+charm_effect,,unmapped,Charm effect beyond inflicts_charmed,10
+inflicts_unconscious,,unmapped,Not in CONDITIONS list (10 occurrences),10
+stealth_advantage,,unmapped,Advantage on Stealth checks,8
+death_burst,,unmapped,Damage/effect on death,7
+heals_on_damage,,unmapped,Heals equal to damage dealt,6
+teleport,,unmapped,Teleportation ability,6
+surprise_attack,,unmapped,Surprise-based bonus,6
+incorporeal,,unmapped,Move through objects/creatures,4
+damage_on_start_turn,,unmapped,Damage at start of turn,3
+regeneration_prevention,,unmapped,Conditions that stop regeneration,3
+gaze_attack,,unmapped,"Gaze-based attacks (medusa, etc.)",2
+speed_reduction,,unmapped,Speed reduction effect,2
+bonus_action_hide,,unmapped,Hide as bonus action (Nimble Escape),2
+life_drain,,unmapped,Life drain mechanic,1
+damage_on_end_turn,,unmapped,Damage at end of turn,1
+phasing,,unmapped,Phase through solid matter,0
+sneak_attack,,unmapped,Sneak attack bonus damage,0
+cant_move,,unmapped,Speed reduced to 0,0
+undead_fortitude,,unmapped,Drop to 0 HP -> CON save to survive,0
+damage_reduction,,unmapped,Flat damage reduction,0

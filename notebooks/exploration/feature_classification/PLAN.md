@@ -100,22 +100,31 @@ Each catalog (trait/action) includes three pattern tracking layers:
 ---
 
 ## Phase 2: Feature Mapping
-**Status**: NOT STARTED
+**Status**: COMPLETE
 **Notebook**: `notebooks/2_feature_mapping.ipynb`
 
 ### Objectives
-- Map discovered patterns to existing features in `1_feature_engineering.ipynb`
+- Map discovered patterns to existing features in `feature_config.py`
 - Identify GAPS (patterns not captured by current feature engineering)
 - Create mapping dataframe linking patterns → features
+- Correlate unmapped patterns with prediction error
+
+### Notebook Structure (6 sections, 16 cells)
+1. **Section 1: Setup & Load Data** — Loads Phase 1 catalogs, feature_config, feature_contributions
+2. **Section 2: Pattern-to-Feature Mapping** — PATTERN_FEATURE_MAP dict with all 83 patterns
+3. **Section 3: Build Mapping DataFrame** — Converts to DataFrame joined with occurrence counts
+4. **Section 4: Gap Analysis** — Unmapped patterns ranked by frequency, monster lists per gap
+5. **Section 5: Coverage Analysis by Monster** — Per-monster mapped vs unmapped counts, correlation with prediction error
+6. **Section 6: Save Outputs** — Exports feature_mapping.csv and unmapped_patterns.csv
+
+### Mapping Types
+- **direct** — Pattern maps 1:1 to a model feature (e.g., `magic_resistance` → `has_magic_resistance_scaled`)
+- **indirect** — Pattern captured as part of a broader feature (e.g., `breath_weapon` → `dpr_deviation` via DPR parsing)
+- **unmapped** — No feature captures this pattern (GAP)
 
 ### Outputs
-- `data/feature_mapping.csv` - Pattern-to-feature mappings
-- `data/unmapped_patterns.csv` - Patterns with no corresponding feature (GAPS)
-
-### Mapping Categories
-- **Direct match**: Pattern maps 1:1 to a feature (e.g., "Pack Tactics" → `has_advantage_condition`)
-- **Indirect match**: Pattern contributes to a composite feature (e.g., "stunned" → `inflicts_stunned`)
-- **Unmapped**: No current feature captures this pattern (GAPS to address)
+- `data/feature_mapping.csv` — All patterns with feature mapping, type, occurrence count
+- `data/unmapped_patterns.csv` — Gap patterns with occurrence counts and affected monster lists
 
 ---
 
@@ -198,6 +207,7 @@ Workflow:
 | 2026-01-30 | Phase 1 | Updated Section 4 to use combined patterns | pattern_count_any for gap analysis |
 | 2026-02-04 | Data | Created `data/dnd5e_weapons.csv` | 37 SRD weapons with weapon_category, average_damage |
 | 2026-02-04 | Phase 1 | Added action name consolidation | Melee/Ranged/Natural Weapon categories, 207→104 unique names |
+| 2026-02-06 | Phase 2 | Created feature mapping notebook | 83 patterns mapped: direct, indirect, unmapped |
 
 ---
 
