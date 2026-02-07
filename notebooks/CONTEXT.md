@@ -113,6 +113,11 @@ cell-level overrides noted below).
 | `EXPECTED_COMBAT_ROUNDS` | Burst damage amortisation (÷3) | If DMG combat-length assumption changes |
 | `DMG_AC_ADJUSTMENTS` | DMG feature → effective AC bonus | When adding/removing a DMG AC feature |
 | `DMG_ATTACK_ADJUSTMENTS` | DMG feature → effective attack bonus | When adding/removing a DMG attack feature |
+| `DMG_DPR_ADJUSTMENTS` | DMG feature → fixed per-round DPR bonus | When adding/removing a DMG DPR feature |
+| `DMG_HP_PER_USE` | HP bonus per use by CR tier (legendary resistance) | When adding per-use HP features |
+| `DMG_HP_BY_TIER` | Fixed HP bonus by CR tier (relentless) | When adding fixed HP-by-tier features |
+| `DMG_HP_PERCENTAGE` | Percentage HP bonus (frightful presence) | When adding %-based HP features |
+| `DMG_HP_MULTIPLIER` | HP multiplier (possession, damage transfer) | When adding HP multiplier features |
 | `DMG_ADVANTAGE_OVERRIDES` | Features that force `has_advantage_condition=0` | When a new DMG feature grants advantage |
 | `DMG_ATTACKERS_ADVANTAGE_OVERRIDES` | Features that force `has_attackers_advantage=0` | When a new DMG feature grants attacker advantage |
 | `CR_TIERS` | 5 CR tier boundaries | Unlikely to change |
@@ -130,15 +135,19 @@ cell-level overrides noted below).
 
 ### parsers.py  — Parsing functions (raw data → numeric features)
 
-34 functions. Key ones with **hardcoded logic** that may need updating:
+38 functions. Key ones with **hardcoded logic** that may need updating:
 
 | Function | Line (approx) | Manual curation notes |
 |----------|--------------|----------------------|
-| `parse_dmg_features(row)` | ~480 | Keyword matching for 12 DMG features — update when adding a new DMG feature |
+| `parse_dmg_features(row)` | ~480 | Data-driven detection for 92 DMG features + 14 special cases |
 | `has_advantage_condition(row)` | ~340 | Hardcoded keyword list for advantage detection |
 | `has_disadvantage_condition(row)` | ~360 | Hardcoded keyword list for disadvantage detection |
 | `has_attackers_advantage(row)` | ~380 | Hardcoded keyword list for attacker-advantage detection |
-| `parse_charge_bonus_attack()` | ~415 | Burst damage keywords (charge, pounce, rampage) |
+| `parse_charge_bonus_attack()` | ~415 | Burst damage: charge, pounce, surprise attack, dive attack, wounded fury, death burst, swallow |
+| `calculate_feature_dpr(row)` | ~907 | Fixed per-round DPR from `DMG_DPR_ADJUSTMENTS` |
+| `parse_breath_weapon_dpr(row)` | ~917 | Breath weapon DPR × 2 targets, excess over multiattack |
+| `parse_trait_extra_dpr(row)` | ~962 | Per-round trait damage: sneak attack, martial advantage, elemental body |
+| `calculate_feature_hp(row)` | ~1014 | HP adjustments from `DMG_HP_*` dicts (legendary resistance, regen, etc.) |
 
 ### baseline_functions.py  — CR-based interpolation
 
@@ -174,17 +183,38 @@ These values are defined **inside the notebook** rather than in helper_files:
 Combat stats follow a 4-layer structure. Deviations are always computed from
 the **total** column.
 
-| Layer | AC | Attack | DPR |
-|-------|-----|--------|-----|
-| **estimated** (parsed from stat block) | `ac_value` | `highest_attack_bonus` | `estimated_dpr` |
-| **feature** (DMG trait adjustments) | `feature_ac` | `feature_attack` | `feature_dpr` |
-| **legendary** | — | — | `legendary_dpr` |
-| **total** (sum of above, used for deviation) | `total_ac` | `total_attack` | `total_dpr` |
+| Layer | AC | Attack | DPR | HP |
+|-------|-----|--------|-----|-----|
+| **estimated** (parsed from stat block) | `ac_value` | `highest_attack_bonus` | `estimated_dpr` | `hp_baseline` |
+| **feature** (DMG trait adjustments) | `feature_ac` | `feature_attack` | `feature_dpr` | `feature_hp` |
+| **legendary** | — | — | `legendary_dpr` | — |
+| **total** (sum of above, used for deviation) | `total_ac` | `total_attack` | `total_dpr` | `hp_after_phase1` |
 
-`feature_dpr` specifically holds burst damage from charge/pounce/rampage,
-amortised over `EXPECTED_COMBAT_ROUNDS` (3). Breath weapon damage is **not**
-included — it lives in the `Desc` field rather than the `Damage` field, so
-`parse_dpr_from_json()` already excludes it.
+### DPR sources in `feature_dpr`
+
+`feature_dpr` aggregates multiple DPR sources:
+
+1. **Burst damage** (`parse_charge_bonus_attack`): charge, pounce, surprise attack, dive attack,
+   wounded fury, death burst (×2 creatures), swallow — amortised over `EXPECTED_COMBAT_ROUNDS` (3)
+2. **Fixed per-round DPR** (`calculate_feature_dpr`): aggressive (+2), rampage (+2) —
+   from `DMG_DPR_ADJUSTMENTS` in feature_config.py
+3. **Breath weapon excess** (`parse_breath_weapon_dpr`): breath damage × 2 targets (DMG assumption),
+   minus `estimated_dpr` (only the excess over multiattack counts)
+4. **Per-round trait damage** (`parse_trait_extra_dpr`): sneak attack, martial advantage,
+   elemental body (heated body, fire form, etc.)
+
+### HP sources in `feature_hp`
+
+`feature_hp` aggregates DMG-specified HP adjustments (`calculate_feature_hp`):
+
+- **Legendary Resistance**: +10/20/30/40 HP per use by CR tier (`DMG_HP_PER_USE`)
+- **Relentless**: +7/14/21/28 HP by CR tier (`DMG_HP_BY_TIER`)
+- **Frightful Presence / Horrifying Visage**: +25% of `hp_baseline` for CR ≤ 10 (`DMG_HP_PERCENTAGE`)
+- **Possession / Damage Transfer**: 2× effective HP (`DMG_HP_MULTIPLIER`)
+- **Regeneration**: regen amount × 3 rounds (parsed from trait description)
+
+`feature_hp` is added to `hp_baseline` in Phase 1: `hp_after_phase1 = hp_baseline + feature_hp`.
+This reduces `residual_hp` for creatures with HP-affecting features.
 
 ---
 

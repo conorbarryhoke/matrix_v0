@@ -13,6 +13,13 @@ from .feature_config import (
     EXPECTED_COMBAT_ROUNDS,
     DMG_AC_ADJUSTMENTS,
     DMG_ATTACK_ADJUSTMENTS,
+    DMG_DPR_ADJUSTMENTS,
+    DMG_HP_PER_USE,
+    DMG_HP_BY_TIER,
+    DMG_HP_PERCENTAGE,
+    DMG_HP_MULTIPLIER,
+    DMG_FEATURE_NAMES,
+    get_cr_tier,
 )
 
 
@@ -382,13 +389,19 @@ def parse_dpr_from_json(actions_str):
 
 def parse_charge_bonus_attack(traits_str, actions_str):
     """
-    Parse bonus action attacks from charge/pounce/rampage traits.
-    Returns additional DPR from these conditional attacks.
+    Parse burst DPR from conditional one-round damage traits.
+    Returns additional DPR amortized over EXPECTED_COMBAT_ROUNDS.
 
     Handles:
-    - Trampling Charge (Elephant, Mammoth, etc.) - ~50% chance
-    - Pounce (Lion, Tiger, etc.) - ~50% chance
-    - Rampage (Gnoll, Giant Hyena) - ~25% chance (requires reducing to 0 HP)
+    - Charge / Trampling Charge: bonus attack on charge hit
+    - Pounce: bonus attack on pounce hit
+    - Surprise Attack: extra damage on first round
+    - Dive Attack: extra damage on dive
+    - Wounded Fury: extra damage when wounded
+    - Death Burst: on-death AoE damage × 2 targets (per DMG)
+    - Swallow: ongoing acid damage (2 rounds per DMG)
+
+    NOTE: Rampage is NOT here — it uses fixed +2 DPR via DMG_DPR_ADJUSTMENTS.
     """
     if pd.isna(traits_str) or pd.isna(actions_str):
         return 0
@@ -399,7 +412,7 @@ def parse_charge_bonus_attack(traits_str, actions_str):
     except (json.JSONDecodeError, TypeError):
         return 0
 
-    # Build attack damage map
+    # Build attack damage map from actions
     attack_damages = {}
     for action in actions:
         if not isinstance(action, dict):
@@ -420,7 +433,7 @@ def parse_charge_bonus_attack(traits_str, actions_str):
         trait_name = trait.get('Name', '').lower()
         trait_desc = trait.get('Desc', '').lower()
 
-        # Check for charge/pounce abilities
+        # Charge / Pounce: bonus attack from the trait
         if any(x in trait_name for x in ['charge', 'pounce']):
             match = re.search(r'can make (?:one|an?|another) (\w+) attack', trait_desc)
             if not match:
@@ -429,20 +442,44 @@ def parse_charge_bonus_attack(traits_str, actions_str):
                 attack_name = match.group(1).lower()
                 for action_name, damage in attack_damages.items():
                     if attack_name in action_name:
-                        # Burst effect: amortize over expected combat rounds
                         bonus_dpr += damage * (1 / EXPECTED_COMBAT_ROUNDS)
                         break
 
-        # Check for rampage ability
-        elif 'rampage' in trait_name:
-            match = re.search(r'make (?:a|an?) (\w+) attack', trait_desc)
+        # Surprise Attack: "extra X (YdZ) damage" on first round
+        elif 'surprise attack' in trait_name:
+            match = re.search(r'extra\s+(\d+)\s*\(\d+d\d+\)\s*damage', trait_desc)
             if match:
-                attack_name = match.group(1).lower()
-                for action_name, damage in attack_damages.items():
-                    if attack_name in action_name:
-                        # Burst effect: amortize over expected combat rounds
-                        bonus_dpr += damage * (1 / EXPECTED_COMBAT_ROUNDS)
-                        break
+                bonus_dpr += int(match.group(1)) * (1 / EXPECTED_COMBAT_ROUNDS)
+
+        # Dive Attack: "extra X (YdZ) damage" on dive
+        elif 'dive attack' in trait_name or 'dive' in trait_name:
+            match = re.search(r'extra\s+(\d+)\s*\(\d+d\d+\)\s*damage', trait_desc)
+            if match:
+                bonus_dpr += int(match.group(1)) * (1 / EXPECTED_COMBAT_ROUNDS)
+
+        # Wounded Fury: extra damage when wounded
+        elif 'wounded fury' in trait_name:
+            match = re.search(r'extra\s+(\d+)\s*\(\d+d\d+\)\s*damage', trait_desc)
+            if match:
+                bonus_dpr += int(match.group(1)) * (1 / EXPECTED_COMBAT_ROUNDS)
+
+        # Death Burst: on-death AoE, assume 2 creatures hit (per DMG)
+        elif 'death burst' in trait_name:
+            match = re.search(r'(\d+)\s*\(\d+d\d+\)\s*(?:\w+\s+)?damage', trait_desc)
+            if match:
+                bonus_dpr += int(match.group(1)) * 2 * (1 / EXPECTED_COMBAT_ROUNDS)
+
+    # Swallow: check actions for swallow with ongoing acid damage
+    for action in actions:
+        if not isinstance(action, dict):
+            continue
+        action_name = action.get('Name', '').lower()
+        if 'swallow' in action_name:
+            action_desc = action.get('Desc', '').lower()
+            match = re.search(r'(\d+)\s*\(\d+d\d+\)\s*(?:acid|fire|bludgeoning)?\s*damage\s*at the start', action_desc)
+            if match:
+                # DMG: "assume 2 rounds of acid damage"
+                bonus_dpr += int(match.group(1)) * 2 * (1 / EXPECTED_COMBAT_ROUNDS)
 
     return bonus_dpr
 
@@ -700,81 +737,149 @@ def has_attackers_advantage(row):
 # DMG FEATURE DETECTION
 # =============================================================================
 
-def parse_dmg_features(row):
+def _extract_ability_names(row):
     """
-    Detect DMG Monster Features from a creature's traits and actions.
-    Returns a dict of feature_{name}: 0/1 flags.
+    Extract lowercased trait, action, and reaction names from a creature row.
 
-    Scans trait names and action names for known DMG features that have
-    specified AC, attack, or DPR costs.
+    Returns:
+        tuple: (trait_names, action_names, reaction_names, all_names)
     """
-    features = {
-        'feature_magic_resistance': 0,
-        'feature_shadow_stealth': 0,
-        'feature_stench': 0,
-        'feature_invisibility': 0,
-        'feature_nimble_escape': 0,
-        'feature_constrict': 0,
-        'feature_web': 0,
-        'feature_pack_tactics': 0,
-        'feature_blood_frenzy': 0,
-        'feature_ambusher': 0,
-        'feature_reckless': 0,
-        'feature_grappler': 0,
-    }
-
     trait_names = []
     action_names = []
+    reaction_names = []
 
-    if pd.notna(row.get('Traits')) and row.get('Traits') != '—':
-        try:
-            traits = json.loads(row['Traits'])
-            for trait in traits:
-                if isinstance(trait, dict):
-                    trait_names.append(trait.get('Name', '').lower())
-        except (json.JSONDecodeError, TypeError):
-            pass
+    for field, target_list in [('Traits', trait_names), ('Actions', action_names), ('Reactions', reaction_names)]:
+        val = row.get(field)
+        if pd.notna(val) and str(val).strip() not in ('', '—'):
+            try:
+                items = json.loads(val)
+                for item in items:
+                    if isinstance(item, dict):
+                        target_list.append(item.get('Name', '').lower())
+            except (json.JSONDecodeError, TypeError):
+                pass
 
-    if pd.notna(row.get('Actions')) and row.get('Actions') != '—':
-        try:
-            actions = json.loads(row['Actions'])
-            for action in actions:
-                if isinstance(action, dict):
-                    action_names.append(action.get('Name', '').lower())
-        except (json.JSONDecodeError, TypeError):
-            pass
+    return trait_names, action_names, reaction_names, trait_names + action_names + reaction_names
 
-    all_names = trait_names + action_names
 
-    # Match trait names against DMG features
+def parse_dmg_features(row):
+    """
+    Detect all 92 DMG Monster Features from a creature's traits, actions, and reactions.
+    Returns a dict of feature_{name}: 0/1 flags for every entry in DMG_FEATURE_NAMES.
+
+    Detection strategy:
+    - Default: trait/action/reaction name startswith the feature keyword (snake_case → spaces)
+    - Special cases for ~12 features where DMG name ≠ actual trait name in the dataset
+    - "Prone" is a synergy detection (inflicts_prone + advantage vs prone targets)
+    - "Undead Fortitude" is merged into "relentless"
+
+    claude: See plan file for the full detection strategy table. To add a new feature,
+    add it to DMG_FEATURE_NAMES in feature_config.py and add detection logic here
+    (either the default startswith will work, or add a special case).
+    """
+    # Initialize all 92 feature flags to 0
+    features = {f'feature_{name}': 0 for name in DMG_FEATURE_NAMES}
+
+    trait_names, action_names, reaction_names, all_names = _extract_ability_names(row)
+
+    # --- Default startswith matching ---
+    # Convert snake_case feature names to space-separated keywords for matching.
+    # e.g. 'magic_resistance' → 'magic resistance'
+    # Skip features that have special-case handling below.
+    special_cases = {
+        'breath_weapon', 'charge', 'damage_absorption', 'elemental_body',
+        'keen_senses', 'relentless', 'shapechange', 'spell_immunity',
+        'terrain_camouflage', 'web', 'sure_footed', 'prone', 'invisibility',
+        'multiattack',
+    }
+
+    for feature_name in DMG_FEATURE_NAMES:
+        if feature_name in special_cases:
+            continue
+        keyword = feature_name.replace('_', ' ')
+        for name in all_names:
+            if name.startswith(keyword):
+                features[f'feature_{feature_name}'] = 1
+                break
+
+    # --- Special-case detections ---
+
     for name in all_names:
-        if 'magic resistance' in name:
-            features['feature_magic_resistance'] = 1
-        if 'shadow stealth' in name:
-            features['feature_shadow_stealth'] = 1
-        if 'stench' in name:
-            features['feature_stench'] = 1
+        # breath_weapon: actual names are "Fire Breath (Recharge 5-6)", "Acid Breath", etc.
+        if 'breath' in name and 'recharge' in name:
+            features['feature_breath_weapon'] = 1
+
+        # charge: "Charge" or "Trampling Charge"
+        if name.startswith('charge') or name == 'trampling charge':
+            features['feature_charge'] = 1
+
+        # damage_absorption: "Lightning Absorption", "Fire Absorption", etc.
+        if 'absorption' in name:
+            features['feature_damage_absorption'] = 1
+
+        # elemental_body: "Heated Body", "Fire Form", "Water Form", "Air Form"
+        if any(kw in name for kw in ['heated body', 'fire form', 'water form', 'air form', 'corrosive form']):
+            features['feature_elemental_body'] = 1
+
+        # keen_senses: "Keen Hearing", "Keen Smell", "Keen Hearing and Sight", etc.
+        if name.startswith('keen'):
+            features['feature_keen_senses'] = 1
+
+        # relentless: "Relentless" or "Undead Fortitude" (merged)
+        if name.startswith('relentless') or name.startswith('undead fortitude'):
+            features['feature_relentless'] = 1
+
+        # shapechange: "Shapechanger", "Change Shape", "Shapechange"
+        if name.startswith('shapechange') or name.startswith('shapechanger') or name.startswith('change shape'):
+            features['feature_shapechange'] = 1
+
+        # spell_immunity: "Spell Immunity" or "Limited Magic Immunity"
+        if name.startswith('spell immunity') or name.startswith('limited magic immunity'):
+            features['feature_spell_immunity'] = 1
+
+        # terrain_camouflage: "Stone Camouflage", "Snow Camouflage", etc. (not "False Appearance")
+        if 'camouflage' in name and 'false' not in name:
+            features['feature_terrain_camouflage'] = 1
+
+        # sure_footed: may be hyphenated "Sure-Footed"
+        if name.startswith('sure-footed') or name.startswith('sure footed'):
+            features['feature_sure_footed'] = 1
+
+        # invisibility: "Invisibility" or "Invisible" (but not "Superior Invisibility" — handled by default)
         if name.startswith('invisibility') or name == 'invisible':
             features['feature_invisibility'] = 1
-        if 'nimble escape' in name:
-            features['feature_nimble_escape'] = 1
-        if 'pack tactics' in name:
-            features['feature_pack_tactics'] = 1
-        if 'blood frenzy' in name:
-            features['feature_blood_frenzy'] = 1
-        if name == 'ambusher' or name.startswith('ambusher'):
-            features['feature_ambusher'] = 1
-        if 'reckless' in name:
-            features['feature_reckless'] = 1
-        if 'grappler' in name:
-            features['feature_grappler'] = 1
 
-    # Action-specific detections
-    for name in action_names:
-        if name == 'constrict' or name.startswith('constrict'):
-            features['feature_constrict'] = 1
+    # web: startswith "web" but NOT "web sense" or "web walker" (those are separate features)
+    for name in action_names + trait_names:
         if name.startswith('web') and 'sense' not in name and 'walker' not in name:
             features['feature_web'] = 1
+            break
+
+    # multiattack: check Actions only (it's always an action, not a trait)
+    for name in action_names:
+        if name == 'multiattack':
+            features['feature_multiattack'] = 1
+            break
+
+    # prone: synergy detection — creature can knock prone AND has advantage vs prone targets
+    # This requires inflicts_prone (computed earlier in the pipeline) to be passed in.
+    # If inflicts_prone isn't available yet, check trait/action descriptions for prone + advantage.
+    inflicts_prone = row.get('inflicts_prone', 0)
+    if inflicts_prone == 1:
+        # Check if creature has advantage on attacks against prone targets
+        all_text = ''
+        for field in ['Traits', 'Actions']:
+            val = row.get(field)
+            if pd.notna(val) and str(val).strip() not in ('', '—'):
+                try:
+                    items = json.loads(val)
+                    for item in items:
+                        if isinstance(item, dict):
+                            all_text += ' ' + item.get('Desc', '')
+                except (json.JSONDecodeError, TypeError):
+                    pass
+        if re.search(r'advantage on.{0,30}attack roll.{0,30}prone', all_text.lower()):
+            features['feature_prone'] = 1
 
     return features
 
@@ -797,6 +902,195 @@ def calculate_feature_attack(row):
         if row.get(col, 0) == 1:
             total += attack_bonus
     return total
+
+
+def calculate_feature_dpr(row):
+    """Sum fixed per-round DPR adjustments from detected DMG features."""
+    total = 0
+    for feature_name, dpr_bonus in DMG_DPR_ADJUSTMENTS.items():
+        col = f'feature_{feature_name}'
+        if row.get(col, 0) == 1:
+            total += dpr_bonus
+    return total
+
+
+def parse_breath_weapon_dpr(row):
+    """
+    Calculate DPR contribution from breath weapons.
+
+    Per DMG: "assume the breath weapon hits two targets, and that each target
+    fails its saving throw." If the breath weapon DPR (× 2 targets) exceeds
+    estimated_dpr, the excess is added as feature_dpr. This avoids double-counting
+    since a creature uses breath weapon OR multiattack, not both.
+    """
+    actions_str = row.get('Actions')
+    if pd.isna(actions_str) or str(actions_str).strip() in ('', '—'):
+        return 0
+
+    try:
+        actions = json.loads(actions_str)
+    except (json.JSONDecodeError, TypeError):
+        return 0
+
+    best_breath_dpr = 0
+    for action in actions:
+        if not isinstance(action, dict):
+            continue
+        name = action.get('Name', '').lower()
+        desc = action.get('Desc', '').lower()
+
+        # Match breath weapon actions (e.g., "Fire Breath (Recharge 5-6)")
+        if 'breath' not in name:
+            continue
+
+        # Parse damage from Desc: "taking 91 (26d6) fire damage"
+        match = re.search(r'(\d+)\s*\(\d+d\d+(?:\s*[+\-]\s*\d+)?\)\s*(?:\w+\s+)?damage', desc)
+        if match:
+            breath_damage = int(match.group(1))
+            # DMG: assume 2 targets, each fails save
+            breath_total = breath_damage * 2
+            best_breath_dpr = max(best_breath_dpr, breath_total)
+
+    if best_breath_dpr <= 0:
+        return 0
+
+    # Only add the EXCESS over estimated_dpr (avoids double-counting with multiattack)
+    estimated_dpr = row.get('estimated_dpr', 0)
+    return max(0, best_breath_dpr - estimated_dpr)
+
+
+def parse_trait_extra_dpr(row):
+    """
+    Parse per-round extra damage from traits that add damage on each attack.
+
+    Handles:
+    - Sneak Attack: "extra X (YdZ) damage" (once per round)
+    - Martial Advantage: "extra X (YdZ) damage" (once per turn)
+    - Elemental Body (Heated Body, Fire Form, etc.): reactive damage per hit
+
+    NOTE: Brute, Angelic Weapons, Enlarge say "included in the attack" — their
+    damage is already in the action's Damage field and captured by estimated_dpr.
+    """
+    traits_str = row.get('Traits')
+    if pd.isna(traits_str) or str(traits_str).strip() in ('', '—'):
+        return 0
+
+    try:
+        traits = json.loads(traits_str)
+    except (json.JSONDecodeError, TypeError):
+        return 0
+
+    extra_dpr = 0
+
+    for trait in traits:
+        if not isinstance(trait, dict):
+            continue
+        trait_name = trait.get('Name', '').lower()
+        trait_desc = trait.get('Desc', '').lower()
+
+        # Sneak Attack: "deals an extra X (YdZ) damage"
+        if 'sneak attack' in trait_name:
+            match = re.search(r'extra\s+(\d+)\s*\(\d+d\d+\)\s*damage', trait_desc)
+            if match:
+                extra_dpr += int(match.group(1))
+
+        # Martial Advantage: "extra X (YdZ) damage"
+        elif 'martial advantage' in trait_name:
+            match = re.search(r'extra\s+(\d+)\s*\(\d+d\d+\)\s*damage', trait_desc)
+            if match:
+                extra_dpr += int(match.group(1))
+
+        # Elemental Body: Heated Body, Fire Form, etc.
+        # "takes X (YdZ) fire damage" — reactive damage when touched/hit
+        elif any(kw in trait_name for kw in ['heated body', 'fire form', 'water form',
+                                              'air form', 'corrosive form']):
+            match = re.search(r'(\d+)\s*\(\d+d\d+\)\s*(?:\w+\s+)?damage', trait_desc)
+            if match:
+                extra_dpr += int(match.group(1))
+
+    return extra_dpr
+
+
+def calculate_feature_hp(row):
+    """
+    Calculate effective HP adjustments from DMG features.
+
+    Sums HP bonuses from:
+    - Legendary Resistance: per-use HP bonus by CR tier × number of uses
+    - Relentless / Undead Fortitude: fixed HP by CR tier
+    - Frightful Presence / Horrifying Visage: +25% of hp_baseline (CR ≤ 10 only)
+    - Possession / Damage Transfer: multiply effective HP
+    - Regeneration: +3 × regen amount per round (per DMG)
+
+    Returns the total HP adjustment to add to hp_baseline.
+    """
+    cr = row.get('cr_numeric', 0)
+    tier = get_cr_tier(cr)
+    hp_baseline = row.get('hp_baseline', 0)
+    total_hp = 0
+
+    # Per-use HP bonuses (Legendary Resistance)
+    for feature_name, tier_values in DMG_HP_PER_USE.items():
+        col = f'feature_{feature_name}'
+        if row.get(col, 0) != 1:
+            continue
+        per_use_hp = tier_values.get(tier, 0)
+        if per_use_hp <= 0:
+            continue
+        # Parse number of uses from trait desc (default 3)
+        uses = 3
+        traits_str = row.get('Traits')
+        if pd.notna(traits_str) and str(traits_str).strip() not in ('', '—'):
+            try:
+                traits = json.loads(traits_str)
+                for trait in traits:
+                    if isinstance(trait, dict) and feature_name.replace('_', ' ') in trait.get('Name', '').lower():
+                        desc = trait.get('Desc', '').lower()
+                        match = re.search(r'(\d+)\s*times', desc)
+                        if match:
+                            uses = int(match.group(1))
+                        break
+            except (json.JSONDecodeError, TypeError):
+                pass
+        total_hp += per_use_hp * uses
+
+    # Fixed HP by tier (Relentless)
+    for feature_name, tier_values in DMG_HP_BY_TIER.items():
+        col = f'feature_{feature_name}'
+        if row.get(col, 0) == 1:
+            total_hp += tier_values.get(tier, 0)
+
+    # Percentage of hp_baseline (Frightful Presence, Horrifying Visage)
+    # DMG: only if "meant to face characters of 10th level or lower" ≈ CR ≤ 10
+    for feature_name, pct in DMG_HP_PERCENTAGE.items():
+        col = f'feature_{feature_name}'
+        if row.get(col, 0) == 1 and cr <= 10:
+            total_hp += hp_baseline * pct
+
+    # HP multiplier (Possession, Damage Transfer)
+    # feature_hp = hp_baseline × (multiplier - 1) to add the EXTRA, not total
+    for feature_name, mult in DMG_HP_MULTIPLIER.items():
+        col = f'feature_{feature_name}'
+        if row.get(col, 0) == 1:
+            total_hp += hp_baseline * (mult - 1)
+
+    # Regeneration: +3 × regen amount per round (per DMG)
+    if row.get('feature_regeneration', 0) == 1:
+        traits_str = row.get('Traits')
+        if pd.notna(traits_str) and str(traits_str).strip() not in ('', '—'):
+            try:
+                traits = json.loads(traits_str)
+                for trait in traits:
+                    if isinstance(trait, dict) and 'regeneration' in trait.get('Name', '').lower():
+                        desc = trait.get('Desc', '').lower()
+                        match = re.search(r'regains\s+(\d+)\s+hit points', desc)
+                        if match:
+                            total_hp += int(match.group(1)) * 3
+                        break
+            except (json.JSONDecodeError, TypeError):
+                pass
+
+    return total_hp
 
 
 # =============================================================================

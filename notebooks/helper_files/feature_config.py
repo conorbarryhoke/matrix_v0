@@ -13,11 +13,49 @@ EXPECTED_COMBAT_ROUNDS = 3  # DMG assumes 3-round combat for CR calculation
 
 
 # =============================================================================
+# DMG MONSTER FEATURE NAMES
+# =============================================================================
+# Complete list of DMG Monster Features (pp.280-281), one per CSV row in
+# data/dmg_monster_feature_costs.csv. Each generates a feature_{name} column.
+# "Undead Fortitude" is merged into "relentless" (both = "don't die at 0 HP").
+# claude: 92 entries (93 CSV rows minus the Undead Fortitude merge).
+#   To add a new DMG feature: add here, add detection in parsers.py → parse_dmg_features(),
+#   and optionally add AC/attack cost to DMG_AC_ADJUSTMENTS / DMG_ATTACK_ADJUSTMENTS below.
+
+DMG_FEATURE_NAMES = [
+    'aggressive', 'ambusher', 'amorphous', 'amphibious', 'angelic_weapons',
+    'antimagic_susceptibility', 'avoidance', 'blind_senses', 'blood_frenzy',
+    'breath_weapon', 'brute', 'charge', 'charm', 'constrict',
+    'damage_absorption', 'damage_transfer', 'death_burst', 'devils_sight',
+    'dive_attack', 'echolocation', 'elemental_body', 'enlarge',
+    'etherealness', 'false_appearance', 'fey_ancestry', 'fiendish_blessing',
+    'flyby', 'frightful_presence', 'grapple', 'grappler', 'hold_breath',
+    'horrifying_visage', 'illumination', 'immutable_form',
+    'incorporeal_movement', 'innate_spellcasting', 'invisibility',
+    'keen_senses', 'labyrinthine_recall', 'leadership',
+    'legendary_resistance', 'life_drain', 'light_sensitivity',
+    'magic_resistance', 'magic_weapons', 'martial_advantage', 'mimicry',
+    'multiattack', 'nightmare_haunting', 'nimble_escape', 'otherworldly_perception',
+    'pack_tactics', 'parry', 'possession', 'pounce', 'prone', 'psychic_defense',
+    'rampage', 'read_thoughts', 'reckless', 'redirect_attack', 'reel',
+    'regeneration', 'rejuvenation', 'relentless', 'shadow_stealth',
+    'shapechange', 'siege_monster', 'slippery', 'sneak_attack',
+    'spell_immunity', 'spellcasting', 'spider_climb', 'standing_leap',
+    'steadfast', 'stench', 'sunlight_sensitivity', 'superior_invisibility',
+    'sure_footed', 'surprise_attack', 'swallow', 'teleport',
+    'terrain_camouflage', 'threatening_reach', 'tunneler', 'turn_immunity',
+    'turn_resistance', 'two_heads', 'web', 'web_sense', 'web_walker',
+    'wounded_fury',
+]
+
+
+# =============================================================================
 # DMG MONSTER FEATURE COSTS
 # =============================================================================
 # From DMG pp.280-281 "Monster Features" table.
 # These adjust a monster's effective AC or attack bonus for CR purposes.
 # Keys are lowercase trait/action names matched against creature data.
+# Only features with quantified AC/attack costs are listed here.
 
 DMG_AC_ADJUSTMENTS = {
     'magic resistance': 2,
@@ -27,6 +65,9 @@ DMG_AC_ADJUSTMENTS = {
     'nimble escape': 4,
     'constrict': 1,
     'web': 1,
+    'avoidance': 1,
+    'parry': 1,
+    'superior invisibility': 2,
 }
 
 DMG_ATTACK_ADJUSTMENTS = {
@@ -34,6 +75,43 @@ DMG_ATTACK_ADJUSTMENTS = {
     'blood frenzy': 4,
     'ambusher': 1,
     'nimble escape': 4,
+    'prone': 2,
+}
+
+# Fixed per-round DPR adjustments from DMG features
+# Keys use snake_case feature names (matched against feature_{name} columns).
+DMG_DPR_ADJUSTMENTS = {
+    'aggressive': 2,     # "Increase effective per-round damage output by 2"
+    'rampage': 2,        # "Increase effective per-round damage output by 2"
+}
+
+# =============================================================================
+# DMG HP ADJUSTMENTS
+# =============================================================================
+# From DMG pp.280-281. Features that increase a monster's effective hit points.
+# Applied as feature_hp in the 4-layer convention (hp_baseline + feature_hp = hp_after_phase1).
+
+# Per-use HP bonus by CR tier — multiply by number of uses (parsed from trait Desc)
+DMG_HP_PER_USE = {
+    'legendary_resistance': {'cr1': 0, 'cr2': 10, 'cr3': 20, 'cr4': 30, 'cr5': 40},
+}
+
+# Fixed HP bonus by CR tier
+DMG_HP_BY_TIER = {
+    'relentless': {'cr1': 0, 'cr2': 7, 'cr3': 14, 'cr4': 21, 'cr5': 28},
+}
+
+# Percentage of hp_baseline added as bonus (only applied when CR ≤ 10)
+DMG_HP_PERCENTAGE = {
+    'frightful_presence': 0.25,   # +25% HP if facing characters level ≤ 10
+    'horrifying_visage': 0.25,    # "See Frightful Presence" per DMG
+}
+
+# HP multiplier — effective HP is multiplied by this value.
+# feature_hp = hp_baseline × (multiplier - 1) so it adds the EXTRA, not the total.
+DMG_HP_MULTIPLIER = {
+    'possession': 2.0,       # "Double the monster's effective hit points"
+    'damage_transfer': 2.0,  # "Double the monster's effective hit points"
 }
 
 # Features that override has_advantage_condition when detected (known cost)
@@ -292,11 +370,10 @@ EXPORT_COLUMNS = [
     'feature_ac', 'total_ac',
     'feature_attack', 'total_attack',
 
-    # DMG feature flags
-    'feature_magic_resistance', 'feature_shadow_stealth', 'feature_stench',
-    'feature_invisibility', 'feature_nimble_escape', 'feature_constrict', 'feature_web',
-    'feature_pack_tactics', 'feature_blood_frenzy', 'feature_ambusher',
-    'feature_reckless', 'feature_grappler',
+    # HP cost layer — DMG-specified HP adjustments
+    'feature_hp',
+
+    # DMG feature flags — added dynamically from DMG_FEATURE_NAMES in get_export_columns()
 
     # Phase 2: Deviations
     'ac_deviation', 'attack_deviation', 'dpr_deviation', 'save_dc_deviation',
@@ -335,8 +412,12 @@ EXPORT_COLUMNS = [
 ]
 
 def get_export_columns():
-    """Return the full list of export columns including condition features."""
+    """Return the full list of export columns including DMG features and condition features."""
     cols = EXPORT_COLUMNS.copy()
+    # DMG feature flags (92 columns from DMG_FEATURE_NAMES)
+    for name in DMG_FEATURE_NAMES:
+        cols.append(f'feature_{name}')
+    # Condition infliction flags (auto-generated from CONDITIONS)
     for condition in CONDITIONS:
         cols.append(f'inflicts_{condition}')
     return cols
