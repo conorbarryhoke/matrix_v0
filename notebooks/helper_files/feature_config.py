@@ -188,7 +188,6 @@ PHASE2_PENALTIES = {
         'attack_deviation': -2.0,
         'dpr_deviation': -0.75,
         'save_dc_deviation': -3.5,
-        'has_flying': -2.5,  # Fixed penalty for flying
         'has_advantage_condition': -1.5,  # 0.75 * attack_deviation
         'has_disadvantage_condition': 1.0,  # -0.5 * attack_deviation (adds HP)
         'has_attackers_advantage': 3.0,  # -0.5 * 4 * ac_deviation (adds HP)
@@ -199,7 +198,6 @@ PHASE2_PENALTIES = {
         'attack_deviation': -3.0,
         'dpr_deviation': -1.0,
         'save_dc_deviation': -5.0,
-        'has_flying': -4.0,
         'has_advantage_condition': -2.25,
         'has_disadvantage_condition': 1.5,
         'has_attackers_advantage': 5.0,
@@ -210,7 +208,6 @@ PHASE2_PENALTIES = {
         'attack_deviation': -4.0,
         'dpr_deviation': -1.25,
         'save_dc_deviation': -6.0,
-        'has_flying': -5.0,
         'has_advantage_condition': -3.0,
         'has_disadvantage_condition': 2.0,
         'has_attackers_advantage': 7.0,
@@ -221,7 +218,6 @@ PHASE2_PENALTIES = {
         'attack_deviation': -5.0,
         'dpr_deviation': -1.5,
         'save_dc_deviation': -7.5,
-        'has_flying': -6.0,
         'has_advantage_condition': -3.75,
         'has_disadvantage_condition': 2.5,
         'has_attackers_advantage': 9.0,
@@ -232,7 +228,6 @@ PHASE2_PENALTIES = {
         'attack_deviation': -6.5,
         'dpr_deviation': -2.0,
         'save_dc_deviation': -9.0,
-        'has_flying': -7.5,
         'has_advantage_condition': -4.875,
         'has_disadvantage_condition': 3.25,
         'has_attackers_advantage': 12.0,
@@ -249,11 +244,7 @@ PHASE2_PENALTIES = {
 PHASE3_FEATURES_BASE = [
     'has_legendary_resistance_scaled',
     'has_regeneration_scaled',
-    'speed_ground_deviation', 'speed_fly_deviation', 'speed_swim', 'speed_burrow', 'speed_climb',
-    'movement_types_count',
-    'save_proficiency_count', 'skill_proficiency_count',
-    'vulnerability_count', 'condition_immunity_count',
-    'has_darkvision', 'darkvision_deviation', 'has_blindsight', 'has_truesight', 'has_tremorsense',
+    'vulnerability_count',
     'trait_count', 'reaction_count', 'bonus_action_count',
     'legendary_action_count', 'legendary_actions_per_round',
     'total_ability_count',
@@ -334,10 +325,6 @@ MODEL_CONFIG = {
     'constrained_features': [
         'has_legendary_resistance_scaled',
         'has_regeneration_scaled',
-        'has_darkvision',
-        'has_blindsight',
-        'has_truesight',
-        'has_tremorsense',
         'has_spellcasting',
         'has_grapple',
     ],
@@ -383,18 +370,12 @@ EXPORT_COLUMNS = [
     # Phase 3: Scaled features
     'has_legendary_resistance_scaled', 'has_regeneration_scaled',
 
-    # Phase 3: Movement
-    'speed_ground', 'speed_fly', 'speed_swim', 'speed_burrow', 'speed_climb',
-    'max_speed', 'movement_types_count', 'has_flying',
+    # Movement (informational — has_flying feeds into feature_ac for CR ≤ 10)
+    'has_flying',
 
-    # Phase 3: Defenses
-    'save_proficiency_count', 'skill_proficiency_count',
+    # Defenses
+    'save_proficiency_count',
     'resistance_count', 'immunity_count', 'vulnerability_count',
-    'condition_immunity_count',
-
-    # Phase 3: Senses
-    'has_darkvision', 'darkvision_deviation', 'has_blindsight',
-    'has_truesight', 'has_tremorsense', 'passive_perception',
 
     # Phase 3: Abilities
     'trait_count', 'action_count', 'reaction_count', 'bonus_action_count',

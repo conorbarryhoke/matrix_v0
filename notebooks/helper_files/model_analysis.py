@@ -286,6 +286,27 @@ def plot_performance_scatter(analysis_dfs, highlight_feature=None):
             if all_vals:
                 vmin, vmax = min(all_vals), max(all_vals)
 
+    # helper for R2
+    def _r2(y_true, y_pred):
+        y_true = np.asarray(y_true)
+        y_pred = np.asarray(y_pred)
+        if y_true.size == 0:
+            return float('nan')
+        ss_res = ((y_true - y_pred) ** 2).sum()
+        ss_tot = ((y_true - y_true.mean()) ** 2).sum()
+        if ss_tot == 0:
+            return float('nan')
+        return 1 - ss_res / ss_tot
+
+    def _title_with_r2(df, base_title):
+        if is_binary and highlight_feature and (highlight_feature in df.columns):
+            mask_true = df[highlight_feature] == 1
+            mask_false = df[highlight_feature] == 0
+            r2_t = _r2(df.loc[mask_true, 'actual_hp'], df.loc[mask_true, 'predicted_hp']) if mask_true.any() else float('nan')
+            r2_f = _r2(df.loc[mask_false, 'actual_hp'], df.loc[mask_false, 'predicted_hp']) if mask_false.any() else float('nan')
+            return f"{base_title}\nR2: True {r2_t:.3f} False {r2_f:.3f}"
+        return base_title
+
     analysis_cr1 = analysis_dfs['cr1']
     analysis_cr2 = analysis_dfs['cr2']
     analysis_cr3 = analysis_dfs['cr3']
@@ -295,11 +316,11 @@ def plot_performance_scatter(analysis_dfs, highlight_feature=None):
     fig, axes = plt.subplots(2, 3, figsize=(18, 10))
     axes = axes.flatten()
 
-    plot_performance_cr_scatter(axes[0], analysis_cr1, 'CR < 1', highlight_feature, is_binary, vmin, vmax)
-    plot_performance_cr_scatter(axes[1], analysis_cr2, 'CR 1-4', highlight_feature, is_binary, vmin, vmax)
-    plot_performance_cr_scatter(axes[2], analysis_cr3, 'CR 5-10', highlight_feature, is_binary, vmin, vmax)
-    plot_performance_cr_scatter(axes[3], analysis_cr4, 'CR 11-16', highlight_feature, is_binary, vmin, vmax)
-    scatter = plot_performance_cr_scatter(axes[4], analysis_cr5, 'CR > 16', highlight_feature, is_binary, vmin, vmax)
+    plot_performance_cr_scatter(axes[0], analysis_cr1, _title_with_r2(analysis_cr1, 'CR < 1'), highlight_feature, is_binary, vmin, vmax)
+    plot_performance_cr_scatter(axes[1], analysis_cr2, _title_with_r2(analysis_cr2, 'CR 1-4'), highlight_feature, is_binary, vmin, vmax)
+    plot_performance_cr_scatter(axes[2], analysis_cr3, _title_with_r2(analysis_cr3, 'CR 5-10'), highlight_feature, is_binary, vmin, vmax)
+    plot_performance_cr_scatter(axes[3], analysis_cr4, _title_with_r2(analysis_cr4, 'CR 11-16'), highlight_feature, is_binary, vmin, vmax)
+    scatter = plot_performance_cr_scatter(axes[4], analysis_cr5, _title_with_r2(analysis_cr5, 'CR > 16'), highlight_feature, is_binary, vmin, vmax)
 
     # Use 6th subplot for legend/colorbar or hide it
     if highlight_feature and not is_binary and scatter is not None:
@@ -317,6 +338,7 @@ def plot_performance_scatter(analysis_dfs, highlight_feature=None):
 
     plt.tight_layout()
     plt.show()
+
 
 # Helper function for error histograms
 def plot_error_cr_hist(ax, analysis, title):

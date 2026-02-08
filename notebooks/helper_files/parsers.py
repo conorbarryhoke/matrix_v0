@@ -884,13 +884,60 @@ def parse_dmg_features(row):
     return features
 
 
+def _has_ranged_damage(row):
+    """Check if a creature can deal damage at range (ranged attacks, breath weapons, or spells)."""
+    # Check for ranged weapon/spell attacks in Actions JSON
+    actions_str = row.get('Actions')
+    if pd.notna(actions_str) and str(actions_str).strip() not in ('', '—'):
+        try:
+            actions = json.loads(actions_str)
+            for action in actions:
+                if isinstance(action, dict):
+                    action_type = str(action.get('Type', '')).lower()
+                    type_attack = str(action.get('Type Attack', '')).lower()
+                    if action_type == 'ranged':
+                        return True
+                    if 'spell attack' in type_attack:
+                        return True
+        except (json.JSONDecodeError, TypeError):
+            pass
+    # Check for breath weapon (inherently ranged)
+    if row.get('feature_breath_weapon', 0) == 1:
+        return True
+    # Check for innate spellcasting (typically grants ranged damage)
+    if row.get('feature_innate_spellcasting', 0) == 1 or row.get('feature_spellcasting', 0) == 1:
+        return True
+    return False
+
+
 def calculate_feature_ac(row):
-    """Sum effective AC adjustments from detected DMG features."""
+    """Sum effective AC adjustments from detected DMG features.
+
+    Includes:
+    - DMG Monster Features table AC costs (magic resistance +2, etc.)
+    - Flying: +2 effective AC if can fly AND deal damage at range AND CR <= 10
+    - Saving throws: 3-4 bonuses → +2; 5+ bonuses → +4
+    """
     total = 0
+
+    # DMG feature AC adjustments
     for feature_name, ac_bonus in DMG_AC_ADJUSTMENTS.items():
         col = f'feature_{feature_name.replace(" ", "_")}'
         if row.get(col, 0) == 1:
             total += ac_bonus
+
+    # Flying: +2 effective AC if can fly, deal damage at range, and CR <= 10
+    cr = row.get('cr_numeric', 0)
+    if row.get('has_flying', 0) == 1 and cr <= 10 and _has_ranged_damage(row):
+        total += 2
+
+    # Saving throw bonuses: 3-4 → +2, 5+ → +4
+    save_count = row.get('save_proficiency_count', 0)
+    if save_count >= 5:
+        total += 4
+    elif save_count >= 3:
+        total += 2
+
     return total
 
 

@@ -23,7 +23,6 @@ from .feature_config import CONDITIONS, PHASE2_PENALTIES, get_cr_tier, get_phase
 
 # Base boolean features that must have non-positive coefficients
 BOOLEAN_FEATURES_BASE = [
-    'has_darkvision', 'has_blindsight', 'has_truesight', 'has_tremorsense',
     'has_spellcasting', 'has_grapple'
 ]
 

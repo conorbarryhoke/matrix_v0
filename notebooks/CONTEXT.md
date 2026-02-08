@@ -122,9 +122,9 @@ cell-level overrides noted below).
 | `DMG_ATTACKERS_ADVANTAGE_OVERRIDES` | Features that force `has_attackers_advantage=0` | When a new DMG feature grants attacker advantage |
 | `CR_TIERS` | 5 CR tier boundaries | Unlikely to change |
 | `CONDITIONS` | 10 D&D conditions → auto-generates `inflicts_{cond}` columns | When adding a trackable condition |
-| `PHASE2_FEATURES` | 9 features with hand-tuned penalties | When adding/removing a Phase 2 penalty feature |
-| `PHASE2_PENALTIES` | 5 × 9 penalty matrix (per-tier per-feature) | When tuning Phase 2 HP adjustments |
-| `PHASE3_FEATURES_BASE` | 27 features with learned coefficients | When adding/removing a Phase 3 regression feature |
+| `PHASE2_FEATURES` | 8 features with hand-tuned penalties (flying removed → AC) | When adding/removing a Phase 2 penalty feature |
+| `PHASE2_PENALTIES` | 5 × 8 penalty matrix (per-tier per-feature) | When tuning Phase 2 HP adjustments |
+| `PHASE3_FEATURES_BASE` | 19 features with learned coefficients (senses/skills/cond_immun removed) | When adding/removing a Phase 3 regression feature |
 | `BASELINE_DATA` | 34 CR baseline data points (from Lazy 5e) | When source baseline data changes |
 | `FLY_SPEED_BASELINE` | Fly speed baseline per tier | When adjusting fly-speed expectations |
 | `DARKVISION_BASELINE` | Darkvision baseline per tier | When adjusting darkvision expectations |
@@ -235,6 +235,33 @@ Configuration lives in feature_config.py:
 
 After overrides, these generic flags mean: "has advantage from an
 **unclassified** source (not yet mapped to a specific DMG feature)."
+
+---
+
+## AC Adjustments in `feature_ac`
+
+`feature_ac` aggregates three sources of effective AC adjustment (all in `calculate_feature_ac()`):
+
+1. **DMG Monster Features** (`DMG_AC_ADJUSTMENTS`): magic resistance +2, shadow stealth +4, etc.
+2. **Flying**: +2 effective AC if creature can fly AND deal damage at range AND CR ≤ 10.
+   - "Deal damage at range" = has ranged weapon attack, spell attack, breath weapon, or spellcasting.
+   - CR > 10 → no AC cost for flying (per DMG p.280).
+   - Flying is NOT a Phase 2 penalty — it flows through `feature_ac` → `ac_deviation`.
+3. **Saving throw bonuses**: 3-4 save proficiencies → +2; 5+ → +4.
+   - This replaces the old Phase 3 learned coefficient for `save_proficiency_count`.
+
+## Features Excluded per DMG Rules
+
+Per DMG (pp.274-279), the following have **no bearing on challenge rating** and are
+excluded from all model phases (Phase 2 and Phase 3). They are still parsed in
+`1_feature_engineering.ipynb` for informational purposes but do not affect predictions:
+
+- **Skill bonuses** (`skill_proficiency_count`)
+- **Senses** (`has_darkvision`, `darkvision_deviation`, `has_blindsight`, `has_truesight`, `has_tremorsense`, `passive_perception`)
+- **Condition immunities** (`condition_immunity_count`)
+- **Languages** (never tracked)
+
+See `DMG_RULES.md` for the source rules.
 
 ---
 
