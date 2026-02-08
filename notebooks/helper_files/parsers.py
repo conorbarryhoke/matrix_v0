@@ -1053,16 +1053,20 @@ def parse_trait_extra_dpr(row):
 
 def calculate_feature_hp(row):
     """
-    Calculate effective HP adjustments from DMG features.
+    Calculate effective HP reduction from DMG features.
 
-    Sums HP bonuses from:
+    These features make a creature's effective HP higher than its raw HP,
+    meaning it needs LESS raw HP for its CR. The returned value is the
+    amount to SUBTRACT from hp_baseline.
+
+    Sources:
     - Legendary Resistance: per-use HP bonus by CR tier × number of uses
     - Relentless / Undead Fortitude: fixed HP by CR tier
-    - Frightful Presence / Horrifying Visage: +25% of hp_baseline (CR ≤ 10 only)
-    - Possession / Damage Transfer: multiply effective HP
-    - Regeneration: +3 × regen amount per round (per DMG)
+    - Frightful Presence / Horrifying Visage: hp_baseline × pct / (1 + pct)
+    - Possession / Damage Transfer: hp_baseline × (1 - 1/mult)
+    - Regeneration: regen_per_round × 3 (per DMG)
 
-    Returns the total HP adjustment to add to hp_baseline.
+    Returns the total HP to subtract from hp_baseline (always >= 0).
     """
     cr = row.get('cr_numeric', 0)
     tier = get_cr_tier(cr)
@@ -1102,17 +1106,21 @@ def calculate_feature_hp(row):
 
     # Percentage of hp_baseline (Frightful Presence, Horrifying Visage)
     # DMG: only if "meant to face characters of 10th level or lower" ≈ CR ≤ 10
+    # Formula: effective_hp = raw_hp × (1 + pct), so raw_hp = hp_baseline / (1 + pct)
+    # Reduction = hp_baseline - hp_baseline / (1 + pct) = hp_baseline × pct / (1 + pct)
     for feature_name, pct in DMG_HP_PERCENTAGE.items():
         col = f'feature_{feature_name}'
         if row.get(col, 0) == 1 and cr <= 10:
-            total_hp += hp_baseline * pct
+            total_hp += hp_baseline * pct / (1 + pct)
 
     # HP multiplier (Possession, Damage Transfer)
-    # feature_hp = hp_baseline × (multiplier - 1) to add the EXTRA, not total
+    # DMG: "Double the monster's effective hit points" → effective_hp = raw_hp × mult
+    # Expected raw_hp = hp_baseline / mult
+    # Reduction = hp_baseline - hp_baseline / mult = hp_baseline × (1 - 1/mult)
     for feature_name, mult in DMG_HP_MULTIPLIER.items():
         col = f'feature_{feature_name}'
         if row.get(col, 0) == 1:
-            total_hp += hp_baseline * (mult - 1)
+            total_hp += hp_baseline * (1 - 1 / mult)
 
     # Regeneration: +3 × regen amount per round (per DMG)
     if row.get('feature_regeneration', 0) == 1:

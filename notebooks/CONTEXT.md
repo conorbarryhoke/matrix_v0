@@ -62,7 +62,7 @@ df  (raw 324 rows)
  │
  ↓
 df_valid  (324 rows with HP > 0)
- ├── Phase 1: hp_after_phase1 = hp_baseline
+ ├── Phase 1: hp_after_phase1 = hp_baseline - feature_hp
  ├── split into df_cr1 … df_cr5
  ├── Phase 2: hp_after_phase2 = hp_after_phase1 + Σ(deviation × penalty)
  ├── resistance/immunity penalty → hp_after_resist_immun_penalty
@@ -188,7 +188,7 @@ the **total** column.
 | **estimated** (parsed from stat block) | `ac_value` | `highest_attack_bonus` | `estimated_dpr` | `hp_baseline` |
 | **feature** (DMG trait adjustments) | `feature_ac` | `feature_attack` | `feature_dpr` | `feature_hp` |
 | **legendary** | — | — | `legendary_dpr` | — |
-| **total** (sum of above, used for deviation) | `total_ac` | `total_attack` | `total_dpr` | `hp_after_phase1` |
+| **total** (baseline minus feature cost) | `total_ac` | `total_attack` | `total_dpr` | `hp_after_phase1` |
 
 ### DPR sources in `feature_dpr`
 
@@ -205,16 +205,19 @@ the **total** column.
 
 ### HP sources in `feature_hp`
 
-`feature_hp` aggregates DMG-specified HP adjustments (`calculate_feature_hp`):
+`feature_hp` represents the HP **reduction** from DMG features — creatures whose features
+increase their effective HP need less raw HP for their CR. The value is always >= 0.
+
+`calculate_feature_hp` aggregates:
 
 - **Legendary Resistance**: +10/20/30/40 HP per use by CR tier (`DMG_HP_PER_USE`)
 - **Relentless**: +7/14/21/28 HP by CR tier (`DMG_HP_BY_TIER`)
-- **Frightful Presence / Horrifying Visage**: +25% of `hp_baseline` for CR ≤ 10 (`DMG_HP_PERCENTAGE`)
-- **Possession / Damage Transfer**: 2× effective HP (`DMG_HP_MULTIPLIER`)
+- **Frightful Presence / Horrifying Visage**: `hp_baseline × pct / (1 + pct)` for CR ≤ 10 (`DMG_HP_PERCENTAGE`)
+- **Possession / Damage Transfer**: `hp_baseline × (1 - 1/mult)` (`DMG_HP_MULTIPLIER`)
 - **Regeneration**: regen amount × 3 rounds (parsed from trait description)
 
-`feature_hp` is added to `hp_baseline` in Phase 1: `hp_after_phase1 = hp_baseline + feature_hp`.
-This reduces `residual_hp` for creatures with HP-affecting features.
+`feature_hp` is **subtracted** from `hp_baseline` in Phase 1: `hp_after_phase1 = hp_baseline - feature_hp`.
+This lowers the expected raw HP, reducing `residual_hp` for creatures with HP-affecting features.
 
 ---
 

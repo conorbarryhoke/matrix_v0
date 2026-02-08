@@ -6,7 +6,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import seaborn as sns
-from .feature_config import CR_TIERS, PHASE2_FEATURES
+from .feature_config import (
+    CR_TIERS, PHASE2_FEATURES, PHASE2_PENALTIES,
+    DMG_FEATURE_NAMES, DMG_AC_ADJUSTMENTS, DMG_ATTACK_ADJUSTMENTS,
+    DMG_DPR_ADJUSTMENTS, DMG_HP_PER_USE, DMG_HP_BY_TIER,
+    DMG_HP_PERCENTAGE, DMG_HP_MULTIPLIER,
+    get_cr_tier,
+)
 from matplotlib.patches import Patch
 
 # =============================================================================
@@ -26,15 +32,100 @@ def _is_binary_feature(analysis_dfs, feature_name):
 # INVESTIGATION HELPERS
 # =============================================================================
 
+def _get_costed_features_detail(creature_export):
+    """Build per-category lists of detected DMG features and their costs."""
+    cr = creature_export.get('cr_numeric', 0)
+    tier = get_cr_tier(cr)
+    hp_baseline = creature_export.get('hp_baseline', 0)
+
+    details = {'ac': [], 'attack': [], 'dpr': [], 'hp': []}
+
+    # AC: derive contributions by working backwards from total feature_ac
+    total_feature_ac = creature_export.get('feature_ac', 0)
+    accounted_ac = 0
+
+    # DMG_AC_ADJUSTMENTS contributions (keys use spaces)
+    for feat_name, cost in DMG_AC_ADJUSTMENTS.items():
+        col = f'feature_{feat_name.replace(" ", "_")}'
+        if creature_export.get(col, 0) == 1:
+            details['ac'].append((feat_name.replace(' ', '_'), f'+{cost}'))
+            accounted_ac += cost
+
+    # Saving throws contribution
+    save_count = creature_export.get('save_proficiency_count', 0)
+    if save_count >= 5:
+        details['ac'].append((f'saving_throws ({int(save_count)} saves)', '+4'))
+        accounted_ac += 4
+    elif save_count >= 3:
+        details['ac'].append((f'saving_throws ({int(save_count)} saves)', '+2'))
+        accounted_ac += 2
+
+    # Flying: attribute remaining AC to flying (avoids needing _has_ranged_damage)
+    if creature_export.get('has_flying', 0) == 1:
+        flying_ac = total_feature_ac - accounted_ac
+        if flying_ac > 0:
+            details['ac'].append((f'flying (CR {int(cr)})', f'+{flying_ac}'))
+        elif cr > 10:
+            details['ac'].append(('flying (CR>10, no cost)', '+0'))
+        else:
+            details['ac'].append(('flying (no ranged, no cost)', '+0'))
+
+    # Attack costs from DMG_ATTACK_ADJUSTMENTS (keys use spaces)
+    for feat_name, cost in DMG_ATTACK_ADJUSTMENTS.items():
+        col = f'feature_{feat_name.replace(" ", "_")}'
+        if creature_export.get(col, 0) == 1:
+            details['attack'].append((feat_name.replace(' ', '_'), f'+{cost}'))
+
+    # DPR costs from DMG_DPR_ADJUSTMENTS (keys use snake_case)
+    for feat_name, cost in DMG_DPR_ADJUSTMENTS.items():
+        col = f'feature_{feat_name}'
+        if creature_export.get(col, 0) == 1:
+            details['dpr'].append((feat_name, f'+{cost}/round'))
+
+    # HP costs
+    for feat_name, tier_values in DMG_HP_PER_USE.items():
+        col = f'feature_{feat_name}'
+        if creature_export.get(col, 0) == 1:
+            per_use = tier_values.get(tier, 0)
+            details['hp'].append((feat_name, f'{per_use}/use'))
+
+    for feat_name, tier_values in DMG_HP_BY_TIER.items():
+        col = f'feature_{feat_name}'
+        if creature_export.get(col, 0) == 1:
+            val = tier_values.get(tier, 0)
+            details['hp'].append((feat_name, f'{val}'))
+
+    for feat_name, pct in DMG_HP_PERCENTAGE.items():
+        col = f'feature_{feat_name}'
+        if creature_export.get(col, 0) == 1:
+            if cr <= 10:
+                val = hp_baseline * pct / (1 + pct)
+                details['hp'].append((feat_name, f'{val:.0f} ({pct:.0%} of baseline)'))
+            else:
+                details['hp'].append((feat_name, f'0 (CR>{10}, no cost)'))
+
+    for feat_name, mult in DMG_HP_MULTIPLIER.items():
+        col = f'feature_{feat_name}'
+        if creature_export.get(col, 0) == 1:
+            val = hp_baseline * (1 - 1 / mult)
+            details['hp'].append((feat_name, f'{val:.0f} ({mult}x multiplier)'))
+
+    if creature_export.get('feature_regeneration', 0) == 1:
+        details['hp'].append(('regeneration', 'regen/round x 3'))
+
+    return details
+
+
 def investigate_creature(creature_name, export_df, contributions_df):
     """
-    Display a streamlined breakdown of a creature's HP prediction.
-    Shows actual features and their HP impacts side-by-side.
+    Display a detailed breakdown of a creature's HP prediction.
+    Shows Phase 1 (baseline + feature HP), Phase 2 (deviation breakdown,
+    costed DMG features, HP penalties), resistance/immunity, and Phase 3.
 
     Args:
         creature_name: Name of the creature to investigate
-        export_df: DataFrame with creature features
-        contributions_df: DataFrame with feature contributions
+        export_df: DataFrame with creature features (4-layer columns, DMG flags)
+        contributions_df: DataFrame with feature contributions (HP impacts)
     """
     # Get creature data from both dataframes
     creature_contrib = contributions_df[contributions_df['Name'] == creature_name]
@@ -47,8 +138,13 @@ def investigate_creature(creature_name, export_df, contributions_df):
     creature_contrib = creature_contrib.iloc[0]
     creature_export = creature_export.iloc[0]
 
+    cr = creature_contrib['CR']
+    hp_baseline = creature_contrib['hp_baseline']
+    feature_hp = creature_contrib.get('feature_hp', 0)
+    hp_after_phase1 = hp_baseline - feature_hp
+
     print("=" * 80)
-    print(f"  {creature_name.upper()} (CR {creature_contrib['CR']})")
+    print(f"  {creature_name.upper()} (CR {cr})")
     print("=" * 80)
     print()
 
@@ -59,46 +155,96 @@ def investigate_creature(creature_name, export_df, contributions_df):
     print()
     print("-" * 80)
 
-    # Phase 1: Baseline
+    # ── Phase 1: Baseline ────────────────────────────────────────────────────
     print(f"\nPHASE 1: CR BASELINE")
-    print(f"  HP Baseline (CR {creature_contrib['CR']}):                          {creature_contrib['hp_baseline']:>8.0f}")
+    print(f"  HP Baseline (CR {cr}):                          {hp_baseline:>8.0f}")
+    if feature_hp != 0:
+        print(f"  Feature HP (DMG adjustments):                  {-feature_hp:>8.0f}")
+    print(f"  HP after Phase 1:                                {hp_after_phase1:>8.0f}")
 
-    # Phase 2: Combat Stats (now applied BEFORE resistance/immunity)
+    # ── Phase 2: Combat Stats ────────────────────────────────────────────────
     print(f"\nPHASE 2: COMBAT STATS")
 
-    # Map feature names to contribution column names
-    phase2_contrib_map = {
-        'ac_deviation': 'phase2_ac_contribution',
-        'attack_deviation': 'phase2_attack_contribution',
-        'dpr_deviation': 'phase2_dpr_contribution',
-        'save_dc_deviation': 'phase2_save_dc_contribution',
-        'has_flying': 'phase2_flying_contribution',
-        'has_advantage_condition': 'phase2_advantage_contribution',
-        'has_disadvantage_condition': 'phase2_disadvantage_contribution',
-        'has_attackers_advantage': 'phase2_attackers_advantage_contribution',
-        'inflicts_prone': 'phase2_prone_contribution',
-    }
+    # Deviation Breakdown table
+    print(f"\n  Deviation Breakdown:")
+    print(f"    {'Stat':<12} {'Estimated':>9}  {'Feature':>8}  {'Total':>7}  {'Baseline':>8}  {'Deviation':>9}")
+    print(f"    {'-'*60}")
+
+    # AC row
+    ac_est = creature_export.get('ac_value', 0)
+    ac_feat = creature_export.get('feature_ac', 0)
+    ac_total = creature_export.get('total_ac', 0)
+    ac_base = creature_export.get('ac_baseline', 0)
+    ac_dev = creature_export.get('ac_deviation', 0)
+    print(f"    {'AC':<12} {ac_est:>9.0f}  {ac_feat:>+8.0f}  {ac_total:>7.0f}  {ac_base:>8.0f}  {ac_dev:>+9.0f}")
+
+    # Attack row
+    atk_est = creature_export.get('highest_attack_bonus', 0)
+    atk_feat = creature_export.get('feature_attack', 0)
+    atk_total = creature_export.get('total_attack', 0)
+    atk_base = creature_export.get('attack_baseline', 0)
+    atk_dev = creature_export.get('attack_deviation', 0)
+    print(f"    {'Attack':<12} {atk_est:>9.0f}  {atk_feat:>+8.0f}  {atk_total:>7.0f}  {atk_base:>8.0f}  {atk_dev:>+9.0f}")
+
+    # DPR row
+    dpr_est = creature_export.get('estimated_dpr', 0)
+    dpr_feat = creature_export.get('feature_dpr', 0)
+    dpr_leg = creature_export.get('legendary_dpr', 0)
+    dpr_total = creature_export.get('total_dpr', 0)
+    dpr_base = creature_export.get('dpr_baseline', 0)
+    dpr_dev = creature_export.get('dpr_deviation', 0)
+    dpr_feat_str = f'{dpr_feat:>+8.0f}'
+    if dpr_leg > 0:
+        dpr_feat_str = f'{dpr_feat + dpr_leg:>+8.0f}'
+    print(f"    {'DPR':<12} {dpr_est:>9.0f}  {dpr_feat_str}  {dpr_total:>7.0f}  {dpr_base:>8.0f}  {dpr_dev:>+9.0f}", end='')
+    if dpr_leg > 0:
+        print(f"  (feat:{dpr_feat:.0f} + leg:{dpr_leg:.0f})")
+    else:
+        print()
+
+    # Save DC row
+    dc_est = creature_export.get('highest_save_dc', 0)
+    dc_base = creature_export.get('dc_baseline', 0)
+    dc_dev = creature_export.get('save_dc_deviation', 0)
+    print(f"    {'Save DC':<12} {dc_est:>9.0f}  {'--':>8}  {dc_est:>7.0f}  {dc_base:>8.0f}  {dc_dev:>+9.0f}")
+
+    # Costed DMG Features
+    details = _get_costed_features_detail(creature_export)
+
+    print(f"\n  Costed DMG Features:")
+    for category, label, total_val in [
+        ('ac', 'feature_ac', creature_contrib.get('feature_ac', 0)),
+        ('attack', 'feature_attack', creature_contrib.get('feature_attack', 0)),
+        ('dpr', 'feature_dpr', creature_contrib.get('feature_dpr', 0)),
+        ('hp', 'feature_hp', feature_hp),
+    ]:
+        items = details[category]
+        if items:
+            item_strs = ', '.join(f'{name} {cost}' for name, cost in items)
+            print(f"    {label} ({total_val:>+.0f}):  {item_strs}")
+        else:
+            print(f"    {label} ({total_val:>+.0f}):  (none)")
+
+    # HP Penalties
+    print(f"\n  HP Penalties:")
 
     for feature in PHASE2_FEATURES:
-        # Get raw feature value
         feature_value = creature_contrib.get(feature, 0)
-
-        # Get HP contribution
-        contrib_col = phase2_contrib_map.get(feature, f'phase2_{feature}_contribution')
+        contrib_col = f'phase2_{feature}_contribution'
         hp_impact = creature_contrib.get(contrib_col, 0)
 
         try:
-            val_str = f"{float(feature_value):.1f}"
-        except:
+            val_str = f"{float(feature_value):+.1f}"
+        except (ValueError, TypeError):
             val_str = str(feature_value)
 
-        print(f"  Feature: {feature:<30} value: {val_str:>6}  hp impact: {hp_impact:>6.0f}")
+        print(f"    {feature:<35} value: {val_str:>6}  hp impact: {hp_impact:>+7.0f}")
 
-    print(f"  {'-' * 53}")
-    print(f"  Phase 2 Total:                                   {creature_contrib.get('phase2_total_contribution', 0):>8.0f}")
-    print(f"  HP after Phase 2:                                {creature_contrib['hp_after_phase2']:>8.0f}")
+    print(f"    {'-'*58}")
+    print(f"    Phase 2 Total:                                   {creature_contrib.get('phase2_total_contribution', 0):>+7.0f}")
+    print(f"    HP after Phase 2:                              {creature_contrib['hp_after_phase2']:>8.0f}")
 
-    # Resistance/Immunity Penalties (now applied AFTER Phase 2)
+    # ── Resistance/Immunity Penalties ─────────────────────────────────────────
     print(f"\nRESISTANCE/IMMUNITY PENALTIES")
     res_penalty = creature_contrib.get('resist_immun_resistance_penalty', 0)
     imm_penalty = creature_contrib.get('resist_immun_immunity_penalty', 0)
@@ -111,10 +257,9 @@ def investigate_creature(creature_name, export_df, contributions_df):
         print(f"  No resistances or immunities")
     print(f"  HP after Resist/Immun:                           {creature_contrib['hp_after_resist_immun_penalty']:>8.0f}")
 
-    # Phase 3: Individual Features
+    # ── Phase 3: Individual Features ──────────────────────────────────────────
     print(f"\nPHASE 3: INDIVIDUAL FEATURES")
 
-    # Get all phase3 columns
     phase3_cols = [col for col in contributions_df.columns
                    if col.startswith('phase3_')
                    and col != 'phase3_total_contribution'
@@ -124,7 +269,6 @@ def investigate_creature(creature_name, export_df, contributions_df):
         feature_name = col.replace('phase3_', '')
         hp_impact = creature_contrib.get(col, 0)
 
-        # Get the actual feature value
         if feature_name in creature_export.index:
             feature_value = creature_export[feature_name]
         else:
@@ -132,15 +276,16 @@ def investigate_creature(creature_name, export_df, contributions_df):
 
         try:
             val_str = f"{float(feature_value):.1f}"
-        except:
+        except (ValueError, TypeError):
             val_str = str(feature_value)
 
-        print(f"  Feature: {feature_name:<35} value: {val_str:>6}  hp impact: {hp_impact:>6.0f}")
+        print(f"  Feature: {feature_name:<35} value: {val_str:>6}  hp impact: {hp_impact:>+7.0f}")
 
-    print(f"\n  Intercept:                                       {creature_contrib.get('phase3_intercept', 0):>8.0f}")
+    print(f"\n  Intercept:                                       {creature_contrib.get('phase3_intercept', 0):>+8.0f}")
     print(f"  {'-' * 53}")
-    print(f"  Phase 3 Total:                                   {creature_contrib.get('phase3_total_contribution', 0):>8.0f}")
+    print(f"  Phase 3 Total:                                   {creature_contrib.get('phase3_total_contribution', 0):>+8.0f}")
 
+    # ── Final Summary ─────────────────────────────────────────────────────────
     print()
     print("=" * 80)
     print(f"  FINAL PREDICTED HP:                              {creature_contrib['predicted_hp']:>8.0f}")
