@@ -790,7 +790,6 @@ def parse_dmg_features(row):
         'breath_weapon', 'charge', 'damage_absorption', 'elemental_body',
         'keen_senses', 'relentless', 'shapechange', 'spell_immunity',
         'terrain_camouflage', 'web', 'sure_footed', 'prone', 'invisibility',
-        'multiattack',
     }
 
     for feature_name in DMG_FEATURE_NAMES:
@@ -853,12 +852,6 @@ def parse_dmg_features(row):
     for name in action_names + trait_names:
         if name.startswith('web') and 'sense' not in name and 'walker' not in name:
             features['feature_web'] = 1
-            break
-
-    # multiattack: check Actions only (it's always an action, not a trait)
-    for name in action_names:
-        if name == 'multiattack':
-            features['feature_multiattack'] = 1
             break
 
     # prone: synergy detection — creature can knock prone AND has advantage vs prone targets

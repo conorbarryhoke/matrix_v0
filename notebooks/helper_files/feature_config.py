@@ -35,7 +35,7 @@ DMG_FEATURE_NAMES = [
     'keen_senses', 'labyrinthine_recall', 'leadership',
     'legendary_resistance', 'life_drain', 'light_sensitivity',
     'magic_resistance', 'magic_weapons', 'martial_advantage', 'mimicry',
-    'multiattack', 'nightmare_haunting', 'nimble_escape', 'otherworldly_perception',
+    'nightmare_haunting', 'nimble_escape', 'otherworldly_perception',
     'pack_tactics', 'parry', 'possession', 'pounce', 'prone', 'psychic_defense',
     'rampage', 'read_thoughts', 'reckless', 'redirect_attack', 'reel',
     'regeneration', 'rejuvenation', 'relentless', 'shadow_stealth',
