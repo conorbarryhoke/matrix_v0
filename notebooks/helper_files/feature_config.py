@@ -172,7 +172,6 @@ PHASE2_FEATURES = [
     'attack_deviation',
     'dpr_deviation',
     'save_dc_deviation',
-    'has_flying',
     'has_advantage_condition',
     'has_disadvantage_condition',
     'has_attackers_advantage',
