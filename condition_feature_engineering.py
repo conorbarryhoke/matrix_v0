@@ -121,7 +121,6 @@ def count_abilities(text_str):
     entries = [x for x in re.split(r'\n+|\*\s+', text) if x.strip()]
     return len(entries)
 
-df['trait_count'] = df['Traits'].apply(count_abilities)
 df['action_count'] = df['Actions'].apply(count_abilities)
 df['reaction_count'] = df['Reactions'].apply(count_abilities)
 df['bonus_action_count'] = df['Bonus_Actions'].apply(count_abilities)
@@ -148,8 +147,6 @@ df[['has_legendary_actions', 'legendary_action_count', 'legendary_actions_per_ro
     lambda x: pd.Series(parse_legendary_actions(x))
 )
 
-# Total ability count
-df['total_ability_count'] = df['trait_count'] + df['action_count'] + df['reaction_count'] + df['legendary_action_count']
 
 # Parse specific abilities
 combined_abilities = (df['Traits'].fillna('') + ' ' + df['Actions'].fillna('') + ' ' +
@@ -272,9 +269,8 @@ feature_columns = [
     'resistance_count', 'immunity_count', 'vulnerability_count', 'condition_immunity_count',
     'has_darkvision', 'darkvision_range', 'has_blindsight', 'has_truesight', 'has_tremorsense',
     'passive_perception',
-    'trait_count', 'action_count', 'reaction_count', 'bonus_action_count',
+    'action_count', 'reaction_count', 'bonus_action_count',
     'legendary_action_count', 'has_legendary_actions', 'legendary_actions_per_round',
-    'total_ability_count',
     'has_multiattack',
     'highest_attack_bonus', 'highest_save_dc',
     'has_legendary_resistance', 'has_magic_resistance', 'has_regeneration',

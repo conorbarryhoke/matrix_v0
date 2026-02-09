@@ -103,11 +103,9 @@ features['save_proficiency_count'] = 0
 features['skill_proficiency_count'] = 1  # Perception
 
 # Action economy
-features['trait_count'] = 1  # Dive Attack trait
 features['action_count'] = 2  # Talon + Javelin
 features['reaction_count'] = 0
 features['bonus_action_count'] = 0
-features['total_ability_count'] = 3
 
 # Conditions (Aarakocra don't inflict conditions)
 features['inflicts_poisoned'] = 0

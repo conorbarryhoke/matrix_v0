@@ -102,14 +102,12 @@ def run_feature_engineering(data_dir):
     print("  Senses parsed")
 
     # Parse ability counts
-    df['trait_count'] = df['Traits'].apply(count_abilities)
     df['action_count'] = df['Actions'].apply(count_abilities)
     df['reaction_count'] = df['Reactions'].apply(count_abilities)
     df['bonus_action_count'] = df['Bonus_Actions'].apply(count_abilities) if 'Bonus_Actions' in df.columns else 0
     df[['has_legendary_actions', 'legendary_action_count', 'legendary_actions_per_round']] = df['Legendary_Actions'].apply(
         lambda x: pd.Series(parse_legendary_actions(x))
     )
-    df['total_ability_count'] = df['trait_count'] + df['action_count'] + df['reaction_count'] + df['legendary_action_count']
     print("  Ability counts parsed")
 
     # Parse combat stats

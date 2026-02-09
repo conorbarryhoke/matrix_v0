@@ -485,6 +485,261 @@ def plot_performance_scatter(analysis_dfs, highlight_feature=None):
     plt.show()
 
 
+# =============================================================================
+# Feature Importance
+# =============================================================================
+
+def _compute_dmg_feature_hp_impact(feat_name, tier, creatures_with):
+    """Compute per-creature HP impact of a single DMG feature for a given tier.
+
+    Converts the feature's DMG-specified AC/attack/DPR/HP costs into an
+    estimated HP impact using Phase 2 penalty rates.
+
+    Returns negative values (features reduce predicted HP).
+    """
+    penalties = PHASE2_PENALTIES[tier]
+    impact = 0.0
+
+    # AC cost → HP via ac_deviation penalty
+    ac_key = feat_name.replace('_', ' ')
+    if ac_key in DMG_AC_ADJUSTMENTS:
+        impact += DMG_AC_ADJUSTMENTS[ac_key] * penalties['ac_deviation']
+
+    # Attack cost → HP via attack_deviation penalty
+    if ac_key in DMG_ATTACK_ADJUSTMENTS:
+        impact += DMG_ATTACK_ADJUSTMENTS[ac_key] * penalties['attack_deviation']
+
+    # DPR cost → HP via dpr_deviation penalty
+    if feat_name in DMG_DPR_ADJUSTMENTS:
+        impact += DMG_DPR_ADJUSTMENTS[feat_name] * penalties['dpr_deviation']
+
+    # HP costs → direct HP reduction
+    if feat_name in DMG_HP_PER_USE:
+        per_use = DMG_HP_PER_USE[feat_name].get(tier, 0)
+        impact -= per_use * 3  # standard 3 uses
+
+    if feat_name in DMG_HP_BY_TIER:
+        impact -= DMG_HP_BY_TIER[feat_name].get(tier, 0)
+
+    if feat_name in DMG_HP_PERCENTAGE:
+        pct = DMG_HP_PERCENTAGE[feat_name]
+        eligible = creatures_with[creatures_with['cr_numeric'] <= 10]
+        if len(eligible) > 0:
+            mean_baseline = eligible['hp_baseline'].mean()
+            impact -= mean_baseline * pct / (1 + pct) * len(eligible) / len(creatures_with)
+
+    if feat_name in DMG_HP_MULTIPLIER:
+        mult = DMG_HP_MULTIPLIER[feat_name]
+        mean_baseline = creatures_with['hp_baseline'].mean()
+        impact -= mean_baseline * (1 - 1 / mult)
+
+    return impact
+
+
+def feature_importance_by_tier(contributions_df, export_df=None):
+    """
+    Show mean HP impact of each modeling feature by CR tier.
+
+    Includes DMG individual feature costs (requires export_df),
+    Phase 1 aggregate feature costs, Phase 2 features (with specified
+    penalty rates), and Phase 3 features (learned coefficients).
+
+    Args:
+        contributions_df: DataFrame with per-creature feature contributions
+        export_df: DataFrame with creature features (for DMG feature flags)
+
+    Returns:
+        DataFrame with mean HP impact per feature per tier
+    """
+    df = contributions_df.copy()
+    df['cr_tier'] = df['CR'].apply(get_cr_tier)
+
+    tiers = ['cr1', 'cr2', 'cr3', 'cr4', 'cr5']
+    tier_labels = {t: CR_TIERS[t]['label'] for t in tiers}
+
+    # Identify contribution columns
+    phase1_features = ['feature_hp', 'feature_ac', 'feature_attack', 'feature_dpr']
+    phase2_cols = {f'phase2_{f}_contribution': f for f in PHASE2_FEATURES}
+    phase3_cols = {c: c.replace('phase3_', '') for c in df.columns
+                   if c.startswith('phase3_')
+                   and c not in ('phase3_total_contribution', 'phase3_intercept')}
+
+    rows = []
+
+    # ── DMG individual features (requires export_df) ─────────────────────
+    if export_df is not None:
+        export = export_df.copy()
+        export['cr_tier'] = export['cr_numeric'].apply(get_cr_tier)
+
+        # Which features have any DMG-specified cost
+        ac_names = {k.replace(' ', '_') for k in DMG_AC_ADJUSTMENTS}
+        atk_names = {k.replace(' ', '_') for k in DMG_ATTACK_ADJUSTMENTS}
+        dpr_names = set(DMG_DPR_ADJUSTMENTS)
+        hp_names = (set(DMG_HP_PER_USE) | set(DMG_HP_BY_TIER)
+                    | set(DMG_HP_PERCENTAGE) | set(DMG_HP_MULTIPLIER))
+        all_costed = ac_names | atk_names | dpr_names | hp_names
+
+        for feat_name in DMG_FEATURE_NAMES:
+            if feat_name not in all_costed:
+                continue
+            col = f'feature_{feat_name}'
+            if col not in export.columns:
+                continue
+
+            row = {'phase': 'DMG Features', 'feature': feat_name}
+            any_present = False
+
+            for tier in tiers:
+                tier_data = export[export['cr_tier'] == tier]
+                n_total = len(tier_data)
+                if n_total == 0:
+                    row[tier] = 0.0
+                    row[f'{tier}_count'] = 0
+                    continue
+
+                mask = tier_data[col] == 1
+                n_with = int(mask.sum())
+                row[f'{tier}_count'] = n_with
+
+                if n_with == 0:
+                    row[tier] = 0.0
+                    continue
+
+                any_present = True
+                creatures_with = tier_data[mask]
+                row[tier] = _compute_dmg_feature_hp_impact(
+                    feat_name, tier, creatures_with)
+
+            if any_present:
+                rows.append(row)
+
+    # ── Phase 1: aggregate feature costs ─────────────────────────────────
+    for col in phase1_features:
+        if col not in df.columns:
+            continue
+        row = {'phase': 'Phase 1', 'feature': col}
+        for tier in tiers:
+            tier_df = df[df['cr_tier'] == tier]
+            if len(tier_df) > 0:
+                # feature_hp is subtracted from baseline, so negate for HP impact
+                if col == 'feature_hp':
+                    row[tier] = -tier_df[col].mean()
+                else:
+                    row[tier] = tier_df[col].mean()
+            else:
+                row[tier] = 0.0
+        rows.append(row)
+
+    # ── Phase 2 ──────────────────────────────────────────────────────────
+    for col, feature in phase2_cols.items():
+        if col not in df.columns:
+            continue
+        row = {'phase': 'Phase 2', 'feature': feature}
+        for tier in tiers:
+            tier_df = df[df['cr_tier'] == tier]
+            row[tier] = tier_df[col].mean() if len(tier_df) > 0 else 0.0
+            row[f'{tier}_penalty'] = PHASE2_PENALTIES.get(tier, {}).get(feature, 0)
+        rows.append(row)
+
+    # ── Phase 3 ──────────────────────────────────────────────────────────
+    for col, feature in phase3_cols.items():
+        if col not in df.columns:
+            continue
+        row = {'phase': 'Phase 3', 'feature': feature}
+        for tier in tiers:
+            tier_df = df[df['cr_tier'] == tier]
+            row[tier] = tier_df[col].mean() if len(tier_df) > 0 else 0.0
+        rows.append(row)
+
+    result_df = pd.DataFrame(rows)
+
+    # Sort within each phase by absolute mean impact (descending)
+    result_df['_abs_mean'] = result_df[tiers].abs().mean(axis=1)
+    result_df = result_df.sort_values(['phase', '_abs_mean'], ascending=[True, False])
+    result_df = result_df.drop('_abs_mean', axis=1).reset_index(drop=True)
+
+    # ── Display ──────────────────────────────────────────────────────────
+    col_w = 10  # width per tier column
+    header_w = 35 + (col_w + 1) * len(tiers)
+
+    def _print_section_header(title):
+        print(f"\n  {title}")
+        print(f"  {'Feature':<35}", end='')
+        for tier in tiers:
+            print(f" {tier_labels[tier]:>{col_w}}", end='')
+        print()
+        print(f"  {'-' * header_w}")
+
+    print("=" * 90)
+    print("FEATURE IMPORTANCE BY CR TIER")
+    print("=" * 90)
+
+    # DMG individual features (per-creature HP impact + count)
+    dmg = result_df[result_df['phase'] == 'DMG Features']
+    if len(dmg) > 0:
+        _print_section_header("DMG INDIVIDUAL FEATURE COSTS (per-creature HP impact)")
+        for _, row in dmg.iterrows():
+            print(f"  {row['feature']:<35}", end='')
+            for tier in tiers:
+                val = row[tier]
+                if val != 0:
+                    print(f" {val:>{col_w}.1f}", end='')
+                else:
+                    print(f" {'--':>{col_w}}", end='')
+            print()
+            print(f"    {'(creature count)':<33}", end='')
+            for tier in tiers:
+                count = int(row.get(f'{tier}_count', 0))
+                if count > 0:
+                    print(f" {count:>{col_w}}", end='')
+                else:
+                    print(f" {'--':>{col_w}}", end='')
+            print()
+
+    # Phase 1: aggregate feature costs
+    _print_section_header("PHASE 1: AGGREGATE DMG FEATURE COSTS (mean across tier)")
+    p1 = result_df[result_df['phase'] == 'Phase 1']
+    for _, row in p1.iterrows():
+        label = row['feature']
+        if label == 'feature_hp':
+            label += '  (HP impact)'
+        else:
+            label += '  (stat adj.)'
+        print(f"  {label:<35}", end='')
+        for tier in tiers:
+            print(f" {row[tier]:>{col_w}.1f}", end='')
+        print()
+
+    # Phase 2
+    _print_section_header("PHASE 2: SPECIFIED PENALTIES (mean across tier)")
+    p2 = result_df[result_df['phase'] == 'Phase 2']
+    for _, row in p2.iterrows():
+        print(f"  {row['feature']:<35}", end='')
+        for tier in tiers:
+            print(f" {row[tier]:>{col_w}.1f}", end='')
+        print()
+        print(f"    {'(per unit penalty)':<33}", end='')
+        for tier in tiers:
+            print(f" {row[f'{tier}_penalty']:>{col_w}.2f}", end='')
+        print()
+
+    # Phase 3
+    _print_section_header("PHASE 3: LEARNED COEFFICIENTS (mean across tier)")
+    p3 = result_df[result_df['phase'] == 'Phase 3']
+    for _, row in p3.iterrows():
+        print(f"  {row['feature']:<35}", end='')
+        for tier in tiers:
+            print(f" {row[tier]:>{col_w}.1f}", end='')
+        print()
+
+    # Clean return DataFrame: drop internal columns, rename tiers to labels
+    drop_cols = [f'{t}_penalty' for t in tiers] + [f'{t}_count' for t in tiers]
+    return_df = result_df.drop(columns=drop_cols, errors='ignore')
+    return_df = return_df.rename(columns={t: tier_labels[t] for t in tiers})
+
+    return return_df
+
+
 # Helper function for error histograms
 def plot_error_cr_hist(ax, analysis, title):
     ax.hist(analysis['Error'], bins=20, alpha=0.7, 

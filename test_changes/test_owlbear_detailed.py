@@ -193,13 +193,11 @@ phase3_features['has_tremorsense'] = 0
 phase3_features['passive_perception'] = 13
 
 # Abilities (Owlbear has keen sight/smell trait)
-phase3_features['trait_count'] = 1  # Keen Sight and Smell
 phase3_features['action_count'] = 3  # Multiattack, Beak, Claws
 phase3_features['reaction_count'] = 0
 phase3_features['bonus_action_count'] = 0
 phase3_features['legendary_action_count'] = 0
 phase3_features['legendary_actions_per_round'] = 0
-phase3_features['total_ability_count'] = 4  # 1 trait + 3 actions
 
 # Other
 phase3_features['has_spellcasting'] = 0

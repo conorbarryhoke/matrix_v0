@@ -117,7 +117,8 @@ from .model_analysis import (
     summarize_model_performance,
     analyze_predictions_by_cr,
     plot_performance_scatter,
-    plot_error_hist
+    plot_error_hist,
+    feature_importance_by_tier,
 )
 
 __version__ = '1.0.0'
