@@ -43,35 +43,48 @@ def print_step(step_num, description):
 # =============================================================================
 
 def run_feature_engineering(data_dir):
-    """Transform raw creature data into engineered features."""
+    """Transform raw creature data into engineered features.
+
+    Mirrors the logic in notebooks/1_feature_engineering.ipynb.
+    """
     print_header("PHASE 1: FEATURE ENGINEERING")
 
     from helper_files import (
-        CONDITIONS, PHASE2_FEATURES, PHASE2_PENALTIES, get_phase3_features,
+        CONDITIONS, DMG_FEATURE_NAMES, PHASE2_FEATURES, PHASE2_PENALTIES,
+        get_phase3_features,
+        DMG_ADVANTAGE_OVERRIDES, DMG_ATTACKERS_ADVANTAGE_OVERRIDES,
         parse_cr, parse_hp, parse_ac, parse_speed, SIZE_ORDINAL_MAP,
         count_proficiencies, has_sense, parse_sense_range, parse_passive_perception,
         count_abilities, parse_legendary_actions, parse_attack_bonus, parse_save_dc,
         parse_dpr_from_json, parse_charge_bonus_attack, parse_legendary_actions_dpr,
-        parse_legendary_conditions, extract_spellcaster_level,
+        parse_legendary_conditions,
         has_advantage_condition, has_disadvantage_condition, has_attackers_advantage,
+        parse_dmg_features, calculate_feature_ac, calculate_feature_attack,
+        calculate_feature_dpr, parse_breath_weapon_dpr, parse_trait_extra_dpr,
+        calculate_feature_hp,
         get_resistance_multiplier, get_immunity_multiplier, extract_family,
         get_baseline_hp, get_baseline_ac, get_baseline_attack, get_baseline_dpr,
         get_baseline_dc, get_baseline_size_ordinal, get_baseline_speed_ground,
         get_fly_speed_baseline, get_darkvision_baseline,
     )
 
-    # Load raw data
+    # ── Load raw data ──
     print_step(1, "Loading raw data")
     df = pd.read_csv(f'{data_dir}/dnd5e_monsters_from_json.csv')
-    print(f"Loaded {len(df)} monsters")
+    df = df[df['Source_Name'] == 'Free Basic Rules (2014)'].copy()
+    print(f"Loaded {len(df)} monsters (2014 5e only)")
 
-    # Parse basic features
+    # Load spellcaster features
+    df_spellcaster_features = pd.read_csv(f'{data_dir}/spellcaster_spell_features.csv')
+    print(f"Loaded {len(df_spellcaster_features)} spellcaster features")
+
+    # ── Parse basic features ──
     print_step(2, "Parsing basic features")
     df['cr_numeric'] = df['Challenge_Rating'].apply(parse_cr)
     df['actual_hp'] = df['HP'].apply(parse_hp)
     df['ac_value'] = df['AC'].apply(parse_ac)
 
-    # Parse speeds
+    # Speeds
     df['speed_ground'] = df['Speed'].apply(lambda x: parse_speed(x, 'ground'))
     df['speed_fly'] = df['Speed'].apply(lambda x: parse_speed(x, 'fly'))
     df['speed_swim'] = df['Speed'].apply(lambda x: parse_speed(x, 'swim'))
@@ -81,91 +94,172 @@ def run_feature_engineering(data_dir):
     df['movement_types_count'] = (df[['speed_ground', 'speed_fly', 'speed_swim', 'speed_burrow', 'speed_climb']] > 0).sum(axis=1)
     df['has_flying'] = (df['speed_fly'] > 0).astype(int)
     df['size_ordinal'] = df['Size'].map(SIZE_ORDINAL_MAP).fillna(2)
-    print("  Speeds and size parsed")
 
-    # Parse proficiencies
+    # Proficiencies
     df['save_proficiency_count'] = df['Saving_Throws'].apply(count_proficiencies)
     df['skill_proficiency_count'] = df['Skills'].apply(count_proficiencies)
     df['resistance_count'] = df['Resistances'].apply(count_proficiencies)
     df['immunity_count'] = df['Immunities'].apply(count_proficiencies)
     df['vulnerability_count'] = df['Vulnerabilities'].apply(count_proficiencies)
     df['condition_immunity_count'] = df['Condition_Immunities'].apply(count_proficiencies)
-    print("  Proficiencies parsed")
 
-    # Parse senses
+    # Senses
     df['has_darkvision'] = df['Senses'].apply(lambda x: has_sense(x, 'darkvision'))
     df['darkvision_range'] = df['Senses'].apply(lambda x: parse_sense_range(x, 'darkvision'))
     df['has_blindsight'] = df['Senses'].apply(lambda x: has_sense(x, 'blindsight'))
     df['has_truesight'] = df['Senses'].apply(lambda x: has_sense(x, 'truesight'))
     df['has_tremorsense'] = df['Senses'].apply(lambda x: has_sense(x, 'tremorsense'))
     df['passive_perception'] = df['Senses'].apply(parse_passive_perception)
-    print("  Senses parsed")
 
-    # Parse ability counts
+    # Ability counts
     df['action_count'] = df['Actions'].apply(count_abilities)
     df['reaction_count'] = df['Reactions'].apply(count_abilities)
     df['bonus_action_count'] = df['Bonus_Actions'].apply(count_abilities) if 'Bonus_Actions' in df.columns else 0
     df[['has_legendary_actions', 'legendary_action_count', 'legendary_actions_per_round']] = df['Legendary_Actions'].apply(
         lambda x: pd.Series(parse_legendary_actions(x))
     )
-    print("  Ability counts parsed")
+    print("  Basic features parsed")
 
-    # Parse combat stats
+    # ── Parse combat stats ──
     print_step(3, "Parsing combat stats")
     df['highest_attack_bonus'] = df['Actions'].apply(parse_attack_bonus)
     combined_abilities = (df['Traits'].fillna('') + ' ' + df['Actions'].fillna('') + ' ' +
                          df['Reactions'].fillna('') + ' ' + df['Legendary_Actions'].fillna(''))
     df['highest_save_dc'] = combined_abilities.apply(parse_save_dc)
 
-    # DC Overrides
     DC_OVERRIDES = {'Green Hag': 14}
     for creature, dc in DC_OVERRIDES.items():
         df.loc[df['Name'] == creature, 'highest_save_dc'] = dc
 
-    # Parse DPR
+    # DPR (4-layer: estimated + feature + legendary = total)
     df['estimated_dpr'] = df['Actions'].apply(parse_dpr_from_json)
-    df['charge_bonus_dpr'] = df.apply(lambda row: parse_charge_bonus_attack(row['Traits'], row['Actions']), axis=1)
-    df['estimated_dpr'] = df['estimated_dpr'] + df['charge_bonus_dpr']
+    df['feature_dpr'] = df.apply(lambda row: parse_charge_bonus_attack(row['Traits'], row['Actions']), axis=1)
     df['legendary_dpr'] = df['Legendary_Actions'].apply(parse_legendary_actions_dpr)
-    df['total_dpr'] = df['estimated_dpr'] + df['legendary_dpr']
+    df['total_dpr'] = df['estimated_dpr'] + df['feature_dpr'] + df['legendary_dpr']
     print(f"  DPR range: {df['total_dpr'].min():.1f} - {df['total_dpr'].max():.1f}")
 
-    # Parse special traits
+    # ── Parse special traits ──
     print_step(4, "Parsing special traits")
     df['has_legendary_resistance'] = combined_abilities.str.contains('legendary resistance', case=False, na=False).astype(int)
     df['has_magic_resistance'] = combined_abilities.str.contains('magic resistance', case=False, na=False).astype(int)
     df['has_regeneration'] = combined_abilities.str.contains('regeneration', case=False, na=False).astype(int)
     df['has_spellcasting'] = combined_abilities.str.contains('spellcasting', case=False, na=False).astype(int)
-    df['spellcaster_level'] = combined_abilities.apply(extract_spellcaster_level)
     df['has_grapple'] = combined_abilities.str.contains('grapple|grappled', case=False, na=False).astype(int)
 
-    # Parse legendary conditions
     df['legendary_conditions'] = df['Legendary_Actions'].apply(parse_legendary_conditions)
-
-    # Condition infliction features
     for condition in CONDITIONS:
         feature_name = f'inflicts_{condition}'
         df[feature_name] = combined_abilities.str.contains(condition, case=False, na=False).astype(int)
         df[feature_name] = df.apply(
-            lambda row: 1 if (row[feature_name] == 1 or condition in row['legendary_conditions']) else 0,
-            axis=1
+            lambda row: 1 if (row[feature_name] == 1 or condition in row['legendary_conditions']) else 0, axis=1
         )
-
-    # Inflicts prone
     df['inflicts_prone'] = combined_abilities.str.contains('prone', case=False, na=False).astype(int)
     df['inflicts_prone'] = df.apply(
-        lambda row: 1 if (row['inflicts_prone'] == 1 or 'prone' in row['legendary_conditions']) else 0,
-        axis=1
+        lambda row: 1 if (row['inflicts_prone'] == 1 or 'prone' in row['legendary_conditions']) else 0, axis=1
     )
 
-    # Advantage/disadvantage conditions
     df['has_advantage_condition'] = df.apply(has_advantage_condition, axis=1)
     df['has_disadvantage_condition'] = df.apply(has_disadvantage_condition, axis=1)
     df['has_attackers_advantage'] = df.apply(has_attackers_advantage, axis=1)
     print(f"  Advantage conditions: {df['has_advantage_condition'].sum()}")
 
-    # Calculate baselines
-    print_step(5, "Calculating baselines and deviations")
+    # ── Spellcasting merge (before DMG Feature Costing) ──
+    print_step("4b", "Merging spellcaster features")
+
+    spellcasting_rename_dict = {
+        'combat_dpr': 'estimated_dpr',
+        'grants_flying': 'has_flying',
+        'attack_bonus': 'highest_attack_bonus',
+        'save_bonus': 'highest_save_dc',
+        'grants_advantage': 'has_advantage_condition',
+        'inflicts_disadvantage': 'has_disadvantage_condition',
+    }
+
+    # Extract spell-specific columns before rename (applied after DMG Feature Costing)
+    spell_ac_bonus = df_spellcaster_features.set_index('Name')['spell_ac_bonus'] if 'spell_ac_bonus' in df_spellcaster_features.columns else None
+    spell_feature_invis = df_spellcaster_features.set_index('Name')['spell_feature_invisibility'] if 'spell_feature_invisibility' in df_spellcaster_features.columns else None
+    spell_feature_sup_invis = df_spellcaster_features.set_index('Name')['spell_feature_superior_invisibility'] if 'spell_feature_superior_invisibility' in df_spellcaster_features.columns else None
+
+    cols_to_drop = [c for c in ['spell_ac_bonus', 'spell_feature_invisibility', 'spell_feature_superior_invisibility'] if c in df_spellcaster_features.columns]
+    df_spellcaster_features = df_spellcaster_features.drop(columns=cols_to_drop)
+    df_spellcaster_features = df_spellcaster_features.rename(columns=spellcasting_rename_dict)
+
+    df_spellcasters = df[df['has_spellcasting'] == 1].copy()
+    if df_spellcaster_features.index.name != 'Name':
+        df_spellcaster_features = df_spellcaster_features.set_index('Name')
+    if df_spellcasters.index.name != 'Name':
+        df_spellcasters = df_spellcasters.set_index('Name')
+
+    # MAX merge
+    for col in df_spellcaster_features.columns:
+        if col in df_spellcasters.columns:
+            df_spellcasters[col] = df_spellcasters[col].combine(df_spellcaster_features[col], max)
+
+    # Flying from spells
+    _has_flying = df_spellcaster_features['has_flying'] == True
+    _lesser_flyspeed = df_spellcasters['speed_fly'] < 60
+    _condition = _has_flying & _lesser_flyspeed
+    df_spellcasters.loc[_condition.index & _condition, 'speed_fly'] = 60
+
+    df_spellcasters = df_spellcasters.reset_index()
+
+    # Re-merge spellcasters back into main df
+    df = df[df['has_spellcasting'] != 1]
+    df = pd.concat([df, df_spellcasters], ignore_index=True)
+    print(f"  Merged {len(df_spellcasters)} spellcasters")
+
+    # ── DMG Feature Costing ──
+    print_step(5, "DMG Feature Costing")
+    dmg_features = df.apply(parse_dmg_features, axis=1, result_type='expand')
+    for col in dmg_features.columns:
+        df[col] = dmg_features[col]
+
+    df['feature_ac'] = df.apply(calculate_feature_ac, axis=1)
+    df['feature_attack'] = df.apply(calculate_feature_attack, axis=1)
+    df['feature_dpr'] += df.apply(calculate_feature_dpr, axis=1)
+    df['feature_dpr'] += df.apply(parse_breath_weapon_dpr, axis=1)
+    df['feature_dpr'] += df.apply(parse_trait_extra_dpr, axis=1)
+    df['total_dpr'] = df['estimated_dpr'] + df['feature_dpr'] + df['legendary_dpr']
+
+    for feat in DMG_ADVANTAGE_OVERRIDES:
+        col = f'feature_{feat}'
+        if col in df.columns:
+            df.loc[df[col] == 1, 'has_advantage_condition'] = 0
+    for feat in DMG_ATTACKERS_ADVANTAGE_OVERRIDES:
+        col = f'feature_{feat}'
+        if col in df.columns:
+            df.loc[df[col] == 1, 'has_attackers_advantage'] = 0
+
+    df['total_ac'] = df['ac_value'] + df['feature_ac']
+    df['total_attack'] = df['highest_attack_bonus'] + df['feature_attack']
+
+    detected_count = sum(1 for col in dmg_features.columns if df[col].sum() > 0)
+    print(f"  {detected_count} DMG features detected across creatures")
+
+    # ── Spell-specific adjustments AFTER DMG Feature Costing ──
+    if spell_ac_bonus is not None:
+        for name, bonus in spell_ac_bonus.items():
+            if bonus > 0:
+                mask = df['Name'] == name
+                if mask.any():
+                    df.loc[mask, 'feature_ac'] += bonus
+    if spell_feature_invis is not None:
+        for name, val in spell_feature_invis.items():
+            if val == 1 or val is True:
+                mask = df['Name'] == name
+                if mask.any():
+                    df.loc[mask, 'feature_invisibility'] = 1
+    if spell_feature_sup_invis is not None:
+        for name, val in spell_feature_sup_invis.items():
+            if val == 1 or val is True:
+                mask = df['Name'] == name
+                if mask.any():
+                    df.loc[mask, 'feature_superior_invisibility'] = 1
+    df['total_ac'] = df['ac_value'] + df['feature_ac']
+    print("  Spell adjustments applied after DMG Feature Costing")
+
+    # ── Calculate baselines and deviations ──
+    print_step(6, "Calculating baselines and deviations")
     df['hp_baseline'] = df['cr_numeric'].apply(get_baseline_hp)
     df['ac_baseline'] = df['cr_numeric'].apply(get_baseline_ac)
     df['attack_baseline'] = df['cr_numeric'].apply(get_baseline_attack)
@@ -182,26 +276,28 @@ def run_feature_engineering(data_dir):
         lambda row: row['darkvision_range'] - row['darkvision_baseline'] if row['darkvision_range'] > 0 else 0, axis=1
     )
 
-    # Calculate deviations
-    df['ac_deviation'] = df['ac_value'] - df['ac_baseline']
-    df['attack_deviation'] = df['highest_attack_bonus'] - df['attack_baseline']
+    # Deviations use total_* columns (which include DMG feature adjustments)
+    df['ac_deviation'] = df['total_ac'] - df['ac_baseline']
+    df['attack_deviation'] = df['total_attack'] - df['attack_baseline']
     df['dpr_deviation'] = df['total_dpr'] - df['dpr_baseline']
-    df['save_dc_deviation'] = df['highest_save_dc'] - df['dc_baseline']
+    df['save_dc_deviation'] = df.apply(
+        lambda row: row['highest_save_dc'] - row['dc_baseline'] if row['highest_save_dc'] > 0 else 0, axis=1
+    )
     df['size_ordinal_deviation'] = df['size_ordinal'] - df['size_ordinal_baseline']
     df['speed_ground_deviation'] = df['speed_ground'] - df['speed_ground_baseline']
     print("  Deviations calculated")
 
-    # Phase 1.5: Resistance/Immunity penalties
-    print_step(6, "Applying Phase 1.5 resistance/immunity penalties")
+    # ── Phase 1: Baseline HP - feature_hp ──
+    print_step(7, "Phase 1: feature_hp and resistance/immunity")
+    df['feature_hp'] = df.apply(calculate_feature_hp, axis=1)
     df_valid = df[df['actual_hp'] > 0].copy()
-    df_valid['hp_after_phase1'] = df_valid['hp_baseline']
-    # Calculate resistance/immunity multipliers (penalties applied after Phase 2)
+    df_valid['hp_after_phase1'] = df_valid['hp_baseline'] - df_valid['feature_hp']
     df_valid['resistance_multiplier'] = df_valid['cr_numeric'].apply(get_resistance_multiplier)
     df_valid['immunity_multiplier'] = df_valid['cr_numeric'].apply(get_immunity_multiplier)
     print(f"  Valid samples: {len(df_valid)} monsters with HP > 0")
 
-    # Split by CR tier and apply Phase 2
-    print_step(7, "Splitting by CR tier and applying Phase 2 penalties")
+    # ── Split by CR tier and apply Phase 2 ──
+    print_step(8, "Splitting by CR tier and applying Phase 2 penalties")
     df_cr1 = df_valid[df_valid['cr_numeric'] < 1.0].copy()
     df_cr2 = df_valid[(df_valid['cr_numeric'] >= 1.0) & (df_valid['cr_numeric'] <= 4.0)].copy()
     df_cr3 = df_valid[(df_valid['cr_numeric'] >= 5.0) & (df_valid['cr_numeric'] <= 10.0)].copy()
@@ -212,13 +308,11 @@ def run_feature_engineering(data_dir):
         """Apply Phase 2 penalties and then resistance/immunity penalties."""
         penalties = PHASE2_PENALTIES[tier_key]
 
-        # Phase 2: Combat stat penalties starting from hp_after_phase1
         df_tier['hp_after_phase2'] = df_tier['hp_after_phase1'].copy()
         for feature, penalty in penalties.items():
             if feature in df_tier.columns:
                 df_tier['hp_after_phase2'] += df_tier[feature] * penalty
 
-        # Apply resistance/immunity penalties AFTER Phase 2
         df_tier['resistance_penalty'] = (
             df_tier['resistance_multiplier'] *
             df_tier['hp_after_phase2'] *
@@ -235,12 +329,9 @@ def run_feature_engineering(data_dir):
 
         df_tier['hp_after_resist_immun_penalty'] = df_tier['hp_after_phase2'] - df_tier['total_defensive_penalty']
 
-        # Calculate scaled features from hp_after_resist_immun_penalty
         df_tier['has_legendary_resistance_scaled'] = df_tier['has_legendary_resistance'] * df_tier['hp_after_resist_immun_penalty']
-        df_tier['has_magic_resistance_scaled'] = df_tier['has_magic_resistance'] * df_tier['hp_after_resist_immun_penalty']
         df_tier['has_regeneration_scaled'] = df_tier['has_regeneration'] * df_tier['hp_after_resist_immun_penalty']
 
-        # Calculate residual HP from final value
         df_tier['residual_hp'] = df_tier['actual_hp'] - df_tier['hp_after_resist_immun_penalty']
         df_tier['family'] = df_tier['Name'].apply(extract_family)
         df_tier['cr_tier'] = tier_key
@@ -259,7 +350,7 @@ def run_feature_engineering(data_dir):
     print(f"  CR > 16:   {len(df_cr5)} monsters")
 
     # Combine and save
-    print_step(8, "Saving engineered features")
+    print_step(9, "Saving engineered features")
     df_engineered = pd.concat([df_cr1, df_cr2, df_cr3, df_cr4, df_cr5], ignore_index=True)
     df_engineered = df_engineered.sort_values('cr_numeric')
 

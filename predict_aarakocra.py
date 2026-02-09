@@ -87,7 +87,6 @@ features['has_legendary_resistance'] = 0
 features['has_magic_resistance'] = 0
 features['has_regeneration'] = 0
 features['has_spellcasting'] = 0
-features['spellcaster_level'] = 0
 features['has_grapple'] = 0
 
 # Senses (Aarakocra have keen eyesight)

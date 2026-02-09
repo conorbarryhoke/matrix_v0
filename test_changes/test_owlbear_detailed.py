@@ -201,7 +201,6 @@ phase3_features['legendary_actions_per_round'] = 0
 
 # Other
 phase3_features['has_spellcasting'] = 0
-phase3_features['spellcaster_level'] = 0
 phase3_features['size_ordinal'] = 3  # Large
 phase3_features['has_grapple'] = 0
 

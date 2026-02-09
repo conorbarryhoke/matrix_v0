@@ -93,6 +93,7 @@ from .parsers import (
     get_immunity_multiplier,
     extract_family,
     parse_spell_targets,
+    parse_spell_frequencies,
 )
 
 from .model_utils import (

@@ -41,12 +41,13 @@ execute_end_to_end.py                (orchestrator — runs all 3 in sequence)
 | Parse Basic Features | 13–31 | CR, AC, HP, speeds, size, proficiencies, senses, ability counts |
 | Parse Combat Stats | 32–38 | Attack bonus, save DC (+ overrides), DPR (4-layer) |
 | Parse Special Traits | 39–46 | Magic resistance / regeneration flags, condition infliction, advantage/disadvantage |
-| Spellcasting | 47–56 | Detect spellcasters, merge enhanced stats from `spellcaster_spell_features.csv` |
-| DMG Feature Costing | 57–58 | Detect 12 DMG features → `feature_ac`, `feature_attack`, `total_ac`, `total_attack`; override generic flags |
-| Baselines & Deviations | 59–69 | Calculate 9 baselines from Lazy 5e, compute 7 deviations (using **totals**) |
-| Phase 1: Baseline HP | 70–71 | Filter to valid HP, calculate resistance/immunity multipliers |
-| Phase 2: CR Tiers + Penalties | 72–76 | Split into 5 CR tiers, apply `PHASE2_PENALTIES`, calculate scaled features |
-| Combine & Save | 77–82 | Recombine tiers, select `columns_to_export`, save to parquet |
+| Spellcasting | 47–56 | Detect spellcasters, MAX-merge combat stats from `spellcaster_spell_features.csv`, extract `spell_ac_bonus`/feature flags for later |
+| DMG Feature Costing | 57–58 | Detect 91 DMG features → `feature_ac`, `feature_attack`, `total_ac`, `total_attack`; override generic flags |
+| Spell Post-DMG Adjustments | 59 | Apply `spell_ac_bonus` (additive to `feature_ac`), spell feature flags (`feature_invisibility`, `feature_superior_invisibility`), recalculate `total_ac` |
+| Baselines & Deviations | 60–70 | Calculate 9 baselines from Lazy 5e, compute 7 deviations (using **totals**) |
+| Phase 1: Baseline HP | 71–72 | Filter to valid HP, calculate `feature_hp`, resistance/immunity multipliers |
+| Phase 2: CR Tiers + Penalties | 73–77 | Split into 5 CR tiers, apply `PHASE2_PENALTIES`, calculate scaled features |
+| Combine & Save | 78–83 | Recombine tiers, select `columns_to_export`, save to parquet |
 
 ### Key data flow within the notebook
 
@@ -54,9 +55,13 @@ execute_end_to_end.py                (orchestrator — runs all 3 in sequence)
 df  (raw 324 rows)
  ├── parse basic features → ac_value, highest_attack_bonus, estimated_dpr, ...
  ├── parse special traits → has_magic_resistance, has_advantage_condition, ...
- ├── merge spellcaster overrides → updates total_dpr, ac_value, etc.
+ ├── spellcasting merge (MAX) → updates estimated_dpr, has_flying, attack_bonus, etc.
+ │   (spell_ac_bonus + feature flags saved separately for post-DMG application)
  ├── DMG feature costing → feature_ac, feature_attack, total_ac, total_attack
  │                          (overrides has_advantage_condition → 0 where classified)
+ ├── spell post-DMG adjustments → spell_ac_bonus added to feature_ac,
+ │                                  spell feature flags set (invisibility, superior_invisibility)
+ │                                  total_ac recalculated
  ├── baselines from lazy_5e → ac_baseline, attack_baseline, dpr_baseline, ...
  ├── deviations = total_{stat} - baseline
  │
@@ -265,6 +270,81 @@ excluded from all model phases (Phase 2 and Phase 3). They are still parsed in
 - **Languages** (never tracked)
 
 See `DMG_RULES.md` for the source rules.
+
+---
+
+## Spellcasting Feature Engineering
+
+Spellcasting features are computed in `notebooks/spell_feature_engineering.ipynb`
+and saved to `data/spellcaster_spell_features.csv`. This CSV is loaded in
+`1_feature_engineering.ipynb` cell 11 and merged into the main `df`.
+
+### Pipeline
+
+```
+data/spellcasters_spells.csv     (313 rows: Name, spell, frequency)
+data/spells.csv                  (spell metadata: level, school, damage, etc.)
+        ↓
+spell_feature_engineering.ipynb
+  cell 33: merge spellcasters_spells × spells (normalise / → space in names)
+  cell 34: compute_creature_combat_features()
+    Pass 1: Identify buffs (AC bonus, advantage, invisibility) + conditions
+            Action-cast buffs consume 1 attack round; bonus action/reaction do NOT
+    Pass 2: Greedy DPR allocation across EXPECTED_COMBAT_ROUNDS (3) rounds
+            Each damage spell fills available round-slots based on frequency
+        ↓
+data/spellcaster_spell_features.csv  (36 rows)
+  Columns: Name, combat_dpr, spell_ac_bonus,
+           spell_feature_invisibility, spell_feature_superior_invisibility,
+           grants_flying, attack_bonus, save_bonus,
+           grants_advantage, inflicts_disadvantage,
+           inflicts_{11 conditions}
+```
+
+### How spellcasting features merge into the main pipeline
+
+The merge happens in two phases because cell 58 (DMG Feature Costing) recalculates
+`feature_ac`, `feature_{name}` flags, `total_dpr`, and `total_ac` from scratch.
+
+**Phase A — Before DMG Feature Costing (cells 50–56):**
+
+1. Extract `spell_ac_bonus`, `spell_feature_invisibility`, `spell_feature_superior_invisibility`
+   as separate Series indexed by creature Name (saved for Phase B).
+2. Rename remaining columns: `combat_dpr → estimated_dpr`, `grants_flying → has_flying`,
+   `attack_bonus → highest_attack_bonus`, etc.
+3. MAX-merge renamed columns with existing `df` values (take whichever is higher).
+4. Set `speed_fly = 60` if spell grants flying and creature has lower fly speed.
+5. Re-merge spellcasters back into main `df`.
+
+`combat_dpr` maps to `estimated_dpr` (not `total_dpr`) because cell 58 recalculates
+`total_dpr = estimated_dpr + feature_dpr + legendary_dpr`. This way the spell DPR
+survives the recalculation.
+
+**Phase B — After DMG Feature Costing (cell 59):**
+
+1. Add `spell_ac_bonus` to `feature_ac` (ADDITIVE, not max — e.g. Shield +5).
+2. OR `spell_feature_invisibility` / `spell_feature_superior_invisibility` with
+   existing `feature_invisibility` / `feature_superior_invisibility` flags.
+3. Recalculate `total_ac = ac_value + feature_ac`.
+
+### Round-aware combat DPR
+
+`combat_dpr` in the CSV represents average DPR across 3 combat rounds with greedy
+spell allocation. Example for Oni (CR 7):
+
+- Round 1: Cone of Cold (36 dmg, 1 use/day) — fills 1 round
+- Rounds 2–3: Glaive multiattack (30 dmg each) — no more spells available
+- `combat_dpr = (36 + 30 + 30) / 3 = 32.0` → but max(melee=30, spell=32) = 32...
+  Actually Oni's spell DPR is 68.0 because it includes multiple spell slots.
+
+Buff spells (Blur, Greater Invisibility, Bless) that cost an action reduce
+available attack rounds from 3 to 2. Bonus action / reaction buffs do NOT.
+
+### Safety helpers
+
+`_safe_bool()` and `_safe_num()` are used in `compute_creature_combat_features()`
+because `float('nan')` is truthy in Python — naive boolean checks on NaN spell
+metadata would incorrectly set flags like `grants_flying=True`.
 
 ---
 

@@ -213,9 +213,9 @@ def parse_spellcasting(text_str):
 
     return has_spellcasting, 0
 
-df[['has_spellcasting', 'spellcaster_level']] = df['Traits'].apply(
+df['has_spellcasting'] = df['Traits'].apply(
     lambda x: pd.Series(parse_spellcasting(x))
-)
+)[0]
 
 # Size ordinal
 size_map = {'Tiny': 0, 'Small': 1, 'Medium': 2, 'Large': 3, 'Huge': 4, 'Gargantuan': 5}
@@ -274,7 +274,7 @@ feature_columns = [
     'has_multiattack',
     'highest_attack_bonus', 'highest_save_dc',
     'has_legendary_resistance', 'has_magic_resistance', 'has_regeneration',
-    'has_spellcasting', 'spellcaster_level',
+    'has_spellcasting',
     'size_ordinal',
     'has_grapple'
 ]

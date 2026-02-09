@@ -1,309 +1,314 @@
-Name,spell
-Acolyte,light
-Acolyte,sacred flame
-Acolyte,thaumaturgy
-Acolyte,bless
-Acolyte,cure wounds
-Acolyte,sanctuary
-Androsphinx,sacred flame
-Androsphinx,spare the dying
-Androsphinx,thaumaturgy
-Androsphinx,command
-Androsphinx,detect evil and good
-Androsphinx,detect magic
-Androsphinx,lesser restoration
-Androsphinx,zone of truth
-Androsphinx,dispel magic
-Androsphinx,tongues
-Androsphinx,banishment
-Androsphinx,freedom of movement
-Androsphinx,flame strike
-Androsphinx,greater restoration
-Androsphinx,heroes' feast
-Archmage,fire bolt
-Archmage,light
-Archmage,mage hand
-Archmage,prestidigitation
-Archmage,shocking grasp
-Archmage,detect magic
-Archmage,identify
-Archmage,mage armor
-Archmage,magic missile
-Archmage,detect thoughts
-Archmage,mirror image
-Archmage,misty step
-Archmage,counterspell
-Archmage,fly
-Archmage,lightning bolt
-Archmage,banishment
-Archmage,fire shield
-Archmage,stoneskin
-Archmage,cone of cold
-Archmage,scrying
-Archmage,wall of force
-Archmage,globe of invulnerability
-Archmage,teleport
-Archmage,mind blank
-Archmage,time stop
-Cloud Giant,detect magic
-Cloud Giant,fog cloud
-Cloud Giant,light
-Cloud Giant,feather fall
-Cloud Giant,fly
-Cloud Giant,misty step
-Cloud Giant,telekinesis
-Cloud Giant,control weather
-Cloud Giant,gaseous form
-Couatl,detect evil and good
-Couatl,detect magic
-Couatl,detect thoughts
-Couatl,bless
-Couatl,create food and water
-Couatl,cure wounds
-Couatl,lesser restoration
-Couatl,protection from poison
-Couatl,sanctuary
-Couatl,shield
-Couatl,dream
-Couatl,greater restoration
-Couatl,scrying
-Cult Fanatic,light
-Cult Fanatic,sacred flame
-Cult Fanatic,thaumaturgy
-Cult Fanatic,command
-Cult Fanatic,inflict wounds
-Cult Fanatic,shield of faith
-Cult Fanatic,hold person
-Cult Fanatic,spiritual weapon
-Deep Gnome (Svirfneblin),nondetection
-Deep Gnome (Svirfneblin),blindness/deafness
-Deep Gnome (Svirfneblin),blur
-Deep Gnome (Svirfneblin),disguise self
-Deva,detect evil and good
-Deva,commune
-Deva,raise dead
-Djinni,at will: detect evil and good
-Djinni,detect magic
-Djinni,thunderwave
-Djinni,tongues
-Djinni,wind walk
-Djinni,creation
-Djinni,gaseous form
-Djinni,invisibility
-Djinni,major image
-Djinni,plane shift
-Drider,dancing lights
-Drider,darkness
-Drider,faerie fire
-Drow,dancing lights
-Drow,darkness
-Drow,faerie fire
-Druid,druidcraft
-Druid,produce flame
-Druid,shillelagh
-Druid,entangle
-Druid,longstrider
-Druid,speak with animals
-Druid,thunderwave
-Druid,animal messenger
-Druid,barkskin
-Dryad,druidcraft
-Dryad,entangle
-Dryad,goodberry
-Dryad,barkskin
-Dryad,pass without trace
-Dryad,shillelagh
-Dust Mephit,sleep
-Efreeti,detect magic
-Efreeti,enlarge/reduce
-Efreeti,tongues
-Efreeti,gaseous form
-Efreeti,invisibility
-Efreeti,major image
-Efreeti,plane shift
-Efreeti,wall of fire
-Glabrezu,darkness
-Glabrezu,detect magic
-Glabrezu,dispel magic
-Glabrezu,confusion
-Glabrezu,fly
-Glabrezu,power word: stun
-Green Hag,dancing lights
-Green Hag,minor illusion
-Green Hag,vicious mockery
-Guardian Naga,mending
-Guardian Naga,sacred flame
-Guardian Naga,thaumaturgy
-Guardian Naga,command
-Guardian Naga,cure wounds
-Guardian Naga,shield of faith
-Guardian Naga,calm emotions
-Guardian Naga,hold person
-Guardian Naga,bestow curse
-Guardian Naga,clairvoyance
-Guardian Naga,banishment
-Guardian Naga,freedom of movement
-Guardian Naga,flame strike
-Guardian Naga,geas
-Guardian Naga,true seeing
-Gynosphinx,mage hand
-Gynosphinx,minor illusion
-Gynosphinx,prestidigitation
-Gynosphinx,detect magic
-Gynosphinx,identify
-Gynosphinx,shield
-Gynosphinx,darkness
-Gynosphinx,locate object
-Gynosphinx,suggestion
-Gynosphinx,dispel magic
-Gynosphinx,remove curse
-Gynosphinx,tongues
-Gynosphinx,banishment
-Gynosphinx,greater invisibility
-Gynosphinx,legend lore
-Ice Mephit,fog cloud
-Lamia,disguise self
-Lamia,major image
-Lamia,charm person
-Lamia,mirror image
-Lamia,scrying
-Lamia,suggestion
-Lamia,geas
-Lich,mage hand
-Lich,prestidigitation
-Lich,ray of frost
-Lich,detect magic
-Lich,magic missile
-Lich,shield
-Lich,thunderwave
-Lich,detect thoughts
-Lich,invisibility
-Lich,acid arrow
-Lich,mirror image
-Lich,animate dead
-Lich,counterspell
-Lich,dispel magic
-Lich,fireball
-Lich,blight
-Lich,dimension door
-Lich,cloudkill
-Lich,scrying
-Lich,disintegrate
-Lich,globe of invulnerability
-Lich,finger of death
-Lich,plane shift
-Lich,dominate monster
-Lich,power word: stun
-Lich,power word: kill
-Mage,fire bolt
-Mage,light
-Mage,mage hand
-Mage,prestidigitation
-Mage,detect magic
-Mage,mage armor
-Mage,magic missile
-Mage,shield
-Mage,misty step
-Mage,suggestion
-Mage,counterspell
-Mage,fireball
-Mage,fly
-Mage,greater invisibility
-Mage,ice storm
-Mage,cone of cold
-Magma Mephit,heat metal
-Mummy Lord,sacred flame
-Mummy Lord,thaumaturgy
-Mummy Lord,command
-Mummy Lord,guiding bolt
-Mummy Lord,shield of faith
-Mummy Lord,hold person
-Mummy Lord,silence
-Mummy Lord,spiritual weapon
-Mummy Lord,animate dead
-Mummy Lord,dispel magic
-Mummy Lord,divination
-Mummy Lord,guardian of faith
-Mummy Lord,contagion
-Mummy Lord,insect plague
-Mummy Lord,harm
-Night Hag,detect magic
-Night Hag,magic missile
-Night Hag,plane shift
-Night Hag,ray of enfeeblement
-Night Hag,sleep
-Oni,darkness
-Oni,invisibility
-Oni,charm person
-Oni,cone of cold
-Oni,gaseous form
-Oni,sleep
-Pit Fiend,detect magic
-Pit Fiend,fireball
-Pit Fiend,hold monster
-Pit Fiend,wall of fire
-Planetar,detect evil and good
-Planetar,invisibility
-Planetar,blade barrier
-Planetar,dispel evil and good
-Planetar,flame strike
-Planetar,raise dead
-Planetar,commune
-Planetar,control weather
-Planetar,insect plague
-Priest,light
-Priest,sacred flame
-Priest,thaumaturgy
-Priest,cure wounds
-Priest,guiding bolt
-Priest,sanctuary
-Priest,lesser restoration
-Priest,spiritual weapon
-Priest,dispel magic
-Priest,spirit guardians
-Rakshasa,detect thoughts
-Rakshasa,disguise self
-Rakshasa,mage hand
-Rakshasa,minor illusion
-Rakshasa,charm person
-Rakshasa,detect magic
-Rakshasa,invisibility
-Rakshasa,major image
-Rakshasa,suggestion
-Rakshasa,dominate person
-Rakshasa,fly
-Rakshasa,plane shift
-Rakshasa,true seeing
-Solar,detect evil and good
-Solar,invisibility
-Solar,blade barrier
-Solar,dispel evil and good
-Solar,resurrection
-Solar,commune
-Solar,control weather
-Spirit Naga,mage hand
-Spirit Naga,minor illusion
-Spirit Naga,ray of frost
-Spirit Naga,charm person
-Spirit Naga,detect magic
-Spirit Naga,sleep
-Spirit Naga,detect thoughts
-Spirit Naga,hold person
-Spirit Naga,lightning bolt
-Spirit Naga,water breathing
-Spirit Naga,blight
-Spirit Naga,dimension door
-Spirit Naga,dominate person
-Steam Mephit,blur
-Storm Giant,detect magic
-Storm Giant,feather fall
-Storm Giant,levitate
-Storm Giant,light
-Storm Giant,control weather
-Storm Giant,water breathing
-Unicorn,detect evil and good
-Unicorn,druidcraft
-Unicorn,pass without trace
-Unicorn,calm emotions
-Unicorn,dispel evil and good
-Unicorn,entangle
+Name,spell,frequency
+Acolyte,bless,slots_3
+Acolyte,cure wounds,slots_3
+Acolyte,light,at_will
+Acolyte,sacred flame,at_will
+Acolyte,sanctuary,slots_3
+Acolyte,thaumaturgy,at_will
+Androsphinx,banishment,slots_3
+Androsphinx,command,slots_4
+Androsphinx,detect evil and good,slots_4
+Androsphinx,detect magic,slots_4
+Androsphinx,dispel magic,slots_3
+Androsphinx,flame strike,slots_2
+Androsphinx,freedom of movement,slots_3
+Androsphinx,greater restoration,slots_2
+Androsphinx,heroes' feast,slots_1
+Androsphinx,lesser restoration,slots_3
+Androsphinx,sacred flame,at_will
+Androsphinx,spare the dying,at_will
+Androsphinx,thaumaturgy,at_will
+Androsphinx,tongues,slots_3
+Androsphinx,zone of truth,slots_3
+Archmage,banishment,slots_3
+Archmage,cone of cold,slots_3
+Archmage,counterspell,slots_3
+Archmage,detect magic,slots_4
+Archmage,detect thoughts,slots_3
+Archmage,disguise self,at_will
+Archmage,fire bolt,at_will
+Archmage,fire shield,slots_3
+Archmage,fly,slots_3
+Archmage,globe of invulnerability,slots_1
+Archmage,identify,slots_4
+Archmage,invisibility,at_will
+Archmage,light,at_will
+Archmage,lightning bolt,slots_3
+Archmage,mage armor,slots_4
+Archmage,mage hand,at_will
+Archmage,magic missile,slots_4
+Archmage,mind blank,slots_1
+Archmage,mirror image,slots_3
+Archmage,misty step,slots_3
+Archmage,prestidigitation,at_will
+Archmage,scrying,slots_3
+Archmage,shocking grasp,at_will
+Archmage,stoneskin,slots_3
+Archmage,teleport,slots_1
+Archmage,time stop,slots_1
+Archmage,wall of force,slots_3
+Cloud Giant,control weather,per_day_1
+Cloud Giant,detect magic,at_will
+Cloud Giant,feather fall,per_day_3
+Cloud Giant,fly,per_day_3
+Cloud Giant,fog cloud,at_will
+Cloud Giant,gaseous form,per_day_1
+Cloud Giant,light,at_will
+Cloud Giant,misty step,per_day_3
+Cloud Giant,telekinesis,per_day_3
+Couatl,bless,per_day_3
+Couatl,create food and water,per_day_3
+Couatl,cure wounds,per_day_3
+Couatl,detect evil and good,at_will
+Couatl,detect magic,at_will
+Couatl,detect thoughts,at_will
+Couatl,dream,per_day_1
+Couatl,greater restoration,per_day_1
+Couatl,lesser restoration,per_day_3
+Couatl,protection from poison,per_day_3
+Couatl,sanctuary,per_day_3
+Couatl,scrying,per_day_1
+Couatl,shield,per_day_3
+Cult Fanatic,command,slots_4
+Cult Fanatic,hold person,slots_3
+Cult Fanatic,inflict wounds,slots_4
+Cult Fanatic,light,at_will
+Cult Fanatic,sacred flame,at_will
+Cult Fanatic,shield of faith,slots_4
+Cult Fanatic,spiritual weapon,slots_3
+Cult Fanatic,thaumaturgy,at_will
+Deep Gnome (Svirfneblin),blindness deafness,per_day_1
+Deep Gnome (Svirfneblin),blur,per_day_1
+Deep Gnome (Svirfneblin),disguise self,per_day_1
+Deep Gnome (Svirfneblin),nondetection,at_will
+Deva,commune,per_day_1
+Deva,detect evil and good,at_will
+Deva,raise dead,per_day_1
+Djinni,conjure elemental,per_day_1
+Djinni,create food and water,per_day_3
+Djinni,creation,per_day_1
+Djinni,detect evil and good,at_will
+Djinni,detect magic,at_will
+Djinni,gaseous form,per_day_1
+Djinni,invisibility,per_day_1
+Djinni,major image,per_day_1
+Djinni,plane shift,per_day_1
+Djinni,thunderwave,at_will
+Djinni,tongues,per_day_3
+Djinni,wind walk,per_day_3
+Drider,dancing lights,at_will
+Drider,darkness,per_day_1
+Drider,faerie fire,per_day_1
+Drow,dancing lights,at_will
+Drow,darkness,per_day_1
+Drow,faerie fire,per_day_1
+Druid,animal messenger,slots_3
+Druid,barkskin,slots_3
+Druid,druidcraft,at_will
+Druid,entangle,slots_4
+Druid,longstrider,slots_4
+Druid,produce flame,at_will
+Druid,shillelagh,at_will
+Druid,speak with animals,slots_4
+Druid,thunderwave,slots_4
+Dryad,barkskin,per_day_1
+Dryad,druidcraft,at_will
+Dryad,entangle,per_day_3
+Dryad,goodberry,per_day_3
+Dryad,pass without trace,per_day_1
+Dryad,shillelagh,per_day_1
+Dust Mephit,sleep,per_day_1
+Efreeti,conjure elemental,per_day_1
+Efreeti,detect magic,at_will
+Efreeti,enlarge/reduce,per_day_3
+Efreeti,gaseous form,per_day_1
+Efreeti,invisibility,per_day_1
+Efreeti,major image,per_day_1
+Efreeti,plane shift,per_day_1
+Efreeti,tongues,per_day_3
+Efreeti,wall of fire,per_day_1
+Glabrezu,confusion,per_day_1
+Glabrezu,darkness,at_will
+Glabrezu,detect magic,at_will
+Glabrezu,dispel magic,at_will
+Glabrezu,fly,per_day_1
+Glabrezu,power word stun,per_day_1
+Green Hag,dancing lights,at_will
+Green Hag,minor illusion,at_will
+Green Hag,vicious mockery,at_will
+Guardian Naga,banishment,slots_3
+Guardian Naga,bestow curse,slots_3
+Guardian Naga,calm emotions,slots_3
+Guardian Naga,clairvoyance,slots_3
+Guardian Naga,command,slots_4
+Guardian Naga,cure wounds,slots_4
+Guardian Naga,flame strike,slots_2
+Guardian Naga,freedom of movement,slots_3
+Guardian Naga,geas,slots_2
+Guardian Naga,hold person,slots_3
+Guardian Naga,mending,at_will
+Guardian Naga,sacred flame,at_will
+Guardian Naga,shield of faith,slots_4
+Guardian Naga,thaumaturgy,at_will
+Guardian Naga,true seeing,slots_1
+Gynosphinx,banishment,slots_3
+Gynosphinx,darkness,slots_3
+Gynosphinx,detect magic,slots_4
+Gynosphinx,dispel magic,slots_3
+Gynosphinx,greater invisibility,slots_3
+Gynosphinx,identify,slots_4
+Gynosphinx,legend lore,slots_1
+Gynosphinx,locate object,slots_3
+Gynosphinx,mage hand,at_will
+Gynosphinx,minor illusion,at_will
+Gynosphinx,prestidigitation,at_will
+Gynosphinx,remove curse,slots_3
+Gynosphinx,shield,slots_4
+Gynosphinx,suggestion,slots_3
+Gynosphinx,tongues,slots_3
+Ice Mephit,fog cloud,per_day_1
+Lamia,charm person,per_day_3
+Lamia,disguise self,at_will
+Lamia,geas,per_day_1
+Lamia,major image,at_will
+Lamia,mirror image,per_day_3
+Lamia,scrying,per_day_3
+Lamia,suggestion,per_day_3
+Lich,acid arrow,slots_3
+Lich,animate dead,slots_3
+Lich,blight,slots_3
+Lich,cloudkill,slots_3
+Lich,counterspell,slots_3
+Lich,detect magic,slots_4
+Lich,detect thoughts,slots_3
+Lich,dimension door,slots_3
+Lich,disintegrate,slots_1
+Lich,dispel magic,slots_3
+Lich,dominate monster,slots_1
+Lich,finger of death,slots_1
+Lich,fireball,slots_3
+Lich,globe of invulnerability,slots_1
+Lich,invisibility,slots_3
+Lich,mage hand,at_will
+Lich,magic missile,slots_4
+Lich,mirror image,slots_3
+Lich,plane shift,slots_1
+Lich,power word kill,slots_1
+Lich,power word stun,slots_1
+Lich,prestidigitation,at_will
+Lich,ray of frost,at_will
+Lich,scrying,slots_3
+Lich,shield,slots_4
+Lich,thunderwave,slots_4
+Mage,cone of cold,slots_1
+Mage,counterspell,slots_3
+Mage,detect magic,slots_4
+Mage,fire bolt,at_will
+Mage,fireball,slots_3
+Mage,fly,slots_3
+Mage,greater invisibility,slots_3
+Mage,ice storm,slots_3
+Mage,light,at_will
+Mage,mage armor,slots_4
+Mage,mage hand,at_will
+Mage,magic missile,slots_4
+Mage,misty step,slots_3
+Mage,prestidigitation,at_will
+Mage,shield,slots_4
+Mage,suggestion,slots_3
+Magma Mephit,heat metal,per_day_1
+Mummy Lord,animate dead,slots_3
+Mummy Lord,command,slots_4
+Mummy Lord,contagion,slots_2
+Mummy Lord,dispel magic,slots_3
+Mummy Lord,divination,slots_3
+Mummy Lord,guardian of faith,slots_3
+Mummy Lord,guiding bolt,slots_4
+Mummy Lord,harm,slots_1
+Mummy Lord,hold person,slots_3
+Mummy Lord,insect plague,slots_2
+Mummy Lord,sacred flame,at_will
+Mummy Lord,shield of faith,slots_4
+Mummy Lord,silence,slots_3
+Mummy Lord,spiritual weapon,slots_3
+Mummy Lord,thaumaturgy,at_will
+Night Hag,detect magic,at_will
+Night Hag,magic missile,at_will
+Night Hag,plane shift,per_day_2
+Night Hag,ray of enfeeblement,per_day_2
+Night Hag,sleep,per_day_2
+Oni,charm person,per_day_1
+Oni,cone of cold,per_day_1
+Oni,darkness,at_will
+Oni,gaseous form,per_day_1
+Oni,invisibility,at_will
+Oni,sleep,per_day_1
+Pit Fiend,detect magic,at_will
+Pit Fiend,fireball,at_will
+Pit Fiend,hold monster,per_day_3
+Pit Fiend,wall of fire,per_day_3
+Planetar,blade barrier,per_day_3
+Planetar,commune,per_day_1
+Planetar,control weather,per_day_1
+Planetar,detect evil and good,at_will
+Planetar,dispel evil and good,per_day_3
+Planetar,flame strike,per_day_3
+Planetar,insect plague,per_day_1
+Planetar,invisibility,at_will
+Planetar,raise dead,per_day_3
+Priest,cure wounds,slots_4
+Priest,dispel magic,slots_2
+Priest,guiding bolt,slots_4
+Priest,lesser restoration,slots_3
+Priest,light,at_will
+Priest,sacred flame,at_will
+Priest,sanctuary,slots_4
+Priest,spirit guardians,slots_2
+Priest,spiritual weapon,slots_3
+Priest,thaumaturgy,at_will
+Rakshasa,charm person,per_day_3
+Rakshasa,detect magic,per_day_3
+Rakshasa,detect thoughts,at_will
+Rakshasa,disguise self,at_will
+Rakshasa,dominate person,per_day_1
+Rakshasa,fly,per_day_1
+Rakshasa,invisibility,per_day_3
+Rakshasa,mage hand,at_will
+Rakshasa,major image,per_day_3
+Rakshasa,minor illusion,at_will
+Rakshasa,plane shift,per_day_1
+Rakshasa,suggestion,per_day_3
+Rakshasa,true seeing,per_day_1
+Solar,blade barrier,per_day_3
+Solar,commune,per_day_1
+Solar,control weather,per_day_1
+Solar,detect evil and good,at_will
+Solar,dispel evil and good,per_day_3
+Solar,invisibility,at_will
+Solar,resurrection,per_day_3
+Spirit Naga,blight,slots_3
+Spirit Naga,charm person,slots_4
+Spirit Naga,detect magic,slots_4
+Spirit Naga,detect thoughts,slots_3
+Spirit Naga,dimension door,slots_3
+Spirit Naga,dominate person,slots_2
+Spirit Naga,hold person,slots_3
+Spirit Naga,lightning bolt,slots_3
+Spirit Naga,mage hand,at_will
+Spirit Naga,minor illusion,at_will
+Spirit Naga,ray of frost,at_will
+Spirit Naga,sleep,slots_4
+Spirit Naga,water breathing,slots_3
+Steam Mephit,blur,per_day_1
+Storm Giant,control weather,per_day_3
+Storm Giant,detect magic,at_will
+Storm Giant,feather fall,at_will
+Storm Giant,levitate,at_will
+Storm Giant,light,at_will
+Storm Giant,water breathing,per_day_3
+Unicorn,calm emotions,per_day_1
+Unicorn,detect evil and good,at_will
+Unicorn,dispel evil and good,per_day_1
+Unicorn,druidcraft,at_will
+Unicorn,entangle,per_day_1
+Unicorn,pass without trace,at_will

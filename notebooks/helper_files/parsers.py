@@ -600,6 +600,116 @@ def parse_legendary_conditions(legendary_str):
 # SPECIAL TRAIT PARSERS
 # =============================================================================
 
+def _clean_spell_name(spell):
+    """Normalize a spell name: lowercase, strip whitespace, remove parenthetical notes."""
+    spell = spell.strip().rstrip('*').strip().lower()
+    # Remove parenthetical notes like "(self only)", "(any humanoid form)"
+    spell = re.sub(r'\s*\([^)]*\)\s*$', '', spell).strip()
+    return spell
+
+
+def parse_spell_frequencies(traits_str):
+    """Parse spellcasting traits to extract spell → frequency mapping.
+
+    Handles three formats:
+      Format A (Innate): "At will: darkness, invisibility  1/day each: cone of cold, sleep"
+      Format B (Prepared): "Cantrips (at will): fire bolt  • 1st level (4 slots): shield, magic missile"
+      Format C (Mephit): Trait named "Innate Spellcasting (1/Day)" with
+                         "can innately cast {spell}" in description.
+
+    Also handles prose like "can cast disguise self and invisibility at will".
+
+    Returns dict: {spell_name_lower: frequency_str}
+    where frequency_str is 'at_will', 'per_day_N', or 'slots_N'
+    """
+    if pd.isna(traits_str):
+        return {}
+
+    import json as _json
+    traits_list = traits_str if isinstance(traits_str, list) else _json.loads(str(traits_str))
+
+    frequencies = {}
+
+    for trait in traits_list:
+        name = trait.get('Name', '')
+        if 'spellcasting' not in name.lower():
+            continue
+        desc = trait.get('Desc', '')
+
+        # --- Format C: Mephit pattern ---
+        # Trait name: "Innate Spellcasting (N/Day)"
+        # Desc: "The mephit can innately cast sleep, requiring no material components."
+        mephit_freq = re.search(r'\((\d+)/day\)', name, re.IGNORECASE)
+        if mephit_freq:
+            n = mephit_freq.group(1)
+            spell_match = re.search(r'can (?:innately )?cast\s+(.+?)(?:,|\s+requiring|\s+\()', desc, re.IGNORECASE)
+            if spell_match:
+                spell = _clean_spell_name(spell_match.group(1))
+                if spell:
+                    frequencies[spell] = f'per_day_{n}'
+            continue  # Mephit traits don't have structured lists
+
+        # --- Handle prose "can cast X and Y at will" (Archmage pattern) ---
+        # Only matches inline spell names — skip if it contains structural markers
+        prose_match = re.search(r'can (?:innately )?cast\s+(.+?)\s+at will', desc, re.IGNORECASE)
+        if prose_match and ':' not in prose_match.group(1) and 'following' not in prose_match.group(1):
+            prose_spells = prose_match.group(1)
+            # Split on " and " — e.g. "disguise self and invisibility"
+            for spell in re.split(r'\s+and\s+', prose_spells):
+                spell = _clean_spell_name(spell)
+                if spell:
+                    frequencies[spell] = 'at_will'
+
+        # --- Format B: "Cantrips (at will): ..." and "Nth level (N slots): ..." ---
+        for m in re.finditer(
+            r'(?:cantrips\s*\(at will\)|(\d+)(?:st|nd|rd|th)\s+level\s*\((\d+)\s+slots?\))\s*:\s*([^\n•]+)',
+            desc, re.IGNORECASE
+        ):
+            level_num = m.group(1)  # None for cantrips
+            slot_count = m.group(2)  # None for cantrips
+            spells_text = m.group(3)
+
+            if level_num is None:
+                freq = 'at_will'
+            else:
+                freq = f'slots_{slot_count}'
+
+            # Truncate at footnote markers like "* The archmage casts..."
+            spells_text = re.split(r'\s+\*\s+[A-Z]', spells_text)[0]
+
+            for spell in spells_text.split(','):
+                spell = _clean_spell_name(spell)
+                if spell:
+                    frequencies[spell] = freq
+
+        # --- Format A: "At will: ..." and "N/day each: ..." ---
+        # Terminators: next N/day block, next bullet •, or end of string
+        for m in re.finditer(
+            r'at will\s*:\s*([^\n•]+?)(?=\s+\d+/day|\s*•|\s*$)',
+            desc, re.IGNORECASE
+        ):
+            spells_text = m.group(1)
+            for spell in spells_text.split(','):
+                spell = _clean_spell_name(spell)
+                if spell and spell not in frequencies:
+                    frequencies[spell] = 'at_will'
+
+        # Match "N/day each: spell1, spell2" or "N/day: spell1, spell2"
+        for m in re.finditer(
+            r'(\d+)/day\s*(?:each\s*)?:\s*([^\n•]+?)(?=\s+\d+/day|\s+at will|\s*•|\s*$)',
+            desc, re.IGNORECASE
+        ):
+            n = m.group(1)
+            freq = f'per_day_{n}'
+            spells_text = m.group(2)
+            for spell in spells_text.split(','):
+                spell = _clean_spell_name(spell)
+                if spell:
+                    frequencies[spell] = freq
+
+    return frequencies
+
+
 def extract_spellcaster_level(text):
     """Extract spellcaster level from text."""
     if pd.isna(text):

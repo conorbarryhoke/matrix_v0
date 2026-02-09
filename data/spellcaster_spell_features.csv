@@ -1,37 +1,37 @@
-Name,modified_dpr,inflicts_blinded,inflicts_charmed,inflicts_deafened,inflicts_frightened,inflicts_incapacitated,inflicts_paralyzed,inflicts_petrified,inflicts_poisoned,inflicts_prone,inflicts_restrained,inflicts_stunned,grants_flying,ac_bonus,attack_bonus,save_bonus,grants_advantage,inflicts_disadvantage,spellcaster_level
-Acolyte,4.5,False,False,False,False,False,False,False,False,False,False,False,False,0.0,2.5,2.5,False,False,1.0
-Androsphinx,26.599999999999998,False,False,False,False,False,True,False,False,False,True,False,False,0.0,0.0,0.0,False,False,11.0
-Archmage,144.0,False,False,False,False,False,False,False,False,False,False,False,True,3.0,0.0,0.0,True,False,17.0
-Cloud Giant,0.0,False,False,False,False,False,False,False,False,False,False,False,True,0.0,0.0,0.0,False,False,15.0
-Couatl,10.5,False,False,False,False,False,False,False,True,False,False,False,False,5.0,2.5,2.5,False,False,9.0
-Cult Fanatic,16.5,False,False,False,False,False,True,False,False,False,False,False,False,2.0,0.0,0.0,False,False,3.0
-Deep Gnome (Svirfneblin),0.0,True,False,True,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,True,5.0
-Deva,0.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,False,False,9.0
-Djinni,12.6,False,False,False,False,True,False,False,False,False,False,False,True,0.0,0.0,0.0,False,False,13.0
-Drider,0.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,False,3.0
-Drow,0.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,False,3.0
-Druid,12.6,False,False,False,False,False,False,False,False,False,True,False,False,0.0,0.0,0.0,False,False,3.0
-Dryad,0.0,False,False,False,False,False,False,False,False,False,True,False,False,0.0,0.0,0.0,False,False,3.0
-Dust Mephit,22.5,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,False,False,1.0
-Efreeti,67.5,False,False,False,False,False,False,False,False,False,False,False,True,0.0,0.0,0.0,False,True,13.0
-Glabrezu,0.0,False,False,False,False,False,False,False,False,False,False,True,True,0.0,0.0,0.0,False,False,15.0
-Green Hag,2.5,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,True,0.0
-Guardian Naga,27.5,False,True,False,True,False,True,False,False,False,True,False,False,2.0,0.0,0.0,True,True,11.0
-Gynosphinx,0.0,False,True,False,False,False,False,False,False,False,False,False,False,5.0,0.0,0.0,False,False,9.0
-Ice Mephit,0.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,False,False,1.0
-Lamia,27.5,False,True,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,False,False,9.0
-Lich,112.0,False,True,False,False,False,False,False,False,False,False,True,False,5.0,0.0,0.0,False,False,17.0
-Mage,144.0,False,True,False,False,False,False,False,False,False,False,False,True,5.0,0.0,0.0,False,False,9.0
-Magma Mephit,9.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,True,3.0
-Mummy Lord,88.0,False,False,False,False,False,True,False,False,False,False,False,False,2.0,0.0,0.0,True,True,11.0
-Night Hag,22.5,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,False,False,13.0
-Oni,144.0,False,False,False,False,False,False,False,False,False,False,False,True,0.0,0.0,0.0,False,False,9.0
-Pit Fiend,112.0,False,False,False,False,False,True,False,False,False,False,False,False,0.0,0.0,0.0,False,False,9.0
-Planetar,88.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,True,15.0
-Priest,14.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,False,5.0
-Rakshasa,0.0,False,True,False,False,False,False,False,False,False,False,False,True,0.0,0.0,0.0,False,False,13.0
-Solar,33.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,True,15.0
-Spirit Naga,84.0,False,True,False,False,False,True,False,False,False,False,False,False,0.0,0.0,0.0,False,False,9.0
-Steam Mephit,0.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,True,True,3.0
-Storm Giant,0.0,False,False,False,False,False,False,False,False,False,False,False,False,0.0,0.0,0.0,False,False,15.0
-Unicorn,0.0,False,True,False,True,False,False,False,False,False,True,False,False,0.0,0.0,0.0,True,True,9.0
+Name,combat_dpr,spell_ac_bonus,spell_feature_invisibility,spell_feature_superior_invisibility,grants_flying,attack_bonus,save_bonus,grants_advantage,inflicts_disadvantage,inflicts_blinded,inflicts_charmed,inflicts_deafened,inflicts_frightened,inflicts_incapacitated,inflicts_paralyzed,inflicts_petrified,inflicts_poisoned,inflicts_prone,inflicts_restrained,inflicts_stunned
+Acolyte,4.5,0,0,0,False,2.5,2.5,False,False,False,False,False,False,False,False,False,False,False,False,False
+Androsphinx,34.0,0,0,0,False,0.0,0.0,False,False,False,False,False,False,False,True,False,False,False,True,False
+Archmage,144.0,3,1,0,True,0.0,0.0,True,False,False,False,False,False,False,False,False,False,False,False,False
+Cloud Giant,43.0,0,0,0,True,0.0,0.0,False,False,False,False,False,False,False,False,False,False,False,False,False
+Couatl,10.166666666666666,5,0,0,False,2.5,2.5,False,False,False,False,False,False,False,False,False,True,False,False,False
+Cult Fanatic,16.5,2,0,0,False,0.0,0.0,False,False,False,False,False,False,False,True,False,False,False,False,False
+Deep Gnome (Svirfneblin),4.333333333333333,0,0,0,False,0.0,0.0,True,True,True,False,True,False,False,False,False,False,False,False,False
+Deva,51.0,0,0,0,False,0.0,0.0,False,False,False,False,False,False,False,False,False,False,False,False,False
+Djinni,46.5,0,1,0,True,0.0,0.0,False,False,False,False,False,False,True,False,False,False,False,False,False
+Drider,35.5,0,0,0,False,0.0,0.0,True,False,False,False,False,False,False,False,False,False,False,False,False
+Drow,5.5,0,0,0,False,0.0,0.0,True,False,False,False,False,False,False,False,False,False,False,False,False
+Druid,12.6,6,0,0,False,0.0,0.0,False,False,False,False,False,False,False,False,False,False,False,True,False
+Dryad,8.5,6,0,0,False,0.0,0.0,False,False,False,False,False,False,False,False,False,False,False,True,False
+Dust Mephit,10.5,0,0,0,False,0.0,0.0,False,False,False,False,False,False,False,False,False,False,False,False,False
+Efreeti,49.166666666666664,0,1,0,True,0.0,0.0,False,True,False,False,False,False,False,False,False,False,False,False,False
+Glabrezu,46.0,0,0,0,True,0.0,0.0,False,False,False,False,False,False,False,False,False,False,False,False,False
+Green Hag,13.0,0,0,0,False,0.0,0.0,True,True,False,False,False,False,False,False,False,False,False,False,False
+Guardian Naga,53.5,2,0,0,False,0.0,0.0,True,True,False,True,False,True,False,True,False,False,False,True,False
+Gynosphinx,17.333333333333332,5,0,1,False,0.0,0.0,False,False,False,True,False,False,False,False,False,False,False,False,False
+Ice Mephit,6.0,0,0,0,False,0.0,0.0,False,False,False,False,False,False,False,False,False,False,False,False,False
+Lamia,22.166666666666668,0,0,0,False,0.0,0.0,False,False,False,True,False,False,False,False,False,False,False,False,False
+Lich,112.0,5,1,0,False,0.0,0.0,False,False,False,True,False,False,False,False,False,False,False,False,False
+Mage,85.33333333333333,5,0,1,True,0.0,0.0,False,False,False,True,False,False,False,False,False,False,False,False,False
+Magma Mephit,7.0,0,0,0,False,0.0,0.0,True,True,False,False,False,False,False,False,False,False,False,False,False
+Mummy Lord,75.0,2,0,0,False,0.0,0.0,True,True,False,False,False,False,False,True,False,False,False,False,False
+Night Hag,19.333333333333332,0,0,0,False,0.0,0.0,False,False,False,False,False,False,False,False,False,False,False,False,False
+Oni,68.0,0,1,0,True,0.0,0.0,False,False,False,False,False,False,False,False,False,False,False,False,False
+Pit Fiend,112.0,0,0,0,False,0.0,0.0,False,False,False,False,False,False,False,True,False,False,False,False,False
+Planetar,87.33333333333333,0,1,0,False,0.0,0.0,True,True,False,False,False,False,False,False,False,False,False,False,False
+Priest,14.0,0,0,0,False,0.0,0.0,True,False,False,False,False,False,False,False,False,False,False,False,False
+Rakshasa,18.0,0,1,0,True,0.0,0.0,False,False,False,True,False,False,False,False,False,False,False,False,False
+Solar,98.0,0,1,0,False,0.0,0.0,True,True,False,False,False,False,False,False,False,False,False,False,False
+Spirit Naga,84.0,0,0,0,False,0.0,0.0,False,False,False,True,False,False,False,True,False,False,False,False,False
+Steam Mephit,3.3333333333333335,0,0,0,False,0.0,0.0,True,True,False,False,False,False,False,False,False,False,False,False,False
+Storm Giant,60.0,0,0,0,False,0.0,0.0,False,False,False,False,False,False,False,False,False,False,False,False,False
+Unicorn,19.5,0,0,0,False,0.0,0.0,True,True,False,True,False,True,False,False,False,False,False,True,False
