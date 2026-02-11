@@ -636,9 +636,7 @@ def feature_importance_by_tier(contributions_df, export_df=None):
             continue
         row = {'phase': 'Phase 2', 'feature': feature}
         for tier in tiers:
-            tier_df = df[df['cr_tier'] == tier]
-            row[tier] = tier_df[col].mean() if len(tier_df) > 0 else 0.0
-            row[f'{tier}_penalty'] = PHASE2_PENALTIES.get(tier, {}).get(feature, 0)
+            row[tier] = PHASE2_PENALTIES.get(tier, {}).get(feature, 0)
         rows.append(row)
 
     # ── Phase 3 ──────────────────────────────────────────────────────────
@@ -648,7 +646,10 @@ def feature_importance_by_tier(contributions_df, export_df=None):
         row = {'phase': 'Phase 3', 'feature': feature}
         for tier in tiers:
             tier_df = df[df['cr_tier'] == tier]
-            row[tier] = tier_df[col].mean() if len(tier_df) > 0 else 0.0
+            tier_vals = tier_df[col] if len(tier_df) > 0 else pd.Series(dtype=float)
+            nonzero = tier_vals[tier_vals != 0]
+            row[tier] = nonzero.mean() if len(nonzero) > 0 else 0.0
+            row[f'{tier}_count'] = len(nonzero)
         rows.append(row)
 
     result_df = pd.DataFrame(rows)
@@ -711,25 +712,37 @@ def feature_importance_by_tier(contributions_df, export_df=None):
         print()
 
     # Phase 2
-    _print_section_header("PHASE 2: SPECIFIED PENALTIES (mean across tier)")
+    _print_section_header("PHASE 2: SPECIFIED PENALTIES (cost per unit)")
     p2 = result_df[result_df['phase'] == 'Phase 2']
     for _, row in p2.iterrows():
         print(f"  {row['feature']:<35}", end='')
         for tier in tiers:
-            print(f" {row[tier]:>{col_w}.1f}", end='')
-        print()
-        print(f"    {'(per unit penalty)':<33}", end='')
-        for tier in tiers:
-            print(f" {row[f'{tier}_penalty']:>{col_w}.2f}", end='')
+            val = row[tier]
+            if val != 0:
+                print(f" {val:>{col_w}.2f}", end='')
+            else:
+                print(f" {'--':>{col_w}}", end='')
         print()
 
     # Phase 3
-    _print_section_header("PHASE 3: LEARNED COEFFICIENTS (mean across tier)")
+    _print_section_header("PHASE 3: LEARNED COEFFICIENTS (mean among creatures with feature)")
     p3 = result_df[result_df['phase'] == 'Phase 3']
     for _, row in p3.iterrows():
         print(f"  {row['feature']:<35}", end='')
         for tier in tiers:
-            print(f" {row[tier]:>{col_w}.1f}", end='')
+            val = row[tier]
+            if val != 0:
+                print(f" {val:>{col_w}.1f}", end='')
+            else:
+                print(f" {'--':>{col_w}}", end='')
+        print()
+        print(f"    {'(creature count)':<33}", end='')
+        for tier in tiers:
+            count = int(row.get(f'{tier}_count', 0))
+            if count > 0:
+                print(f" {count:>{col_w}}", end='')
+            else:
+                print(f" {'--':>{col_w}}", end='')
         print()
 
     # Clean return DataFrame: drop internal columns, rename tiers to labels
