@@ -444,8 +444,8 @@ def plot_performance_scatter(analysis_dfs, highlight_feature=None):
         return 1 - ss_res / ss_tot
 
     def _title_with_r2(df, base_title):
-        if is_binary and highlight_feature and (highlight_feature in df.columns):
-            mask_true = df[highlight_feature] == 1
+        if highlight_feature and (highlight_feature in df.columns):
+            mask_true = df[highlight_feature] != 0
             mask_false = df[highlight_feature] == 0
             r2_t = _r2(df.loc[mask_true, 'actual_hp'], df.loc[mask_true, 'predicted_hp']) if mask_true.any() else float('nan')
             r2_f = _r2(df.loc[mask_false, 'actual_hp'], df.loc[mask_false, 'predicted_hp']) if mask_false.any() else float('nan')
