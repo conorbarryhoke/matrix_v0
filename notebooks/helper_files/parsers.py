@@ -1069,9 +1069,11 @@ def parse_breath_weapon_dpr(row):
     Calculate DPR contribution from breath weapons.
 
     Per DMG: "assume the breath weapon hits two targets, and that each target
-    fails its saving throw." If the breath weapon DPR (× 2 targets) exceeds
-    estimated_dpr, the excess is added as feature_dpr. This avoids double-counting
-    since a creature uses breath weapon OR multiattack, not both.
+    fails its saving throw." For recharge abilities, the DMG says to assume
+    one use per combat, averaging damage over EXPECTED_COMBAT_ROUNDS.
+
+    The excess over estimated_dpr is added as feature_dpr to avoid
+    double-counting with multiattack (creature uses breath OR attacks, not both).
     """
     actions_str = row.get('Actions')
     if pd.isna(actions_str) or str(actions_str).strip() in ('', '—'):
@@ -1083,6 +1085,7 @@ def parse_breath_weapon_dpr(row):
         return 0
 
     best_breath_dpr = 0
+    has_recharge = False
     for action in actions:
         if not isinstance(action, dict):
             continue
@@ -1092,6 +1095,9 @@ def parse_breath_weapon_dpr(row):
         # Match breath weapon actions (e.g., "Fire Breath (Recharge 5-6)")
         if 'breath' not in name:
             continue
+
+        if 'recharge' in name:
+            has_recharge = True
 
         # Parse damage from Desc: "taking 91 (26d6) fire damage"
         match = re.search(r'(\d+)\s*\(\d+d\d+(?:\s*[+\-]\s*\d+)?\)\s*(?:\w+\s+)?damage', desc)
@@ -1104,9 +1110,14 @@ def parse_breath_weapon_dpr(row):
     if best_breath_dpr <= 0:
         return 0
 
-    # Only add the EXCESS over estimated_dpr (avoids double-counting with multiattack)
     estimated_dpr = row.get('estimated_dpr', 0)
-    return max(0, best_breath_dpr - estimated_dpr)
+    excess = max(0, best_breath_dpr - estimated_dpr)
+
+    if has_recharge:
+        # DMG: "assume one use per combat" — amortize over expected rounds
+        return excess / EXPECTED_COMBAT_ROUNDS
+    else:
+        return excess
 
 
 def parse_trait_extra_dpr(row):

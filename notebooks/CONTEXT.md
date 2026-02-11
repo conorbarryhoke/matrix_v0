@@ -150,7 +150,7 @@ cell-level overrides noted below).
 | `has_attackers_advantage(row)` | ~380 | Hardcoded keyword list for attacker-advantage detection |
 | `parse_charge_bonus_attack()` | ~415 | Burst damage: charge, pounce, surprise attack, dive attack, wounded fury, death burst, swallow |
 | `calculate_feature_dpr(row)` | ~907 | Fixed per-round DPR from `DMG_DPR_ADJUSTMENTS` |
-| `parse_breath_weapon_dpr(row)` | ~917 | Breath weapon DPR × 2 targets, excess over multiattack |
+| `parse_breath_weapon_dpr(row)` | ~917 | Breath weapon DPR × 2 targets; amortized ÷ EXPECTED_COMBAT_ROUNDS for recharge abilities |
 | `parse_trait_extra_dpr(row)` | ~962 | Per-round trait damage: sneak attack, martial advantage, elemental body |
 | `calculate_feature_hp(row)` | ~1014 | HP adjustments from `DMG_HP_*` dicts (legendary resistance, regen, etc.) |
 
@@ -204,7 +204,9 @@ the **total** column.
 2. **Fixed per-round DPR** (`calculate_feature_dpr`): aggressive (+2), rampage (+2) —
    from `DMG_DPR_ADJUSTMENTS` in feature_config.py
 3. **Breath weapon excess** (`parse_breath_weapon_dpr`): breath damage × 2 targets (DMG assumption),
-   minus `estimated_dpr` (only the excess over multiattack counts)
+   minus `estimated_dpr` (only the excess over multiattack counts). For recharge abilities
+   (Recharge 5-6, etc.), the excess is amortized ÷ `EXPECTED_COMBAT_ROUNDS` per DMG guidance:
+   "assume [a recharge ability] is used once per combat."
 4. **Per-round trait damage** (`parse_trait_extra_dpr`): sneak attack, martial advantage,
    elemental body (heated body, fire form, etc.)
 

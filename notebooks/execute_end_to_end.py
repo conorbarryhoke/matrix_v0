@@ -463,7 +463,9 @@ def run_model_training(df):
 
     for tier in tiers.keys():
         filepath = f'../pickled_models/hp_model_{tier}.pkl'
-        save_model(models[tier], scalers[tier], phase3_features, filepath)
+        r = results[tier]
+        save_model(models[tier], scalers[tier], phase3_features,
+                   r['train_count'], r['test_r2'], r['test_mae'], filepath)
         print(f"  Saved {tier} model to {filepath}")
 
     return models, scalers, results
