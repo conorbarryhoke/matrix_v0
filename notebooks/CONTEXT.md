@@ -129,7 +129,7 @@ cell-level overrides noted below).
 | `CONDITIONS` | 10 D&D conditions → auto-generates `inflicts_{cond}` columns | When adding a trackable condition |
 | `PHASE2_FEATURES` | 8 features with hand-tuned penalties (flying removed → AC) | When adding/removing a Phase 2 penalty feature |
 | `PHASE2_PENALTIES` | 5 × 8 penalty matrix (per-tier per-feature) | When tuning Phase 2 HP adjustments |
-| `PHASE3_FEATURES_BASE` | 19 features with learned coefficients (senses/skills/cond_immun removed) | When adding/removing a Phase 3 regression feature |
+| `PHASE3_FEATURES_BASE` | 18 features with learned coefficients (`legendary_action_count` removed as redundant with `legendary_actions_per_round`) | When adding/removing a Phase 3 regression feature |
 | `BASELINE_DATA` | 34 CR baseline data points (from Lazy 5e) | When source baseline data changes |
 | `FLY_SPEED_BASELINE` | Fly speed baseline per tier | When adjusting fly-speed expectations |
 | `DARKVISION_BASELINE` | Darkvision baseline per tier | When adjusting darkvision expectations |

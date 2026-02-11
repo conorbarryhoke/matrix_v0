@@ -115,9 +115,10 @@ def run_feature_engineering(data_dir):
     df['action_count'] = df['Actions'].apply(count_abilities)
     df['reaction_count'] = df['Reactions'].apply(count_abilities)
     df['bonus_action_count'] = df['Bonus_Actions'].apply(count_abilities) if 'Bonus_Actions' in df.columns else 0
-    df[['has_legendary_actions', 'legendary_action_count', 'legendary_actions_per_round']] = df['Legendary_Actions'].apply(
+    df[['has_legendary_actions', '_legendary_action_count', 'legendary_actions_per_round']] = df['Legendary_Actions'].apply(
         lambda x: pd.Series(parse_legendary_actions(x))
     )
+    df.drop(columns=['_legendary_action_count'], inplace=True)
     print("  Basic features parsed")
 
     # ── Parse combat stats ──

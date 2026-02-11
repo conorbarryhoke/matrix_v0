@@ -580,8 +580,6 @@ def feature_importance_by_tier(contributions_df, export_df=None):
         all_costed = ac_names | atk_names | dpr_names | hp_names
 
         for feat_name in DMG_FEATURE_NAMES:
-            if feat_name not in all_costed:
-                continue
             col = f'feature_{feat_name}'
             if col not in export.columns:
                 continue

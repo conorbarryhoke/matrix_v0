@@ -245,7 +245,7 @@ PHASE3_FEATURES_BASE = [
     'has_legendary_resistance_scaled',
     'has_regeneration_scaled',
     'vulnerability_count',
-    'legendary_action_count', 'legendary_actions_per_round',
+    'legendary_actions_per_round',
     'has_spellcasting',
     'size_ordinal_deviation', 'has_grapple'
 ]
@@ -377,7 +377,7 @@ EXPORT_COLUMNS = [
 
     # Phase 3: Abilities
     'action_count', 
-    'legendary_action_count', 'legendary_actions_per_round',
+    'legendary_actions_per_round',
 
     # Phase 3: Spellcasting
     'has_spellcasting',
